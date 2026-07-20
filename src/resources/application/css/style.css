@@ -62,7 +62,7 @@ Palette:
 
 /* Inner Content Card */
 .content-card {
-    -fx-background-color: #162a5b;
+    -fx-background-color: #1d2d83;
     -fx-background-radius: 25px;
     -fx-padding: 30px;
 }
@@ -169,19 +169,25 @@ Palette:
     -fx-opacity: 1.0;
 }
 
-/*
-========================================
-NEW SPECIFIC TABLE STYLING for SearchSong
-========================================
-*/
+/* ------ SEARCH SONG TABLE ----- */ 
 
 /* 1. Set the global font and background for the whole table container */
 .table-view {
     -fx-font-family: "Open Sauce One";
+	-fx-font-size:30;
     -fx-base: transparent; /* Makes default controls see-through */
     -fx-background-color: transparent;
     -fx-background-radius: 5px; /* Slight corner radius on the main container */
+	
+    /* Adjust this value until exactly 10 rows fit comfortably */
+    -fx-max-height: 760px; 
+    -fx-pref-height: 760px;
+    
+    -fx-font-family: "Open Sauce One";
+    -fx-base: transparent;
+    -fx-background-color: transparent;
 }
+
 
 /* 2. Style the Column Headers (Light Blue-Grey Background) */
 .table-view .column-header,
@@ -195,7 +201,7 @@ NEW SPECIFIC TABLE STYLING for SearchSong
 .table-view .column-header .label {
     -fx-text-fill: #0c1821;
     -fx-font-weight: bold;
-    -fx-font-size: 20px;
+    -fx-font-size: 24px;
 }
 
 /* Hide default table header background shadow/highlight */
@@ -207,13 +213,15 @@ NEW SPECIFIC TABLE STYLING for SearchSong
 
 /* Default Cell style (Lightest blue/grey) */
 .table-view .table-cell {
-    -fx-padding: 8px 10px; /* Cell spacing */
-    -fx-alignment: center; /* Center-align data as seen in sample */
-    -fx-background-color: transparent; /* Important! Prevents double backgrounds */
+	-fx-font-size: 14px;
+    -fx-padding: 0px 24px; /* Cell spacing */
+    -fx-alignment: CENTER; /* Center-align data as seen in sample */
+	-fx-background-color: transparent; /* Important! Prevents double backgrounds */
 }
 
 /* Target default rows to set the basic cell color (matches cell background in sample) */
 .table-view .table-row-cell {
+	-fx-pref-height: 64px;
     -fx-background-color: #f0f2f8; /* Very light blue-grey */
     -fx-text-fill: #0c1821; /* Dark text for readability */
 }
@@ -228,18 +236,28 @@ NEW SPECIFIC TABLE STYLING for SearchSong
     -fx-background-color: #92a4e2; /* Clear selection highlight */
 }
 
-/* 4. Formatting specific columns to match the sample data (GAMES layout) */
-/* (In image_094d87.png, the data appears centered or specific alignment) */
-.table-view .table-cell {
-     -fx-font-size: 12px;
+.table-view .column-header {
+    -fx-pref-height: 70px; /* Adjust header row height */
+    -fx-alignment: CENTER;
 }
 
-.table-view {
-    /* Adjust this value until exactly 10 rows fit comfortably */
-    -fx-max-height: 380px; 
-    -fx-pref-height: 380px;
-    
-    -fx-font-family: "Open Sauce One";
-    -fx-base: transparent;
-    -fx-background-color: transparent;
+/* ----- Expandable Navigation Buttons ----- */
+.pane{
+	-fx-background-color: white;
+}
+
+.navigation-button{
+	-fx-font-size: 12px;
+	-fx-font-family: "Open Sauce One";
+	-fx-background-color: transparent;
+	-fx-graphic-text-gap: 0px;
+	-fx-text-fill: gray;
+}
+
+.navigation-button:pressed:hover{
+	-fx-text-fill: black;
+}
+
+.navigation-button:hover{
+	-fx-text-fill: white;
 }

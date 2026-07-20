@@ -3,7 +3,6 @@ package application.controller;
 import java.util.List;
 import java.util.ArrayList;
 import application.api.SpotifyClient;
-import application.model.Media;
 import application.model.Song;
 import application.model.Status;
 
@@ -11,21 +10,34 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 public class MainController implements Initializable{
 	
@@ -46,57 +58,27 @@ public class MainController implements Initializable{
 	
 	@FXML
     private TableView<Song> tableView;
-
-	private static String fitToSpace(String text, int width) {
-	    if (text == null) {
-	        return "";
-	    }
-
-	    if (text.length() <= width) {
-	        return text;
-	    }
-
-	    return text.substring(0, width - 3) + "...";
-	}
 	
-	public static void printMedia(List<? extends Media> mediaList, boolean isAllMedias) {
-		
-		String mediaType = "";
-		
-	    System.out.println();
-	    if(isAllMedias)
-	    	System.out.print("-------");
-        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-        if(isAllMedias)
-	    	System.out.printf("| %-4s ", "Type");
-        System.out.printf("| %-3s | %-25s | %-20s | %-11s | %-11s | %-20s | %-22s | %-50s |%n", "No.", "Title", "Creator", "Year", "Status", "Rating", "Reviewed By User", "Info");
-        if(isAllMedias)
-	    	System.out.print("-------");
-        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-	    int ctr = 1;
-
-	    for (Media media: mediaList)
-	    {
-	    	
-	    	if (media instanceof Song)
-				mediaType = "SONG";
-	    	
-	    	if(isAllMedias)
-	    		System.out.printf("| %-4s ", mediaType);
-	    	System.out.printf("| %-3s | %-25s | %-20s | %-11s | %-11s | %-20s | %-22s | %-50s |%n", ctr++, fitToSpace(media.getTitle(), 25), fitToSpace(media.getCreator(), 20), media.getYearString(), media.getStatus().toDbString(), media.getUserRatingString(), media.getReviewedStatus(), fitToSpace(media.getMediaInfo(), 50));	    
-	    }
-	    
-	    if(isAllMedias)
-	    	System.out.print("-------");
-	    System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
-	}
+	// For Expandable Navigation Bar
+	private static final int deltaXNavButton1 = 10;
+	private static final int deltaXNavButton2 = -10;
+ 
+	@FXML
+	private HBox extendableNavigationPane;
+ 
+	@FXML
+	private Button navButton1;
+ 
+	@FXML
+	private Button navButton2;
+ 
+	private Rectangle clipRect;
+ 
+	private DropShadow dropShadowForSelectedPane;
 	
 	@FXML
 	void searchSong(ActionEvent event) throws IOException, InterruptedException {
-		System.out.println("Searching...");
 	    List<Song> results = spotifyClient.searchTracks(songName.getText());
-	    System.out.println("Done!");
-	    printMedia(results, false);
 	    
 	    if (results == null) {
 	        results = new ArrayList<>();   // avoid NPE if search fails/returns nothing
@@ -112,7 +94,6 @@ public class MainController implements Initializable{
 	    tableView.getColumns().clear();
 
 	    // 3. Create them entirely in Java
-	    TableColumn<Song, Integer> id = new TableColumn<>("ID");
 	    TableColumn<Song, String> title = new TableColumn<>("TITLE");
 	    TableColumn<Song, String> creator = new TableColumn<>("CREATOR");
 	    TableColumn<Song, String> year = new TableColumn<>("YEAR");
@@ -122,7 +103,6 @@ public class MainController implements Initializable{
 	    TableColumn<Song, String> album = new TableColumn<>("ALBUM");
 	    TableColumn<Song, String> runtime = new TableColumn<>("RUNTIME");
 
-	    id.setCellValueFactory(new PropertyValueFactory<>("mediaId"));
 	    title.setCellValueFactory(new PropertyValueFactory<>("title"));
 	    creator.setCellValueFactory(new PropertyValueFactory<>("creator"));
 	    year.setCellValueFactory(new PropertyValueFactory<>("yearString"));
@@ -132,9 +112,10 @@ public class MainController implements Initializable{
 	    album.setCellValueFactory(new PropertyValueFactory<>("album"));
 	    runtime.setCellValueFactory(new PropertyValueFactory<>("runtimeString"));
 
-	    tableView.getColumns().addAll(id, title, creator, year, status, userRating, review, album, runtime);
+	    tableView.getColumns().addAll(title, creator, year, status, userRating, review, album, runtime);
 
-	    // 4. Enable row drag-and-drop reordering
+	    // Row drag-and-drop reordering
+	    // Adapted from: https://stackoverflow.com/a/28606524
 	    tableView.setRowFactory(tv -> {
 	        TableRow<Song> row = new TableRow<>();
 
@@ -179,6 +160,113 @@ public class MainController implements Initializable{
 	    });
 	    
 	    updateTablePage();
+	    
+	    clipRect = new Rectangle();
+		clipRect.setWidth(extendableNavigationPane.getPrefWidth());
+		setIcon(navButton1, "/resources/application/images/back-reply-svgrepo-com.png");
+		setIcon(navButton2, "/resources/application/images/stack-overflow-svgrepo-com.png");
+		hidePane();
+ 
+		dropShadowForSelectedPane = new DropShadow(BlurType.THREE_PASS_BOX, Color.BLUE, 7, 0.2, 0, 1);
+	}
+	
+	private void setIcon(Button button, String name) {
+		Image image = new Image(getClass().getResourceAsStream(name));
+		ImageView imageView = new ImageView(image);
+        
+        imageView.setFitWidth(72);
+        imageView.setFitHeight(72); 
+        imageView.setPreserveRatio(true);
+		
+		button.setGraphic(imageView);
+		button.setContentDisplay(ContentDisplay.TOP);
+	}
+	
+	@FXML
+	private void showPane() { 
+		// Animation for showing the pane completely
+		Timeline timelineDown = new Timeline();
+ 
+		final KeyValue kvDwn1 = new KeyValue(clipRect.heightProperty(), extendableNavigationPane.getHeight());
+		final KeyValue kvDwn2 = new KeyValue(clipRect.translateYProperty(), 0);
+		final KeyValue kvDwn3 = new KeyValue(extendableNavigationPane.translateYProperty(), 0);
+		final KeyFrame kfDwn = new KeyFrame(Duration.millis(100), createBouncingEffect(extendableNavigationPane.getHeight()), kvDwn1, kvDwn2,
+				kvDwn3);
+ 
+		// Animation for moving button 1
+		final KeyValue kvB1 = new KeyValue(navButton1.translateXProperty(), -deltaXNavButton1);
+		final KeyFrame kfB1 = new KeyFrame(Duration.millis(200), kvB1);
+ 
+		// Animation for moving button 2
+		final KeyValue kvB2 = new KeyValue(navButton2.translateXProperty(), -deltaXNavButton2);
+		final KeyFrame kfB2 = new KeyFrame(Duration.millis(200), kvB2);
+ 
+		navButton1.setText("Back");
+		navButton2.setText("Playlists");
+		timelineDown.getKeyFrames().addAll(kfDwn, kfB1, kfB2);
+		timelineDown.play();
+	}
+ 
+	@FXML
+	private void hidePane() { 
+		// Animation for hiding the pane..
+		Timeline timelineUp = new Timeline();
+ 
+		final KeyValue kvUp1 = new KeyValue(clipRect.heightProperty(), 55);
+		final KeyValue kvUp2 = new KeyValue(extendableNavigationPane.translateYProperty(), 10);
+		final KeyFrame kfUp = new KeyFrame(Duration.millis(200), kvUp1, kvUp2);
+ 
+		// Animation for moving button 1
+		final KeyValue kvB1 = new KeyValue(navButton1.translateXProperty(), deltaXNavButton1);
+		final KeyFrame kfB1 = new KeyFrame(Duration.millis(200), kvB1);
+ 
+		final KeyValue kvB2 = new KeyValue(navButton2.translateXProperty(), deltaXNavButton2);
+		final KeyFrame kfB2 = new KeyFrame(Duration.millis(200), kvB2);
+ 
+		navButton1.setText(null);
+		navButton2.setText(null);
+		timelineUp.getKeyFrames().addAll(kfUp, kfB1, kfB2);
+		timelineUp.play();
+	}
+ 
+	@FXML
+	private void selectPane1() {
+		System.out.println("Selecting pane 1");
+		deselectAllPanes();
+		navButton1.setEffect(dropShadowForSelectedPane);
+	}
+ 
+	@FXML
+	private void selectPane2() {
+		System.out.println("Selecting pane 2");
+		deselectAllPanes();
+		navButton2.setEffect(dropShadowForSelectedPane);
+	}
+ 
+	private void deselectAllPanes() {
+		navButton1.setEffect(null);
+		navButton2.setEffect(null);
+	}
+ 
+	private EventHandler<ActionEvent> createBouncingEffect(double height) {
+		final Timeline timelineBounce = new Timeline();
+		timelineBounce.setCycleCount(2);
+		timelineBounce.setAutoReverse(true);
+		final KeyValue kv1 = new KeyValue(clipRect.heightProperty(), (height - 15));
+		final KeyValue kv2 = new KeyValue(clipRect.translateYProperty(), 15);
+		final KeyValue kv3 = new KeyValue(extendableNavigationPane.translateYProperty(), -15);
+		final KeyFrame kf1 = new KeyFrame(Duration.millis(100), kv1, kv2, kv3);
+		timelineBounce.getKeyFrames().add(kf1);
+ 
+		// Event handler to call bouncing effect after the scroll down is
+		// finished.
+		EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				timelineBounce.play();
+			}
+		};
+		return handler;
 	}
 	
 	private void updateTablePage() {
