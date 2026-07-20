@@ -100,12 +100,14 @@
 			      </HBox>
 			   </children>
 			</HBox>
-      	<HBox fx:id="extendableNavigationPane" alignment="CENTER" minHeight="64.0" onMouseEntered="#showPane" onMouseExited="#hidePane" prefHeight="64.0" prefWidth="371.0" spacing="20.0">
-      		<children>
-      			<Button fx:id="navButton1" mnemonicParsing="false" onAction="#selectPane1" styleClass="navigation-button" text="Back" />
-      			<Button fx:id="navButton2" mnemonicParsing="false" onAction="#selectPane2" styleClass="navigation-button" text="Playlists" />
-      		</children>
-      	</HBox>
+			
+			<!-- Extendable Navigation Pane -->
+	      	<HBox fx:id="extendableNavigationPane" alignment="CENTER" minHeight="64.0" onMouseEntered="#showPane" onMouseExited="#hidePane" prefHeight="64.0" prefWidth="371.0" spacing="20.0">
+	      		<children>
+	      			<Button fx:id="navButton1" mnemonicParsing="false" onAction="#selectPane1" styleClass="navigation-button" text="Back" />
+	      			<Button fx:id="navButton2" mnemonicParsing="false" onAction="#selectPane2" styleClass="navigation-button" text="Playlists" />
+	      		</children>
+	      	</HBox>
             
          </children>
          <BorderPane.margin>
