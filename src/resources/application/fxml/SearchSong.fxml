@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MainController">
+   
+   <!-- TOP NAVIGATION HEADER (Persistent Layer) -->
+   <top>
+      <HBox prefHeight="80.0" prefWidth="1280.0" styleClass="nav-bar" BorderPane.alignment="CENTER">
+         <children>
+            <!-- Profile Section -->
+            <HBox styleClass="profile-container">
+               <children>
+                  <Circle radius="30.0" styleClass="profile-avatar" />
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="font-public-sans, profile-text" text="Profile" />
+               </children>
+               <HBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </HBox.margin>
+            </HBox>
+            
+            <Region HBox.hgrow="ALWAYS" />
+            
+            <!-- Dynamic Navigation Links Section -->
+            <HBox alignment="CENTER" spacing="50.0">
+               <children>
+                  <Label styleClass="font-open-sauce, nav-link" text="SONGS">
+                     <HBox.margin>
+                        <Insets right="100.0" />
+                     </HBox.margin></Label>
+                  <Label styleClass="font-open-sauce, active-pill" text="GAMES"/>
+                  <Label styleClass="font-open-sauce, nav-link" text="SHOWS">
+                     <HBox.margin>
+                        <Insets left="100.0" />
+                     </HBox.margin></Label>
+               </children>
+               <HBox.margin>
+                  <Insets right="120.0" />
+               </HBox.margin>
+            </HBox>
+            
+            <Region HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+   </top>
+   
+   <!-- DYNAMIC CENTER CONTENT CARD -->
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" spacing="25.0" styleClass="content-card" BorderPane.alignment="CENTER">
+         <children>
+            
+            <!-- Search Control Bar Area -->
+            <HBox alignment="CENTER" spacing="15.0">
+               <children>
+                  <TextField fx:id="songName" promptText="Enter song title" styleClass="font-open-sauce, search-bar" HBox.hgrow="ALWAYS" />
+                  <Button mnemonicParsing="false" onAction="#searchSong" styleClass="font-open-sauce, search-button" text="Search" />
+               </children>
+            </HBox>
+            
+            <!-- Table Container Section -->
+            <TableView fx:id="tableView" prefHeight="360.0" prefWidth="1220.0" VBox.vgrow="ALWAYS">
+              <columns>
+                <TableColumn prefWidth="170.0" text="Title" />
+                <TableColumn prefWidth="170.0" text="Creator" />
+                  <TableColumn prefWidth="140.0" text="Year" />
+                  <TableColumn prefWidth="160.0" text="Average Playtime" />
+                  <TableColumn prefWidth="150.0" text="Status" />
+                  <TableColumn prefWidth="140.0" text="Rating" />
+                  <TableColumn prefWidth="280.0" text="Review" />
+              </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+            
+            <!-- Pagination Controls Footer Area -->
+            <HBox alignment="CENTER_LEFT" prefWidth="1220.0">
+			   <children>
+			      <!-- Added fx:id here so the controller can update the text -->
+			      <Label fx:id="pageLabel" styleClass="font-open-sauce" text="Showing 10 of 22" textFill="WHITE" />
+			      <Region HBox.hgrow="ALWAYS" />
+			      <HBox alignment="CENTER" spacing="15.0">
+			         <children>
+			            <!-- Added fx:id and onAction for Previous -->
+			            <Button mnemonicParsing="false" onAction="#handlePreviousPage" style="-fx-background-color: transparent;" text="Previous ◀" textFill="WHITE" styleClass="font-open-sauce" />
+			            <!-- Added fx:id and onAction for Next -->
+			            <Button mnemonicParsing="false" onAction="#handleNextPage" style="-fx-background-color: transparent;" text="▶ Next" textFill="WHITE" styleClass="font-open-sauce" />
+			         </children>
+			      </HBox>
+			   </children>
+			</HBox>
+            
+            <!-- Bottom Modification Controls Bar -->
+            <HBox alignment="CENTER" prefHeight="70.0" prefWidth="1220.0" spacing="40.0">
+               <children>
+                  <Button contentDisplay="TOP" mnemonicParsing="false" styleClass="font-open-sauce, action-button" text="Add Playlist">
+                     <graphic>
+                        <!-- Replace with real SVG/PNG graphic paths -->
+                        <Label style="-fx-font-size: 24px; -fx-font-weight: bold;" text="＋" textFill="WHITE" />
+                     </graphic>
+                  </Button>
+                  <Button contentDisplay="TOP" mnemonicParsing="false" styleClass="font-open-sauce, action-button" text="Remove Game">
+                     <graphic>
+                        <Label style="-fx-font-size: 24px; -fx-font-weight: bold;" text="—" textFill="WHITE" />
+                     </graphic>
+                  </Button>
+                  <Button contentDisplay="TOP" mnemonicParsing="false" styleClass="font-open-sauce, action-button" text="Back to&#10;My Playlists" textAlignment="CENTER">
+                     <graphic>
+                        <Label style="-fx-font-size: 24px;" text="🗂" textFill="WHITE" />
+                     </graphic>
+                  </Button>
+                  <Button contentDisplay="TOP" mnemonicParsing="false" styleClass="font-open-sauce, action-button" text="Delete Playlist">
+                     <graphic>
+                        <Label style="-fx-font-size: 24px;" text="🗑" textFill="WHITE" />
+                     </graphic>
+                  </Button>
+               </children>
+            </HBox>
+            
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="10.0" left="20.0" right="20.0" top="5.0" />
+         </BorderPane.margin>
+      </VBox>
+   </center>
+</BorderPane>

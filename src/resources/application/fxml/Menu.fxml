@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox fx:id="rootContainer" prefHeight="1080.0" prefWidth="1920.0"
+      stylesheets="@../css/style.css" styleClass="menu-container"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="application.controller.MenuController">
+   <children>
+
+      <!-- Songs Tile -->
+      <VBox fx:id="songsTile" alignment="CENTER"
+            onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited"
+            styleClass="menu-tile" prefWidth="640.0" prefHeight="1080.0">
+         <children>
+            <Label styleClass="tile-title" text="Songs" />
+            <ImageView fx:id="songsImage" fitHeight="400.0" fitWidth="400.0"
+                       pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
+         </children>
+      </VBox>
+
+      <!-- Games Tile -->
+      <VBox fx:id="gamesTile" alignment="CENTER"
+            onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited"
+            styleClass="menu-tile" prefWidth="640.0" prefHeight="1080.0">
+         <children>
+            <Label styleClass="tile-title" text="Games" />
+            <ImageView fx:id="gamesImage" fitHeight="400.0" fitWidth="400.0"
+                       pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
+         </children>
+      </VBox>
+
+      <!-- Shows Tile -->
+      <VBox fx:id="showsTile" alignment="CENTER"
+            onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited"
+            styleClass="menu-tile" prefWidth="640.0" prefHeight="1080.0">
+         <children>
+            <Label styleClass="tile-title" text="Shows" />
+            <ImageView fx:id="showsImage" fitHeight="400.0" fitWidth="400.0"
+                       pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
+         </children>
+      </VBox>
+
+   </children>
+</HBox>
