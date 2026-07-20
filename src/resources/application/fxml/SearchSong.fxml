@@ -6,6 +6,8 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -90,15 +92,32 @@
 			      <!-- Added fx:id here so the controller can update the text -->
 			      <Label fx:id="pageLabel" styleClass="font-open-sauce" text="Showing 10 of 22" textFill="WHITE" />
 			      <Region HBox.hgrow="ALWAYS" />
-			      <HBox alignment="CENTER" spacing="15.0">
-			         <children>
-			            <!-- Added fx:id and onAction for Previous -->
-			            <Button mnemonicParsing="false" onAction="#handlePreviousPage" style="-fx-background-color: transparent;" styleClass="font-open-sauce" text="Previous ◀" textFill="WHITE" />
-			            <!-- Added fx:id and onAction for Next -->
-			            <Button mnemonicParsing="false" onAction="#handleNextPage" style="-fx-background-color: transparent;" styleClass="font-open-sauce" text="▶ Next" textFill="WHITE" />
-			         </children>
-			      </HBox>
-			   </children>
+		            <HBox alignment="CENTER" spacing="15.0">
+					   <children>
+					      <!-- Previous Button -->
+					      <Button mnemonicParsing="false" style="-fx-background-color: transparent;" styleClass="font-open-sauce" text="Previous" textFill="WHITE">
+					         <graphic>
+					            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+					               <image>
+					                  <Image url="@/resources/application/images/left-triangle-filled-svgrepo-com.png" />
+					               </image>
+					            </ImageView>
+					         </graphic>
+					      </Button>
+					
+					      <!-- Next Button -->
+					      <Button contentDisplay="RIGHT" mnemonicParsing="false" style="-fx-background-color: transparent;" styleClass="font-open-sauce" text="Next" textFill="WHITE">
+					         <graphic>
+					            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+					               <image>
+					                  <Image url="@/resources/application/images/right-triangle-filled-svgrepo-com.png" />
+					               </image>
+					            </ImageView>
+					         </graphic>
+					      </Button>
+					   </children>
+					</HBox>
+				</children>
 			</HBox>
 			
 			<!-- Extendable Navigation Pane -->
