@@ -1,17 +1,6 @@
-/*
-Red and Light Minimalist Theme
-Palette:
-- Dominant (60%): Clean off-white background (#F9FAFB)
-- Structural Card (30%): Pure white card surface (#FFFFFF) with delicate border
-- Accent (10%): High-energy, professional Red (#E53935 / #C62828)
-- Dark elements: Charcoal (#1E293B) and Slate Grey (#64748B)
-*/
-
-/* Application-wide base rules */
 .root {
-    -fx-base: #8f9bcf;
-    -fx-background-color: linear-gradient(to bottom, #8f9bcf 0%, #031d3d 100%);
-    -fx-padding: 20px;
+    -fx-background-color: #162e3f;
+    -fx-padding: 10px;
 }
 
 /* Typography Rules */
@@ -23,6 +12,14 @@ Palette:
 .font-open-sauce {
     -fx-font-family: "Open Sauce One";
 	-fx-font-size: 15px;
+}
+
+/* Header & Nav overrides */
+.brand-title {
+    -fx-font-family: "Open Sauce One";
+    -fx-font-weight: bold;
+    -fx-font-size: 26px;
+    -fx-fill: #ffffff;
 }
 
 /* Top Navigation Bar Styles */
@@ -37,44 +34,62 @@ Palette:
 }
 
 .profile-avatar {
-    -fx-fill: #031d3d;
+    -fx-fill: #ffffff;
 }
 
 .profile-text {
-    -fx-font-size: 50px;
-    -fx-fill: #0c1821;
+	-fx-font-family: "Public Sans";
+    -fx-font-size: 40px;
+    -fx-fill: #ffffff;
 }
 
 .nav-link {
-    -fx-font-size: 35px;
-    -fx-fill: #0c1821;
+    -fx-font-size: 38px;
+    -fx-fill: #ffffff;
 }
 
-/* Highlight style for 'GAMES' pill button */
+/* Highlight style for active pill button */
 .active-pill {
-    -fx-background-color: #5f72d5;
-    -fx-background-radius: 20px;
-    -fx-padding: 6px 24px;
-    -fx-font-size: 35px;
-	-fx-font-weight: bold;
-    -fx-fill: #0c1821;
+    -fx-background-color: #366b91;
+    -fx-background-radius: 90px;
+    -fx-padding: 6px 28px;
+    -fx-font-size: 38px;
+    -fx-font-weight: bold;
+    -fx-fill: #ffffff;
 }
 
-/* Inner Content Card */
+/* Inner content card */
 .content-card {
     -fx-background-color: #1d2d83;
-    -fx-background-radius: 25px;
-    -fx-padding: 30px;
+	-fx-background-radius: 15px;
+	-fx-padding: 25px;
 }
 
-/* Search Area Components */
+.section-header-title {
+    -fx-font-family: "Open Sauce Sans ExtraBold";
+    -fx-font-size: 108px;
+    -fx-font-weight: bold;
+    -fx-fill: #ffffff;
+}
+
+/* Album frame cell styling within the TableView */
+.album-frame {
+    -fx-background-color: #a8d5ba;
+    -fx-background-radius: 10px;
+    -fx-min-width: 48px;
+    -fx-min-height: 48px;
+    -fx-max-width: 48px;
+    -fx-max-height: 48px;
+}
+
+/* ----- SEARCH BAR ----- */
 .search-bar {
     -fx-background-color: #06112d;
     -fx-background-radius: 30px;
     -fx-text-fill: white;
     -fx-prompt-text-fill: #5b6ea3;
     -fx-font-size: 18px;
-    -fx-padding: 12px 20px 12px 50px; /* Extra left padding to leave space for a search icon */
+    -fx-padding: 12px 20px 12px 50px;
 }
 
 .search-button {
@@ -86,16 +101,6 @@ Palette:
     -fx-min-width: 140px;
     -fx-padding: 10px 20px;
     -fx-cursor: hand;
-}
-
-/* Custom Table View Layout overrides */
-.table-view {
-    -fx-background-color: transparent;
-    -fx-base: #c1caf2;
-    -fx-corner-radius: 5px;
-}
-.table-view .column-header {
-    -fx-background-color: #cbd4fc;
 }
 
 /* Bottom Toolbar Buttons */
@@ -120,11 +125,11 @@ Palette:
 }
 
 .primary-button:hover {
--fx-background-color: #D32F2F; /* Material Red hover */
+-fx-background-color: #D32F2F;
 }
 
 .primary-button:pressed {
--fx-background-color: #B91C1C; /* Deep pressed red */
+-fx-background-color: #B91C1C;
 }
 
 .footer-text {
@@ -139,11 +144,10 @@ Palette:
 }
 
 .menu-tile {
-    -fx-background-color: #d61c29; /* Red background matching your image */
+    -fx-background-color: #d61c29;
     -fx-alignment: center;
     -fx-spacing: 40px;
     -fx-cursor: hand;
-    /* Smooth background color transition */
     -fx-transition: -fx-background-color 0.2s ease-in-out; 
 }
 
@@ -161,7 +165,6 @@ Palette:
 }
 
 .tile-image {
-    /* Optional: slightly dim the image transparency until hovered */
     -fx-opacity: 0.85;
 }
 
@@ -169,17 +172,15 @@ Palette:
     -fx-opacity: 1.0;
 }
 
-/* ------ SEARCH SONG TABLE ----- */ 
-
-/* 1. Set the global font and background for the whole table container */
+/* ------ TABLE VIEWS ----- */ 
 .table-view {
     -fx-font-family: "Open Sauce One";
 	-fx-font-size:30;
-    -fx-base: transparent; /* Makes default controls see-through */
+    -fx-base: transparent;
     -fx-background-color: transparent;
-    -fx-background-radius: 5px; /* Slight corner radius on the main container */
+    -fx-background-radius: 5px;
 	
-    /* Adjust this value until exactly 10 rows fit comfortably */
+    /* Adjust this value until exactly 10 rows fit */
     -fx-max-height: 760px; 
     -fx-pref-height: 760px;
     
@@ -189,55 +190,46 @@ Palette:
 }
 
 
-/* 2. Style the Column Headers (Light Blue-Grey Background) */
 .table-view .column-header,
 .table-view .column-header .filler {
-    /* Matches the specific header color in image_094d87.png */
     -fx-background-color: #cbd4fc;
-    -fx-padding: 10px; /* Slight extra padding for height */
+    -fx-padding: 10px;
 }
 
-/* Style the text inside the headers (Dark Blue/Grey) */
 .table-view .column-header .label {
     -fx-text-fill: #0c1821;
     -fx-font-weight: bold;
     -fx-font-size: 24px;
 }
 
-/* Hide default table header background shadow/highlight */
 .table-view .column-header-background {
     -fx-background-color: transparent;
 }
 
-/* 3. Style the Data Cells & Alternate Rows */
 
-/* Default Cell style (Lightest blue/grey) */
 .table-view .table-cell {
 	-fx-font-size: 14px;
-    -fx-padding: 0px 24px; /* Cell spacing */
-    -fx-alignment: CENTER; /* Center-align data as seen in sample */
-	-fx-background-color: transparent; /* Important! Prevents double backgrounds */
+    -fx-padding: 0px 24px;
+    -fx-alignment: CENTER;
+	-fx-background-color: transparent;
 }
 
-/* Target default rows to set the basic cell color (matches cell background in sample) */
 .table-view .table-row-cell {
 	-fx-pref-height: 64px;
-    -fx-background-color: #f0f2f8; /* Very light blue-grey */
-    -fx-text-fill: #0c1821; /* Dark text for readability */
+    -fx-background-color: #f0f2f8;
+    -fx-text-fill: #0c1821;
 }
 
-/* Target Alternate Rows to have a slightly different color */
 .table-view .table-row-cell:odd {
-    -fx-background-color: #e6eaf3; /* A shade darker for the striped effect */
+    -fx-background-color: #e6eaf3;
 }
 
-/* Style selected rows */
 .table-view .table-row-cell:filled:selected {
-    -fx-background-color: #92a4e2; /* Clear selection highlight */
+    -fx-background-color: #92a4e2;
 }
 
 .table-view .column-header {
-    -fx-pref-height: 70px; /* Adjust header row height */
+    -fx-pref-height: 70px;
     -fx-alignment: CENTER;
 }
 
