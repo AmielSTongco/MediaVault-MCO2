@@ -163,8 +163,8 @@ public class SearchController implements Initializable{
 	    
 	    clipRect = new Rectangle();
 		clipRect.setWidth(extendableNavigationPane.getPrefWidth());
-		setIcon(navButton1, "/resources/application/images/back-reply-svgrepo-com.png");
-		setIcon(navButton2, "/resources/application/images/stack-overflow-svgrepo-com.png");
+		setIcon(navButton1, "/resources/application/images/icons/back-reply-svgrepo-com.png");
+		setIcon(navButton2, "/resources/application/images/icons/stack-overflow-svgrepo-com.png");
 		hidePane();
  
 		dropShadowForSelectedPane = new DropShadow(BlurType.THREE_PASS_BOX, Color.BLUE, 7, 0.2, 0, 1);

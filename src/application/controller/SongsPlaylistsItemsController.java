@@ -93,7 +93,7 @@ public class SongsPlaylistsItemsController implements Initializable {
         TableColumn<Song, String> dragCol = new TableColumn<>("");
         dragCol.setPrefWidth(10);
 	
-	     Image dragImage = new Image(getClass().getResourceAsStream("/resources/application/images/drag-horizontal-svgrepo-com.png"));
+	     Image dragImage = new Image(getClass().getResourceAsStream("/resources/application/images/icons/drag-horizontal-svgrepo-com.png"));
 	
 	     // Add the drag icon
 	     dragCol.setCellFactory(col -> new TableCell<Song, String>() {
@@ -208,9 +208,9 @@ public class SongsPlaylistsItemsController implements Initializable {
 
         updateTablePage();
         
-        Image logoImg = new Image(getClass().getResourceAsStream("/resources/application/images/logo.png"));
-        Image titleImg = new Image(getClass().getResourceAsStream("/resources/application/images/title.png"));
-        Image settingsImg = new Image(getClass().getResourceAsStream("/resources/application/images/settings-gear-svgrepo-com.png"));
+        Image logoImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png"));
+        Image titleImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png"));
+        Image settingsImg = new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png"));
 
         // Assign images to ImageView nodes
         mediaVaultLogo.setImage(logoImg);
@@ -219,8 +219,8 @@ public class SongsPlaylistsItemsController implements Initializable {
         
         clipRect = new Rectangle();
 		clipRect.setWidth(extendableNavigationPane.getPrefWidth());
-		setIcon(navButton1, "/resources/application/images/plus-svgrepo-com.png");
-		setIcon(navButton2, "/resources/application/images/back-reply-svgrepo-com.png");
+		setIcon(navButton1, "/resources/application/images/icons/plus-svgrepo-com.png");
+		setIcon(navButton2, "/resources/application/images/icons/back-reply-svgrepo-com.png");
 		hidePane();
  
 		dropShadowForSelectedPane = new DropShadow(BlurType.THREE_PASS_BOX, Color.BLUE, 7, 0.2, 0, 1);
