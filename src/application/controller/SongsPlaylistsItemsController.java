@@ -124,7 +124,6 @@ public class SongsPlaylistsItemsController implements Initializable {
                 imageView.setFitWidth(45);
                 imageView.setFitHeight(45);
                 
-                // Rounded frame corners matching the screenshot UI
                 javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(45, 45);
                 clip.setArcWidth(10);
                 clip.setArcHeight(10);
@@ -138,7 +137,6 @@ public class SongsPlaylistsItemsController implements Initializable {
                 if (empty || url == null || url.trim().isEmpty()) {
                     setGraphic(null);
                 } else {
-                    // backgroundLoading = true prevents UI stutter when pulling from web
                     Image webImage = new Image(url, 45, 45, true, true, true);
                     imageView.setImage(webImage);
                     setGraphic(imageView);
@@ -246,8 +244,7 @@ public class SongsPlaylistsItemsController implements Initializable {
 		final KeyValue kvDwn1 = new KeyValue(clipRect.heightProperty(), extendableNavigationPane.getHeight());
 		final KeyValue kvDwn2 = new KeyValue(clipRect.translateYProperty(), 0);
 		final KeyValue kvDwn3 = new KeyValue(extendableNavigationPane.translateYProperty(), 0);
-		final KeyFrame kfDwn = new KeyFrame(Duration.millis(100), createBouncingEffect(extendableNavigationPane.getHeight()), kvDwn1, kvDwn2,
-				kvDwn3);
+		final KeyFrame kfDwn = new KeyFrame(Duration.millis(100), createBouncingEffect(extendableNavigationPane.getHeight()), kvDwn1, kvDwn2, kvDwn3);
  
 		// Animation for moving button 1
 		final KeyValue kvB1 = new KeyValue(navButton1.translateXProperty(), -deltaXNavButton1);
@@ -314,8 +311,6 @@ public class SongsPlaylistsItemsController implements Initializable {
 		final KeyFrame kf1 = new KeyFrame(Duration.millis(100), kv1, kv2, kv3);
 		timelineBounce.getKeyFrames().add(kf1);
  
-		// Event handler to call bouncing effect after the scroll down is
-		// finished.
 		EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
