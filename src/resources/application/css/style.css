@@ -24,6 +24,7 @@
 
 /* Top Navigation Bar Styles */
 .nav-bar {
+	-fx-background-color: #031336;
     -fx-padding: 10px 40px;
     -fx-alignment: center-left;
 }
@@ -137,10 +138,11 @@
 -fx-font-size: 13px;
 }
 
+/* ----- MENU TILES ----- */
 .menu-container {
     -fx-background-color: #000000;
     -fx-padding: 0;
-    -fx-spacing: 2; /* Creates the thin black divider line between tiles */
+    -fx-spacing: 4; /* Creates the thin black divider line between tiles */
 }
 
 .menu-tile {
@@ -153,19 +155,8 @@
 
 /* Highlight effect when hovered */
 .menu-tile:hover {
-    -fx-background-color: #e62230; /* Slightly lighter/brighter red */
+    -fx-background-color: #e62230;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 15, 0, 0, 0);
-}
-
-.tile-title {
-    -fx-font-family: "System";
-    -fx-font-size: 32px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #000000;
-}
-
-.tile-image {
-    -fx-opacity: 0.85;
 }
 
 .menu-tile:hover .tile-image {

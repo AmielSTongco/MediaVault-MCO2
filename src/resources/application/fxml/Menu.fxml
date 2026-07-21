@@ -24,9 +24,9 @@
             <!-- Profile Container -->
             <HBox alignment="CENTER_RIGHT" spacing="35">
                <children>
-                  <Circle radius="70.0" styleClass="profile-avatar" />
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 80px;" styleClass="font-public-sans, profile-text" text="chisaepicm.." />
-                  <ImageView fx:id="settingsIcon" fitHeight="120.0" pickOnBounds="true" preserveRatio="true" />
+                  <Circle radius="50.0" styleClass="profile-avatar" />
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 60px;" styleClass="font-public-sans, profile-text" text="chisaepicm.." />
+                  <ImageView fx:id="settingsIcon" fitHeight="80.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </HBox>
          </children>
@@ -36,9 +36,9 @@
 	<center>
 		<HBox fx:id="rootContainer" styleClass="menu-container">
 			<children>
-		      <ImageView fx:id="songsTile" fitWidth="680.0" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
-			  <ImageView fx:id="gamesTile" fitWidth="680.0" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
-			  <ImageView fx:id="showsTile" fitWidth="680.0" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
+		      <ImageView fx:id="songsTile" fitWidth="680.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
+			  <ImageView fx:id="gamesTile" fitWidth="680.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
+			  <ImageView fx:id="showsTile" fitWidth="680.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
 		   </children>
 		</HBox>
 	</center>

@@ -1,9 +1,14 @@
 package application.controller;
 
+import java.io.IOException;
+
 import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
@@ -75,5 +80,28 @@ public class MenuController {
         scaleDown.setToX(1.0);
         scaleDown.setToY(1.0);
         scaleDown.play();
+    }
+    
+    @FXML
+    private void handleTileClick(MouseEvent event) {
+    		Object source = event.getSource();
+        String fxmlPath = "";
+
+        // Identify which tile was clicked
+        if (source == songsTile) {
+            fxmlPath = "/resources/application/fxml/SongsPlaylistsItemsScene.fxml";
+        } else if (source == gamesTile) {
+            //fxmlPath = "/resources/application/fxml/GamesScene.fxml";
+        } else if (source == showsTile) {
+            //fxmlPath = "/resources/application/fxml/ShowsScene.fxml";
+        }
+        
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.getScene().setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
