@@ -80,7 +80,7 @@
 					         <graphic>
 					            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
 					               <image>
-					                  <Image url="@/resources/application/images/left-triangle-filled-svgrepo-com.png" />
+					                  <Image url="@/resources/application/images/icons/left-triangle-filled-svgrepo-com.png" />
 					               </image>
 					            </ImageView>
 					         </graphic>
@@ -91,7 +91,7 @@
 					         <graphic>
 					            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
 					               <image>
-					                  <Image url="@/resources/application/images/right-triangle-filled-svgrepo-com.png" />
+					                  <Image url="@/resources/application/images/icons/right-triangle-filled-svgrepo-com.png" />
 					               </image>
 					            </ImageView>
 					         </graphic>
