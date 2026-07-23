@@ -24,7 +24,6 @@
 
 /* Top Navigation Bar Styles */
 .nav-bar {
-	-fx-background-color: #031336;
     -fx-padding: 10px 40px;
     -fx-alignment: center-left;
 }
@@ -64,6 +63,10 @@
     -fx-background-color: #1d2d83;
 	-fx-background-radius: 15px;
 	-fx-padding: 25px;
+}
+
+.content-card.song{
+    -fx-background-color: #366b91;
 }
 
 .section-header-title {
@@ -115,16 +118,16 @@
 }
 
 .primary-button:hover {
--fx-background-color: #D32F2F;
+	-fx-background-color: #D32F2F;
 }
 
 .primary-button:pressed {
--fx-background-color: #B91C1C;
+	-fx-background-color: #B91C1C;
 }
 
 .footer-text {
--fx-text-fill: #64748B;
--fx-font-size: 13px;
+	-fx-text-fill: #64748B;
+	-fx-font-size: 13px;
 }
 
 /* ----- MENU TILES ----- */
@@ -216,8 +219,6 @@
 /* Container Box */
 .details-card {
     -fx-background-color: #3e7392; /* Outer card background color */
-    -fx-padding: 20px;
-    -fx-spacing: 20px;            /* Gap between image and VBox */
     -fx-alignment: center-left;
     -fx-background-radius: 15px;
 }
@@ -225,7 +226,7 @@
 .media-title {
 	-fx-fill: #ffffff;
 	-fx-font-family: "Open Sauce One";
-	-fx-font-size: 120px;
+	-fx-font-size: 150px;
 	-fx-font-weight: bold;
 }
 
@@ -237,12 +238,12 @@
 
 /* Curved Rectangles (Pills) */
 .info-pill {
-    -fx-background-color: #8fa2e6; /* Soft blue/purple pill color */
-    -fx-background-radius: 90px;   /* Creates fully rounded pill ends */
-    -fx-padding: 8px 20px;          /* Internal padding (top/bottom left/right) */
+    -fx-background-color: #8fa2e6;
+    -fx-background-radius: 90px;
+    -fx-padding: 8px 20px;          /* Internal padding */
     -fx-text-fill: #ffffff;
-    -fx-font-family: "Open Sauce One", "Public Sans", sans-serif;
-    -fx-font-size: 16px;
+    -fx-font-family: "Open Sauce One";
+    -fx-font-size: 48px;
     -fx-font-weight: bold;
     -fx-max-width: infinity;       /* Makes all pills stretch to fill VBox width */
 }
