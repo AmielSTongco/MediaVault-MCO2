@@ -114,17 +114,6 @@
     -fx-cursor: hand;
 }
 
-/* Primary Action Button (Accented Red) /
-.primary-button {
--fx-background-color: #E53935; / Dynamic Red background */
--fx-text-fill: #FFFFFF;
--fx-font-weight: bold;
--fx-font-size: 15px;
--fx-background-radius: 8px;
--fx-cursor: hand;
--fx-effect: dropshadow(three-pass-box, rgba(229, 57, 53, 0.25), 8, 0, 0, 2);
-}
-
 .primary-button:hover {
 -fx-background-color: #D32F2F;
 }
@@ -180,7 +169,6 @@
     -fx-background-color: transparent;
 }
 
-
 .table-view .column-header,
 .table-view .column-header .filler {
     -fx-background-color: #cbd4fc;
@@ -222,6 +210,41 @@
 .table-view .column-header {
     -fx-pref-height: 70px;
     -fx-alignment: CENTER;
+}
+
+/* ----- MEDIA SCENE ----- */
+/* Container Box */
+.details-card {
+    -fx-background-color: #3e7392; /* Outer card background color */
+    -fx-padding: 20px;
+    -fx-spacing: 20px;            /* Gap between image and VBox */
+    -fx-alignment: center-left;
+    -fx-background-radius: 15px;
+}
+
+.media-title {
+	-fx-fill: #ffffff;
+	-fx-font-family: "Open Sauce One";
+	-fx-font-size: 120px;
+	-fx-font-weight: bold;
+}
+
+/* VBox holding the pills */
+.info-vbox {
+    -fx-spacing: 10px;            /* Vertical gap between pill rows */
+    -fx-alignment: center-left;
+}
+
+/* Curved Rectangles (Pills) */
+.info-pill {
+    -fx-background-color: #8fa2e6; /* Soft blue/purple pill color */
+    -fx-background-radius: 90px;   /* Creates fully rounded pill ends */
+    -fx-padding: 8px 20px;          /* Internal padding (top/bottom left/right) */
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Open Sauce One", "Public Sans", sans-serif;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-max-width: infinity;       /* Makes all pills stretch to fill VBox width */
 }
 
 /* ----- Expandable Navigation Buttons ----- */
