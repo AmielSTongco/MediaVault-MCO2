@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MediaController">
+   
+   <!-- TOP NAVIGATION HEADER -->
+   <top>
+      <HBox prefHeight="90.0" prefWidth="1280.0" styleClass="nav-bar" BorderPane.alignment="CENTER">
+         <children>
+            <!-- Logo Section -->
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+               	<ImageView fx:id="mediaVaultLogo" fitHeight="80.0" pickOnBounds="true" preserveRatio="true" />
+                	<ImageView fx:id="mediaVaultTitle" fitHeight="50.0" pickOnBounds="true" preserveRatio="true" />
+               </children>
+            </HBox>
+            
+            <Region HBox.hgrow="ALWAYS" />
+            
+            <!-- Dynamic Navigation Links Section -->
+            <HBox alignment="CENTER" spacing="180.0">
+               <children>
+                  <Label styleClass="font-open-sauce, active-pill" text="SONGS" textFill="WHITE" />
+                  <Label styleClass="font-open-sauce, nav-link" text="GAMES" textFill="WHITE" />
+                  <Label styleClass="font-open-sauce, nav-link" text="SHOWS" textFill="WHITE" />
+               </children>
+            </HBox>
+            
+            <Region HBox.hgrow="ALWAYS" />
+
+            <!-- Profile Container -->
+            <HBox alignment="CENTER_RIGHT" spacing="12.0">
+               <children>
+                  <Circle radius="20.0" styleClass="profile-avatar" />
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="font-public-sans, profile-text" text="chisaepicm.." />
+                  <ImageView fx:id="settingsIcon" fitHeight="60.0" pickOnBounds="true" preserveRatio="true" />
+               </children>
+            </HBox>
+         </children>
+      </HBox>
+   </top>
+   
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" spacing="20.0" styleClass="content-card, song" BorderPane.alignment="CENTER">
+         <children>
+            <Text fx:id="title" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="media-title" text="SONG TITLE">
+               <VBox.margin>
+                  <Insets left="65.0" right="65.0" />
+               </VBox.margin></Text>
+            
+            <HBox alignment="CENTER_LEFT" spacing="20.0">
+			    <!-- Album Art -->
+			    <ImageView fx:id="albumArt" fitHeight="600.0" fitWidth="600.0" preserveRatio="true">
+			        <image>
+			            <Image url="@/resources/application/images/music.png" />
+			        </image>
+			    </ImageView>
+			
+			    <!-- Info Pills -->
+			    <VBox styleClass="info-vbox" HBox.hgrow="ALWAYS">
+			        <children>
+			            <Label fx:id="artistLabel" styleClass="info-pill" text="Artist: NIKI" />
+			            <Label fx:id="yearLabel" styleClass="info-pill" text="Year: 2022" />
+			            <Label fx:id="genreLabel" styleClass="info-pill" text="Genre: Alternative pop and folk-pop" />
+			            <Label fx:id="playtimeLabel" styleClass="info-pill" text="Average Playtime:" />
+			            <Label fx:id="statusLabel" styleClass="info-pill" text="Status:" />
+			            <Label fx:id="ratingLabel" styleClass="info-pill" text="Rating: 100000000000" />
+			            <Label fx:id="reviewLabel" styleClass="info-pill" text="Review: Tagos sa bones" />
+			        </children>
+			    </VBox>
+               <VBox.margin>
+                  <Insets left="65.0" right="65.0" />
+               </VBox.margin>
+			</HBox>
+			
+            <!-- Extendable Navigation Pane -->
+	      	<HBox fx:id="extendableNavigationPane" alignment="CENTER" minHeight="64.0" onMouseEntered="#showPane" onMouseExited="#hidePane" prefHeight="64.0" prefWidth="371.0" spacing="25.0">
+	      		<children>
+	      			<Button fx:id="navButton1" mnemonicParsing="false" onAction="#selectPane1" styleClass="navigation-button" text="Add Playlist" />
+	      			<Button fx:id="navButton2" mnemonicParsing="false" onAction="#selectPane2" styleClass="navigation-button" text="Back" />
+	      		</children>
+	      	</HBox>
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="10.0" left="20.0" right="20.0" top="5.0" />
+         </BorderPane.margin>
+      </VBox>
+   </center>
+   
+</BorderPane>
