@@ -41,6 +41,9 @@ public class MediaController {
 
     @FXML
     private Label genreLabel;
+    
+    @FXML
+    private Label mediaLabel;
 
     @FXML
     private ImageView mediaVaultLogo;
@@ -76,7 +79,7 @@ public class MediaController {
     private Label statusLabel;
 
     @FXML
-    private Text title;
+    private Label title;
 
     @FXML
     private Label yearLabel;
@@ -107,6 +110,12 @@ public class MediaController {
         
         albumArt.setClip(clip);
         
+        DropShadow shadow = new DropShadow();
+        shadow.setRadius(10);
+        //shadow.setOffsetX(5);
+        shadow.setOffsetY(5);
+        shadow.setColor(Color.color(0, 0, 0, 0.4));
+        
         Light.Distant light = new Light.Distant();
         light.setAzimuth(-135);
         
@@ -115,13 +124,16 @@ public class MediaController {
         lighting.setDiffuseConstant(1.45);
         lighting.setSurfaceScale(1);
         
-        artistLabel.setEffect(lighting);
-        yearLabel.setEffect(lighting);
-        genreLabel.setEffect(lighting);
-        playtimeLabel.setEffect(lighting);
-        statusLabel.setEffect(lighting);
-        ratingLabel.setEffect(lighting);
-        reviewLabel.setEffect(lighting);
+        shadow.setInput(lighting);
+        
+        mediaLabel.setEffect(shadow);
+        artistLabel.setEffect(shadow);
+        yearLabel.setEffect(shadow);
+        genreLabel.setEffect(shadow);
+        playtimeLabel.setEffect(shadow);
+        statusLabel.setEffect(shadow);
+        ratingLabel.setEffect(shadow);
+        reviewLabel.setEffect(shadow);
     }
     
     @FXML
