@@ -232,6 +232,11 @@
     -fx-alignment: center-left;
 }
 
+/* Override font size for shows */
+.info-pill.shows{
+    -fx-font-size: 40px;
+}
+
 /* Curved Rectangles (Pills) */
 .info-pill {
     -fx-background-color: #8fa2e6;
@@ -243,6 +248,8 @@
     -fx-font-weight: bold;
     -fx-max-width: infinity;       /* Makes all pills stretch to fill VBox width */
 }
+
+
 
 /* ----- Expandable Navigation Buttons ----- */
 .pane{
