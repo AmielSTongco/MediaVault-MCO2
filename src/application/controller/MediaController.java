@@ -63,6 +63,9 @@ public class MediaController {
     @FXML
     private Button navButton3;
 
+    	@FXML 
+    	private Label avgPlaytimeLabel;
+    
     @FXML
     private Label playtimeLabel;
 
@@ -83,9 +86,13 @@ public class MediaController {
 
     @FXML
     private Label yearLabel;
+    
+	private String mediaType;
 
     @FXML
     public void initialize() {
+    		mediaType = mediaLabel.getText();		
+    		
     		Image logoImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png"));
         Image titleImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png"));
         Image settingsImg = new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png"));
@@ -130,10 +137,20 @@ public class MediaController {
         creatorLabel.setEffect(shadow);
         yearLabel.setEffect(shadow);
         genreLabel.setEffect(shadow);
-        playtimeLabel.setEffect(shadow);
         statusLabel.setEffect(shadow);
         ratingLabel.setEffect(shadow);
         reviewLabel.setEffect(shadow);
+        
+        switch(mediaType) {
+        		case "SONGS":
+	        		playtimeLabel.setEffect(shadow);
+	        		break;
+        		case "GAMES":
+        			avgPlaytimeLabel.setEffect(shadow);
+        			break;
+        		case "SHOWS":
+        			break;
+        }	
     }
     
     @FXML
