@@ -236,7 +236,7 @@
 .info-pill {
     -fx-background-color: #8fa2e6;
     -fx-background-radius: 90px;
-    -fx-padding: 8px 20px;          /* Internal padding */
+    -fx-padding: 8px 50px;          /* Internal padding */
     -fx-text-fill: #ffffff;
     -fx-font-family: "Open Sauce One";
     -fx-font-size: 48px;
