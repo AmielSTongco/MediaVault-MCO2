@@ -33,14 +33,10 @@
     -fx-spacing: 12px;
 }
 
-.profile-avatar {
-    -fx-fill: #ffffff;
-}
-
 .profile-text {
 	-fx-font-family: "Public Sans";
-    -fx-font-size: 40px;
-    -fx-fill: #ffffff;
+    -fx-font-size: 50px;
+    -fx-text-fill: #ffffff;
 }
 
 .nav-link {
@@ -53,7 +49,7 @@
     -fx-background-color: #366b91;
     -fx-background-radius: 90px;
     -fx-padding: 6px 28px;
-    -fx-font-size: 38px;
+    -fx-font-size: 46px;
     -fx-font-weight: bold;
     -fx-fill: #ffffff;
 }
@@ -224,7 +220,7 @@
 }
 
 .media-title {
-	-fx-fill: #ffffff;
+	-fx-text-fill: #ffffff;
 	-fx-font-family: "Open Sauce One";
 	-fx-font-size: 150px;
 	-fx-font-weight: bold;

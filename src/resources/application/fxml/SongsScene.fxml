@@ -27,7 +27,7 @@
             
             <Region HBox.hgrow="ALWAYS" />
             
-			<Label alignment="CENTER" styleClass="font-open-sauce, active-pill" text="SONGS" textFill="WHITE" />
+			<Label fx:id="mediaLabel" alignment="CENTER" styleClass="font-open-sauce, active-pill" text="SONGS" textFill="WHITE" />
             
             <Region HBox.hgrow="ALWAYS" />
 
@@ -46,10 +46,10 @@
    <center>
       <VBox prefHeight="200.0" prefWidth="100.0" styleClass="content-card, song" BorderPane.alignment="CENTER">
          <children>
-            <Text fx:id="title" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="media-title" text="ANAHEIM">
+            <Label fx:id="title" styleClass="media-title" text="ANAHEIM">
                <VBox.margin>
                   <Insets left="65.0" right="65.0" />
-               </VBox.margin></Text>
+               </VBox.margin></Label>
             
             <HBox alignment="CENTER_LEFT" spacing="20.0">
 			    <!-- Album Art -->
