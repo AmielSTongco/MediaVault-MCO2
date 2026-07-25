@@ -20,7 +20,7 @@
             <!-- Logo Section -->
             <HBox alignment="CENTER_LEFT" spacing="10.0">
                <children>
-               	<ImageView fx:id="mediaVaultLogo" fitHeight="80.0" pickOnBounds="true" preserveRatio="true" />
+               	<ImageView fx:id="mediaVaultLogo" fitHeight="90.0" pickOnBounds="true" preserveRatio="true" />
                 	<ImageView fx:id="mediaVaultTitle" fitHeight="50.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </HBox>
