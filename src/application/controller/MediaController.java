@@ -74,6 +74,21 @@ public class MediaController {
 
     @FXML
     private Label reviewLabel;
+    
+    @FXML
+    private Label yearFirstAiredLabel;
+    
+    @FXML
+    private Label yearLastAiredLabel;
+    
+    @FXML
+    private Label numOfEpisodesLabel;
+    
+    @FXML
+    private Label numOfSeasonsLabel;
+    
+    @FXML
+    private Label airingLabel;
 
     @FXML
     private ImageView settingsIcon;
@@ -135,7 +150,6 @@ public class MediaController {
         
         mediaLabel.setEffect(shadow);
         creatorLabel.setEffect(shadow);
-        yearLabel.setEffect(shadow);
         genreLabel.setEffect(shadow);
         statusLabel.setEffect(shadow);
         ratingLabel.setEffect(shadow);
@@ -144,11 +158,18 @@ public class MediaController {
         switch(mediaType) {
         		case "SONGS":
 	        		playtimeLabel.setEffect(shadow);
+	        		yearLabel.setEffect(shadow);
 	        		break;
         		case "GAMES":
         			avgPlaytimeLabel.setEffect(shadow);
+        			yearLabel.setEffect(shadow);
         			break;
         		case "SHOWS":
+        			airingLabel.setEffect(shadow);
+        			yearFirstAiredLabel.setEffect(shadow);
+        			yearLastAiredLabel.setEffect(shadow);
+        			numOfEpisodesLabel.setEffect(shadow);
+        			numOfSeasonsLabel.setEffect(shadow);
         			break;
         }	
     }
