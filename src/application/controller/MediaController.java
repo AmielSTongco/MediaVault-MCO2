@@ -31,7 +31,7 @@ public class MediaController {
 	private DropShadow dropShadowForSelectedPane;
 	
     @FXML
-    private ImageView albumArt;
+    private ImageView mediaArt;
 
     @FXML
     private Label creatorLabel;
@@ -108,7 +108,7 @@ public class MediaController {
         clip.setArcWidth(65);
         clip.setArcHeight(65);
         
-        albumArt.setClip(clip);
+        mediaArt.setClip(clip);
         
         DropShadow shadow = new DropShadow();
         shadow.setRadius(10);

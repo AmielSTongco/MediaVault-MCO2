@@ -53,7 +53,7 @@
             
             <HBox alignment="CENTER_LEFT" spacing="20.0">
 			    <!-- Album Art -->
-			    <ImageView fx:id="albumArt" fitHeight="600.0" fitWidth="600.0" preserveRatio="true">
+			    <ImageView fx:id="mediaArt" fitHeight="600.0" fitWidth="600.0" preserveRatio="true">
 			        <image>
 			            <Image url="@/resources/application/images/default/music.png" />
 			        </image>
