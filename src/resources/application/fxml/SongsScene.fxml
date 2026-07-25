@@ -62,7 +62,7 @@
 			    <!-- Info Pills -->
 			    <VBox styleClass="info-vbox" HBox.hgrow="ALWAYS">
 			        <children>
-			            <Label fx:id="artistLabel" styleClass="info-pill" text="Artist: NIKI" />
+			            <Label fx:id="creatorLabel" styleClass="info-pill" text="Artist: NIKI" />
 			            <Label fx:id="yearLabel" styleClass="info-pill" text="Year: 2022" />
 			            <Label fx:id="genreLabel" styleClass="info-pill" text="Genre: Alternative pop and folk-pop" />
 			            <Label fx:id="playtimeLabel" styleClass="info-pill" text="Average Playtime:" />

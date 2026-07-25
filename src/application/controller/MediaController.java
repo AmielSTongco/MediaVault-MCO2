@@ -34,7 +34,7 @@ public class MediaController {
     private ImageView albumArt;
 
     @FXML
-    private Label artistLabel;
+    private Label creatorLabel;
 
     @FXML
     private HBox extendableNavigationPane;
@@ -127,7 +127,7 @@ public class MediaController {
         shadow.setInput(lighting);
         
         mediaLabel.setEffect(shadow);
-        artistLabel.setEffect(shadow);
+        creatorLabel.setEffect(shadow);
         yearLabel.setEffect(shadow);
         genreLabel.setEffect(shadow);
         playtimeLabel.setEffect(shadow);
