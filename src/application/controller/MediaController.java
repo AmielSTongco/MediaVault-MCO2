@@ -10,10 +10,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Light;
+import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -45,12 +47,18 @@ public class MediaController {
 
     @FXML
     private ImageView mediaVaultTitle;
+    
+    @FXML
+    private ImageView profileAvatar;
 
     @FXML
     private Button navButton1;
 
     @FXML
     private Button navButton2;
+    
+    @FXML
+    private Button navButton3;
 
     @FXML
     private Label playtimeLabel;
@@ -78,11 +86,13 @@ public class MediaController {
     		Image logoImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png"));
         Image titleImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png"));
         Image settingsImg = new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png"));
+        Image profileImg = new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png"));
 
         // Assign images to ImageView nodes
         mediaVaultLogo.setImage(logoImg);
         mediaVaultTitle.setImage(titleImg);
         settingsIcon.setImage(settingsImg);
+        profileAvatar.setImage(profileImg);
         
         clipRect = new Rectangle();
 		clipRect.setWidth(extendableNavigationPane.getPrefWidth());
@@ -96,6 +106,22 @@ public class MediaController {
         clip.setArcHeight(65);
         
         albumArt.setClip(clip);
+        
+        Light.Distant light = new Light.Distant();
+        light.setAzimuth(-135);
+        
+        Lighting lighting = new Lighting();
+        lighting.setLight(light);
+        lighting.setDiffuseConstant(1.45);
+        lighting.setSurfaceScale(1);
+        
+        artistLabel.setEffect(lighting);
+        yearLabel.setEffect(lighting);
+        genreLabel.setEffect(lighting);
+        playtimeLabel.setEffect(lighting);
+        statusLabel.setEffect(lighting);
+        ratingLabel.setEffect(lighting);
+        reviewLabel.setEffect(lighting);
     }
     
     @FXML
