@@ -104,7 +104,7 @@ public class MenuController {
         		FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/MediaPlaylistsScene.fxml"));
         		Parent root = loader.load();
         		
-            MediaPlaylistsItemsController controller = loader.getController();
+            MediaPlaylistsController controller = loader.getController();
             controller.setupView(title, styleClass);
             
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
