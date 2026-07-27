@@ -6,6 +6,25 @@ public enum Type {
 	SHOW;
 	
 	/**
+	 * Returns the pluralized title formatted in Title Case (e.g., "Songs", "Games", "Shows").
+	 *
+	 * @return the formatted media title
+	 */
+	public String getTitle() {
+		String name = name();
+        return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase() + "s";
+	}
+	
+	/**
+	 * Returns the CSS style class name associated with this media type (e.g., "theme-songs").
+	 *
+	 * @return the CSS theme class string
+	 */
+	public String getStyleClass() {
+		return "theme-" + name().toLowerCase() + "s";
+	}
+	
+	/**
 	 * Converts the value to string for storing inside the database
 	 * 
 	 * @return lowercased string without underscores
