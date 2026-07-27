@@ -86,18 +86,28 @@ public class MenuController {
     private void handleTileClick(MouseEvent event) {
     		Object source = event.getSource();
         String fxmlPath = "";
+        String title = null;
+        String styleClass = null;
 
         // Identify which tile was clicked
         if (source == songsTile) {
-            fxmlPath = "/resources/application/fxml/SongsPlaylistsItemsScene.fxml";
+            title = "Songs";
+            styleClass = "theme-songs";
         } else if (source == gamesTile) {
-            //fxmlPath = "/resources/application/fxml/GamesScene.fxml";
+	        	title = "Games";
+	        	styleClass = "theme-games";
         } else if (source == showsTile) {
-            //fxmlPath = "/resources/application/fxml/ShowsScene.fxml";
+        		title = "Shows";
+            styleClass = "theme-shows";
         }
         
         try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+        		FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/MediaPlaylistsItemsScene.fxml"));
+        		Parent root = loader.load();
+        		
+            MediaPlaylistsItemsController controller = loader.getController();
+            controller.setupView(title, styleClass);
+            
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.getScene().setRoot(root);
         } catch (IOException e) {
