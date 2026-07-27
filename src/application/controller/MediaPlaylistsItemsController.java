@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import application.model.Media;
 import application.model.Song;
 import application.model.Status;
+import application.model.Type;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -127,15 +128,15 @@ public class MediaPlaylistsItemsController implements Initializable {
         mediaLabel.setEffect(shadow);
 	}
 	
-	public void setupView(String title, String styleClass) {
-		mediaLabel.setText(title);
+	public void setupView(Type mediaType) {
+		mediaLabel.setText(mediaType.getTitle());
 		
 		rootPane.getStyleClass().removeAll("theme-songs", "theme-games", "theme-shows");
-		rootPane.getStyleClass().add(styleClass);
+		rootPane.getStyleClass().add(mediaType.getStyleClass());
 
         tableView.getColumns().clear();
         
-        setupTable(title);
+        setupTable(mediaType);
         
         // sample data, this is where DAO will go
         List<Media> sample = new ArrayList<>();
@@ -190,7 +191,7 @@ public class MediaPlaylistsItemsController implements Initializable {
         tableView.setItems(data);
 	}
 	
-	public void setupTable(String mediaType) {
+	public void setupTable(Type mediaType) {
 		// Declare Columns
 		TableColumn<Media, String> dragCol = new TableColumn<>("");
 		TableColumn<Media, String> mediaArtCol = new TableColumn<>("Media Art");
@@ -268,7 +269,7 @@ public class MediaPlaylistsItemsController implements Initializable {
         tableView.getColumns().addAll(dragCol, mediaArtCol, title, creator);
         
         switch (mediaType) {
-	        case "Songs" -> {
+	        case Type.SONG:
 	            TableColumn<Media, String> yearSong = new TableColumn<>("Year Released");
 	            TableColumn<Media, String> album = new TableColumn<>("Album");
 	            TableColumn<Media, String> runtime = new TableColumn<>("Runtime");
@@ -278,8 +279,8 @@ public class MediaPlaylistsItemsController implements Initializable {
 	            runtime.setCellValueFactory(new PropertyValueFactory<>("runtimeSeconds"));
 	
 	            tableView.getColumns().addAll(yearSong, album, runtime);
-	        }
-	        case "Games" -> {
+	            break;
+	        case Type.GAME:
 	            TableColumn<Media, String> genreGame = new TableColumn<>("Genre");
 	            TableColumn<Media, String> yearGame = new TableColumn<>("Year Released");
 	            TableColumn<Media, String> playtime = new TableColumn<>("Avg Playtime (Mins)");
@@ -289,8 +290,8 @@ public class MediaPlaylistsItemsController implements Initializable {
 	            playtime.setCellValueFactory(new PropertyValueFactory<>("avgPlaytimeMins"));
 	
 	            tableView.getColumns().addAll(genreGame, yearGame, playtime);
-	        }
-	        case "Shows" -> {
+	            break;
+	        case Type.SHOW:
 	            TableColumn<Media, String> genreShow = new TableColumn<>("Genre");
 	            TableColumn<Media, String> yearStartCol = new TableColumn<>("Year Start");
 	            TableColumn<Media, String> yearEndCol = new TableColumn<>("Year End");
@@ -311,7 +312,7 @@ public class MediaPlaylistsItemsController implements Initializable {
 	                genreShow, yearStartCol, yearEndCol, 
 	                numOfSeasonsCol, numOfEpisodesCol, avgMinsPerEpCol, airingCol
 	            );
-	        }
+	            break;
 	    }
         
         tableView.getColumns().addAll(status, userRating, review);
