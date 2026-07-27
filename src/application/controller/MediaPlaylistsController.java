@@ -1,5 +1,6 @@
 package application.controller;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +17,11 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
@@ -40,6 +44,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class MediaPlaylistsController implements Initializable {
@@ -318,16 +323,25 @@ public class MediaPlaylistsController implements Initializable {
  
 	@FXML
 	private void addPlaylist() {
-		System.out.println("Selecting pane 1");
+		// Add logic here
 		deselectAllPanes();
 		addButton.setEffect(dropShadowForSelectedPane);
 	}
  
 	@FXML
-	private void goToHome() {
-		System.out.println("Selecting pane 2");
+	private void goToHome(ActionEvent event) {
 		deselectAllPanes();
 		homeButton.setEffect(dropShadowForSelectedPane);
+		
+		try {
+	    		FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/Menu.fxml"));
+	    		Parent root = loader.load();
+	        
+	        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+	        stage.getScene().setRoot(root);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
 	}
  
 	private void deselectAllPanes() {
