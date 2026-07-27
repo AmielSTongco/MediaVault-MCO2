@@ -1,6 +1,32 @@
 .root {
-    -fx-background-color: #162e3f;
+    -fx-bg-main: #162e3f;
+    -fx-bg-card: #366b91;
+}
+
+.root.theme-songs {
+    -fx-bg-main: #162e3f;
+    -fx-bg-card: #366b91;
+}
+
+.root.theme-games {
+    -fx-bg-main: #162051;
+    -fx-bg-card: #364591;
+}
+
+.root.theme-shows {
+    -fx-bg-main: #3e325f;
+    -fx-bg-card: #675a8c;
+}
+
+.root {
+    -fx-background-color: -fx-bg-main;
     -fx-padding: 10px;
+}
+
+.content-card {
+    -fx-background-color: -fx-bg-card;
+    -fx-background-radius: 15px;
+    -fx-padding: 25px;
 }
 
 /* Typography Rules */
@@ -52,13 +78,6 @@
     -fx-font-size: 46px;
     -fx-font-weight: bold;
     -fx-fill: #ffffff;
-}
-
-/* Inner content card */
-.content-card {
-    -fx-background-color: #1d2d83;
-	-fx-background-radius: 15px;
-	-fx-padding: 25px;
 }
 
 .content-card.song{
@@ -158,8 +177,6 @@
     -fx-base: transparent;
     -fx-background-color: transparent;
     -fx-background-radius: 5px;
-	
-    /* Adjust this value until exactly 10 rows fit */
     -fx-max-height: 760px; 
     -fx-pref-height: 760px;
     
