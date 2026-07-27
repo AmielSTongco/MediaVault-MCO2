@@ -126,6 +126,51 @@ public class MediaPlaylistsItemsController implements Initializable {
         shadow.setInput(lighting);
         
         mediaLabel.setEffect(shadow);
+        
+     // Drag and drop rows logic
+        // Adapted from: https://stackoverflow.com/a/28606524
+        tableView.setRowFactory(tv -> {
+            TableRow<Media> row = new TableRow<>();
+
+            row.setOnDragDetected(event -> {
+                if (!row.isEmpty()) {
+                    Integer index = row.getIndex();
+                    Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
+                    db.setDragView(row.snapshot(null, null));
+                    ClipboardContent cc = new ClipboardContent();
+                    cc.putString(index.toString());
+                    db.setContent(cc);
+                    event.consume();
+                }
+            });
+
+            row.setOnDragOver(event -> {
+                Dragboard db = event.getDragboard();
+                if (db.hasString()) {
+                    if (row.getIndex() != Integer.parseInt(db.getString())) {
+                        event.acceptTransferModes(TransferMode.MOVE);
+                        event.consume();
+                    }
+                }
+            });
+
+            row.setOnDragDropped(event -> {
+                Dragboard db = event.getDragboard();
+                if (db.hasString()) {
+                    int draggedIndex = Integer.parseInt(db.getString());
+                    Media draggedSong = tableView.getItems().remove(draggedIndex);
+
+                    int dropIndex = row.isEmpty() ? tableView.getItems().size() : row.getIndex();
+                    tableView.getItems().add(dropIndex, draggedSong);
+
+                    event.setDropCompleted(true);
+                    tableView.getSelectionModel().select(dropIndex);
+                    event.consume();
+                }
+            });
+
+            return row;
+        });
 	}
 	
 	public void setupView(Type mediaType) {
@@ -316,51 +361,6 @@ public class MediaPlaylistsItemsController implements Initializable {
 	    }
         
         tableView.getColumns().addAll(status, userRating, review);
-        
-        // Drag and drop rows logic
-        // Adapted from: https://stackoverflow.com/a/28606524
-        tableView.setRowFactory(tv -> {
-            TableRow<Media> row = new TableRow<>();
-
-            row.setOnDragDetected(event -> {
-                if (!row.isEmpty()) {
-                    Integer index = row.getIndex();
-                    Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
-                    db.setDragView(row.snapshot(null, null));
-                    ClipboardContent cc = new ClipboardContent();
-                    cc.putString(index.toString());
-                    db.setContent(cc);
-                    event.consume();
-                }
-            });
-
-            row.setOnDragOver(event -> {
-                Dragboard db = event.getDragboard();
-                if (db.hasString()) {
-                    if (row.getIndex() != Integer.parseInt(db.getString())) {
-                        event.acceptTransferModes(TransferMode.MOVE);
-                        event.consume();
-                    }
-                }
-            });
-
-            row.setOnDragDropped(event -> {
-                Dragboard db = event.getDragboard();
-                if (db.hasString()) {
-                    int draggedIndex = Integer.parseInt(db.getString());
-                    Media draggedSong = tableView.getItems().remove(draggedIndex);
-
-                    int dropIndex = row.isEmpty() ? tableView.getItems().size() : row.getIndex();
-                    tableView.getItems().add(dropIndex, draggedSong);
-
-                    event.setDropCompleted(true);
-                    tableView.getSelectionModel().select(dropIndex);
-                    event.consume();
-                }
-            });
-
-            return row;
-        });
 
         updateTablePage();
 	}
