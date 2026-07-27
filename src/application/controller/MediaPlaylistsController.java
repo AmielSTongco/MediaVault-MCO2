@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import application.model.Media;
 import application.model.MediaPlaylist;
 import application.model.Type;
 import javafx.animation.KeyFrame;
