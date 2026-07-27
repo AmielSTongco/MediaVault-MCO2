@@ -2,6 +2,7 @@ package application.controller;
 
 import java.io.IOException;
 
+import application.model.Type;
 import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -85,19 +86,15 @@ public class MenuController {
     @FXML
     private void handleTileClick(MouseEvent event) {
     		Object source = event.getSource();
-        String title = null;
-        String styleClass = null;
+        Type mediaType = null;
 
         // Identify which tile was clicked
         if (source == songsTile) {
-            title = "Songs";
-            styleClass = "theme-songs";
+        		mediaType = Type.SONG;
         } else if (source == gamesTile) {
-	        	title = "Games";
-	        	styleClass = "theme-games";
+        		mediaType = Type.GAME;
         } else if (source == showsTile) {
-        		title = "Shows";
-            styleClass = "theme-shows";
+        		mediaType = Type.SHOW;
         }
         
         try {
@@ -105,7 +102,7 @@ public class MenuController {
         		Parent root = loader.load();
         		
             MediaPlaylistsController controller = loader.getController();
-            controller.setupView(title, styleClass);
+            controller.setupView(mediaType);
             
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.getScene().setRoot(root);
