@@ -13,7 +13,7 @@ public class Main extends Application {
 	@Override
 	public void start(Stage stage) {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("/resources/application/fxml/SearchSong.fxml"));
+			Parent root = FXMLLoader.load(getClass().getResource("/resources/application/fxml/Menu.fxml"));
 			Scene scene = new Scene(root);
 			
 			Font.loadFont(getClass().getResourceAsStream("/resources/application/fonts/PublicSans-VariableFont_wght.ttf"), 16);

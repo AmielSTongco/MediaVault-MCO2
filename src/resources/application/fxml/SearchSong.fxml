@@ -6,6 +6,8 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -13,7 +15,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.SearchController">
    
    <!-- TOP NAVIGATION HEADER (Persistent Layer) -->
    <top>
@@ -39,7 +41,7 @@
                      <HBox.margin>
                         <Insets right="100.0" />
                      </HBox.margin></Label>
-                  <Label styleClass="font-open-sauce, active-pill" text="GAMES"/>
+                  <Label styleClass="font-open-sauce, active-pill" text="GAMES" />
                   <Label styleClass="font-open-sauce, nav-link" text="SHOWS">
                      <HBox.margin>
                         <Insets left="100.0" />
@@ -69,12 +71,12 @@
             </HBox>
             
             <!-- Table Container Section -->
-            <TableView fx:id="tableView" prefHeight="360.0" prefWidth="1220.0" VBox.vgrow="ALWAYS">
+            <TableView fx:id="tableView" prefHeight="720.0" prefWidth="1220.0" VBox.vgrow="ALWAYS">
               <columns>
                 <TableColumn prefWidth="170.0" text="Title" />
                 <TableColumn prefWidth="170.0" text="Creator" />
-                  <TableColumn prefWidth="140.0" text="Year" />
-                  <TableColumn prefWidth="160.0" text="Average Playtime" />
+                  <TableColumn prefWidth="120.0" text="Year" />
+                  <TableColumn prefWidth="130.0" text="Runtime" />
                   <TableColumn prefWidth="150.0" text="Status" />
                   <TableColumn prefWidth="140.0" text="Rating" />
                   <TableColumn prefWidth="280.0" text="Review" />
@@ -90,43 +92,41 @@
 			      <!-- Added fx:id here so the controller can update the text -->
 			      <Label fx:id="pageLabel" styleClass="font-open-sauce" text="Showing 10 of 22" textFill="WHITE" />
 			      <Region HBox.hgrow="ALWAYS" />
-			      <HBox alignment="CENTER" spacing="15.0">
-			         <children>
-			            <!-- Added fx:id and onAction for Previous -->
-			            <Button mnemonicParsing="false" onAction="#handlePreviousPage" style="-fx-background-color: transparent;" text="Previous ◀" textFill="WHITE" styleClass="font-open-sauce" />
-			            <!-- Added fx:id and onAction for Next -->
-			            <Button mnemonicParsing="false" onAction="#handleNextPage" style="-fx-background-color: transparent;" text="▶ Next" textFill="WHITE" styleClass="font-open-sauce" />
-			         </children>
-			      </HBox>
-			   </children>
+		            <HBox alignment="CENTER" spacing="15.0">
+					   <children>
+					      <!-- Previous Button -->
+					      <Button mnemonicParsing="false" style="-fx-background-color: transparent;" styleClass="font-open-sauce" text="Previous" textFill="WHITE">
+					         <graphic>
+					            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+					               <image>
+					                  <Image url="@/resources/application/images/icons/left-triangle-filled-svgrepo-com.png" />
+					               </image>
+					            </ImageView>
+					         </graphic>
+					      </Button>
+					
+					      <!-- Next Button -->
+					      <Button contentDisplay="RIGHT" mnemonicParsing="false" style="-fx-background-color: transparent;" styleClass="font-open-sauce" text="Next" textFill="WHITE">
+					         <graphic>
+					            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+					               <image>
+					                  <Image url="@/resources/application/images/icons/right-triangle-filled-svgrepo-com.png" />
+					               </image>
+					            </ImageView>
+					         </graphic>
+					      </Button>
+					   </children>
+					</HBox>
+				</children>
 			</HBox>
-            
-            <!-- Bottom Modification Controls Bar -->
-            <HBox alignment="CENTER" prefHeight="70.0" prefWidth="1220.0" spacing="40.0">
-               <children>
-                  <Button contentDisplay="TOP" mnemonicParsing="false" styleClass="font-open-sauce, action-button" text="Add Playlist">
-                     <graphic>
-                        <!-- Replace with real SVG/PNG graphic paths -->
-                        <Label style="-fx-font-size: 24px; -fx-font-weight: bold;" text="＋" textFill="WHITE" />
-                     </graphic>
-                  </Button>
-                  <Button contentDisplay="TOP" mnemonicParsing="false" styleClass="font-open-sauce, action-button" text="Remove Game">
-                     <graphic>
-                        <Label style="-fx-font-size: 24px; -fx-font-weight: bold;" text="—" textFill="WHITE" />
-                     </graphic>
-                  </Button>
-                  <Button contentDisplay="TOP" mnemonicParsing="false" styleClass="font-open-sauce, action-button" text="Back to&#10;My Playlists" textAlignment="CENTER">
-                     <graphic>
-                        <Label style="-fx-font-size: 24px;" text="🗂" textFill="WHITE" />
-                     </graphic>
-                  </Button>
-                  <Button contentDisplay="TOP" mnemonicParsing="false" styleClass="font-open-sauce, action-button" text="Delete Playlist">
-                     <graphic>
-                        <Label style="-fx-font-size: 24px;" text="🗑" textFill="WHITE" />
-                     </graphic>
-                  </Button>
-               </children>
-            </HBox>
+			
+			<!-- Extendable Navigation Pane -->
+	      	<HBox fx:id="extendableNavigationPane" alignment="CENTER" minHeight="64.0" onMouseEntered="#showPane" onMouseExited="#hidePane" prefHeight="64.0" prefWidth="371.0" spacing="20.0">
+	      		<children>
+	      			<Button fx:id="navButton1" mnemonicParsing="false" onAction="#selectPane1" styleClass="navigation-button" text="Back" />
+	      			<Button fx:id="navButton2" mnemonicParsing="false" onAction="#selectPane2" styleClass="navigation-button" text="Playlists" />
+	      		</children>
+	      	</HBox>
             
          </children>
          <BorderPane.margin>
