@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -24,9 +25,9 @@
             <!-- Profile Container -->
             <HBox alignment="CENTER_RIGHT" spacing="35">
                <children>
-                  <Circle radius="50.0" styleClass="profile-avatar" />
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 60px;" styleClass="font-public-sans, profile-text" text="chisaepicm.." />
-                  <ImageView fx:id="settingsIcon" fitHeight="80.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="profileAvatar" fitHeight="90.0" pickOnBounds="true" preserveRatio="true" />
+                  <Label maxWidth="300.0" styleClass="font-public-sans, profile-text" text="chisaepicmoment" />
+                  <ImageView fx:id="settingsIcon" fitHeight="60.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </HBox>
          </children>
@@ -34,7 +35,7 @@
 	</top>
 	
 	<center>
-		<HBox fx:id="rootContainer" styleClass="menu-container">
+		<HBox styleClass="menu-container">
 			<children>
 		      <ImageView fx:id="songsTile" fitWidth="680.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
 			  <ImageView fx:id="gamesTile" fitWidth="680.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
@@ -42,6 +43,4 @@
 		   </children>
 		</HBox>
 	</center>
-
-
 </BorderPane>
