@@ -138,7 +138,7 @@ public class MediaPlaylistsItemsController implements Initializable {
         
         setupTable(mediaType);
         
-        // sample data, this is where DAO will go
+        // TODO: sample data, this is where DAO will go
         List<Media> sample = new ArrayList<>();
         
         sample.add(new Song("Midnight Drive",
@@ -227,7 +227,7 @@ public class MediaPlaylistsItemsController implements Initializable {
 		mediaArtCol.setCellValueFactory(new PropertyValueFactory<>("imageUrl")); 
         mediaArtCol.setPrefWidth(45);
 
-        // Fetch URL from field
+        // TODO: Fetch URL from field
         mediaArtCol.setCellFactory(col -> new TableCell<Media, String>() {
             private final ImageView imageView = new ImageView();
 
@@ -248,7 +248,7 @@ public class MediaPlaylistsItemsController implements Initializable {
                 if (empty || url == null || url.trim().isEmpty()) {
                     setGraphic(null);
                 } else {
-                		// Add image here!
+                		// TODO: Add image here!
                 		// Parameters: url, requestedWidth, requestedHeight, preserveRatio, smooth, backgroundLoading (keep last three as true)
                     Image webImage = new Image(url, 45, 45, true, true, true);
                     imageView.setImage(webImage);

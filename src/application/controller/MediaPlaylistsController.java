@@ -187,7 +187,7 @@ public class MediaPlaylistsController implements Initializable {
         
         setupTable();
         
-        // sample data, input DAO logic here
+        // TODO: sample data, input DAO logic here
         List<MediaPlaylist> samplePlaylists = new ArrayList<>();
 
         samplePlaylists.add(new MediaPlaylist(
@@ -323,7 +323,7 @@ public class MediaPlaylistsController implements Initializable {
  
 	@FXML
 	private void addPlaylist() {
-		// Add logic here
+		// TODO: Add logic here
 		deselectAllPanes();
 		addButton.setEffect(dropShadowForSelectedPane);
 	}
