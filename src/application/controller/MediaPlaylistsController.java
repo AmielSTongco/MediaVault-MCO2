@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 
 import application.model.Media;
 import application.model.MediaPlaylist;
+import application.model.Type;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -171,15 +172,15 @@ public class MediaPlaylistsController implements Initializable {
         });
 	}
 	
-	public void setupView(String title, String styleClass) {
-		mediaLabel.setText(title);
+	public void setupView(Type mediaType) {
+		mediaLabel.setText(mediaType.getTitle());
 		
 		rootPane.getStyleClass().removeAll("theme-songs", "theme-games", "theme-shows");
-		rootPane.getStyleClass().add(styleClass);
+		rootPane.getStyleClass().add(mediaType.getStyleClass());
 
         tableView.getColumns().clear();
         
-        setupTable(title);
+        setupTable();
         
         // sample data, input DAO logic here
         List<MediaPlaylist> samplePlaylists = new ArrayList<>();
@@ -209,7 +210,7 @@ public class MediaPlaylistsController implements Initializable {
         tableView.setItems(sample);
 	}
 	
-	public void setupTable(String mediaType) {
+	public void setupTable() {
 		// Declare Columns
 		TableColumn<MediaPlaylist, String> dragCol = new TableColumn<>("");
 		TableColumn<MediaPlaylist, String> titleCol = new TableColumn<>("Title");
