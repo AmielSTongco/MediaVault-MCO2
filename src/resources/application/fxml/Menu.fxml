@@ -23,11 +23,11 @@
             <Region HBox.hgrow="ALWAYS" />
 
             <!-- Profile Container -->
-            <HBox alignment="CENTER_RIGHT" spacing="35">
+            <HBox alignment="CENTER_RIGHT" spacing="25">
                <children>
-                  <ImageView fx:id="profileAvatar" fitHeight="90.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="profileAvatar" fitHeight="100.0" pickOnBounds="true" preserveRatio="true" />
                   <Label maxWidth="300.0" styleClass="font-public-sans, profile-text" text="chisaepicmoment" />
-                  <ImageView fx:id="settingsIcon" fitHeight="60.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="settingsIcon" fitHeight="100.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </HBox>
          </children>
