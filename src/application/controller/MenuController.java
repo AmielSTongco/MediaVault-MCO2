@@ -30,6 +30,9 @@ public class MenuController {
     @FXML
     private ImageView mediaVaultTitle;
     
+    @FXML 
+    private ImageView profileAvatar;
+    
     @FXML
     private ImageView settingsIcon;
 
@@ -40,13 +43,10 @@ public class MenuController {
 	    	gamesTile.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/backgrounds/games-tile.png")));
 	    	showsTile.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/backgrounds/shows-tile.png")));
         
-	    	Image logoImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png"));
-	    	Image titleImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png"));
-	    Image settingsImg = new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png"));
-	    	
-	    mediaVaultLogo.setImage(logoImg);
-        mediaVaultTitle.setImage(titleImg);
-        settingsIcon.setImage(settingsImg);
+	    	mediaVaultLogo.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png")));
+	    	mediaVaultTitle.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png")));
+	    	settingsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png")));
+	    	profileAvatar.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png")));        
 	    
         // Ensure that when a tile expands, it renders on top of the other tiles
         songsTile.setViewOrder(0);
