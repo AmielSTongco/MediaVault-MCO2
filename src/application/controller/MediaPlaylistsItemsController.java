@@ -40,7 +40,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
-public class MediaPlaylistsItemsController implements Initializable {
+public class MediaPlaylistsItemsController {
 
     @FXML 
     private TableView<Media> tableView;
