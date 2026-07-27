@@ -29,6 +29,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Light;
+import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
@@ -40,7 +42,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
-public class MediaPlaylistsItemsController {
+public class MediaPlaylistsItemsController implements Initializable {
 
     @FXML 
     private TableView<Media> tableView;
@@ -85,7 +87,46 @@ public class MediaPlaylistsItemsController {
 	private Rectangle clipRect;
  
 	private DropShadow dropShadowForSelectedPane;
-
+	
+	@Override
+	public void initialize(URL arg0, ResourceBundle arg1) {
+		Image logoImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png"));
+        Image titleImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png"));
+        Image settingsImg = new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png"));
+        Image profileImg = new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png"));
+        
+        // Assign images to ImageView nodes
+        mediaVaultLogo.setImage(logoImg);
+        mediaVaultTitle.setImage(titleImg);
+        settingsIcon.setImage(settingsImg);
+        profileAvatar.setImage(profileImg);
+        
+        clipRect = new Rectangle();
+		clipRect.setWidth(extendableNavigationPane.getPrefWidth());
+		setIcon(navButton1, "/resources/application/images/icons/plus-svgrepo-com.png");
+		setIcon(navButton2, "/resources/application/images/icons/back-reply-svgrepo-com.png");
+		hidePane();
+ 
+		dropShadowForSelectedPane = new DropShadow(BlurType.THREE_PASS_BOX, Color.BLUE, 7, 0.2, 0, 1);
+		
+		DropShadow shadow = new DropShadow();
+        shadow.setRadius(10);
+        shadow.setOffsetY(5);
+        shadow.setColor(Color.color(0, 0, 0, 0.4));
+        
+        Light.Distant light = new Light.Distant();
+        light.setAzimuth(-135);
+        
+        Lighting lighting = new Lighting();
+        lighting.setLight(light);
+        lighting.setDiffuseConstant(1.45);
+        lighting.setSurfaceScale(1);
+        
+        shadow.setInput(lighting);
+        
+        mediaLabel.setEffect(shadow);
+	}
+	
 	public void setupView(String title, String styleClass) {
 		mediaLabel.setText(title);
 		
@@ -147,25 +188,6 @@ public class MediaPlaylistsItemsController {
         ObservableList<Media> data = FXCollections.observableArrayList(sample);
         
         tableView.setItems(data);
-        
-        Image logoImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png"));
-        Image titleImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png"));
-        Image settingsImg = new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png"));
-        Image profileImg = new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png"));
-        
-        // Assign images to ImageView nodes
-        mediaVaultLogo.setImage(logoImg);
-        mediaVaultTitle.setImage(titleImg);
-        settingsIcon.setImage(settingsImg);
-        profileAvatar.setImage(profileImg);
-        
-        clipRect = new Rectangle();
-		clipRect.setWidth(extendableNavigationPane.getPrefWidth());
-		setIcon(navButton1, "/resources/application/images/icons/plus-svgrepo-com.png");
-		setIcon(navButton2, "/resources/application/images/icons/back-reply-svgrepo-com.png");
-		hidePane();
- 
-		dropShadowForSelectedPane = new DropShadow(BlurType.THREE_PASS_BOX, Color.BLUE, 7, 0.2, 0, 1);
 	}
 	
 	public void setupTable(String mediaType) {
