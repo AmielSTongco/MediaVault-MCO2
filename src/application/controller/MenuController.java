@@ -85,7 +85,6 @@ public class MenuController {
     @FXML
     private void handleTileClick(MouseEvent event) {
     		Object source = event.getSource();
-        String fxmlPath = "";
         String title = null;
         String styleClass = null;
 
@@ -102,7 +101,7 @@ public class MenuController {
         }
         
         try {
-        		FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/MediaPlaylistsItemsScene.fxml"));
+        		FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/MediaPlaylistsScene.fxml"));
         		Parent root = loader.load();
         		
             MediaPlaylistsItemsController controller = loader.getController();
