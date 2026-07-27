@@ -96,7 +96,7 @@ public class MediaPlaylistsItemsController implements Initializable {
         
         setupTable(title);
         
-        // sample data
+        // sample data, this is where DAO will go
         List<Media> sample = new ArrayList<>();
         
         sample.add(new Song("Midnight Drive",
@@ -225,6 +225,8 @@ public class MediaPlaylistsItemsController implements Initializable {
                 if (empty || url == null || url.trim().isEmpty()) {
                     setGraphic(null);
                 } else {
+                		// Add image here!
+                		// Parameters: url, requestedWidth, requestedHeight, preserveRatio, smooth, backgroundLoading (keep last three as true)
                     Image webImage = new Image(url, 45, 45, true, true, true);
                     imageView.setImage(webImage);
                     setGraphic(imageView);
@@ -292,7 +294,8 @@ public class MediaPlaylistsItemsController implements Initializable {
         
         tableView.getColumns().addAll(status, userRating, review);
         
-        // Drag and drop rows
+        // Drag and drop rows logic
+        // Adapted from: https://stackoverflow.com/a/28606524
         tableView.setRowFactory(tv -> {
             TableRow<Media> row = new TableRow<>();
 
@@ -338,10 +341,6 @@ public class MediaPlaylistsItemsController implements Initializable {
 
         updateTablePage();
 	}
-	
-	@Override
-    public void initialize(URL arg0, ResourceBundle arg1) {        
-    }
     
     private void setIcon(Button button, String name) {
 		Image image = new Image(getClass().getResourceAsStream(name));
