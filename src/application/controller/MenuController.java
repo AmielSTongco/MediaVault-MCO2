@@ -49,16 +49,16 @@ public class MenuController {
     @FXML
     public void initialize() {
         // Load images and icons
-	    	songsTile.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/backgrounds/songs-tile.png")));
-	    	gamesTile.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/backgrounds/games-tile.png")));
-	    	showsTile.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/backgrounds/shows-tile.png")));
-        
-	    	mediaVaultLogo.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png")));
-	    	mediaVaultTitle.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png")));
-	    	settingsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png")));
-	    	profileAvatar.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png")));        
-	    
-	    	menuContainer.setAlignment(Pos.CENTER);
+    	songsTile.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/backgrounds/songs-tile.png")));
+    	gamesTile.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/backgrounds/games-tile.png")));
+    	showsTile.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/backgrounds/shows-tile.png")));
+    
+    	mediaVaultLogo.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png")));
+    	mediaVaultTitle.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png")));
+    	settingsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png")));
+    	profileAvatar.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png")));        
+    
+    	menuContainer.setAlignment(Pos.CENTER);
 
 	    songsTile.fitHeightProperty().bind(menuContainer.heightProperty());
 	    gamesTile.fitHeightProperty().bind(menuContainer.heightProperty());
