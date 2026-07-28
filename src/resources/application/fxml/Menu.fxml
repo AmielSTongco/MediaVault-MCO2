@@ -10,7 +10,7 @@
 
 <BorderPane style="-fx-padding: 0px;" fx:id="rootBorderPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MenuController">
 	<top>
-		<HBox prefHeight="180.0" prefWidth="1280.0" styleClass="nav-bar" BorderPane.alignment="CENTER">
+		<HBox prefHeight="180.0" styleClass="nav-bar" BorderPane.alignment="CENTER">
          <children>
             <!-- Logo Section -->
             <HBox alignment="CENTER_LEFT" spacing="10.0">
