@@ -59,10 +59,14 @@ public class MenuController {
 	    	profileAvatar.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png")));        
 	    
 	    	menuContainer.setAlignment(Pos.CENTER);
+	    	
+	    	ImageView[] tiles = {songsTile, gamesTile, showsTile};
+	    	
+	    	for (ImageView tile : tiles) {
+	        tile.fitWidthProperty().bind(menuContainer.widthProperty().divide(3));
 
-	    songsTile.fitHeightProperty().bind(menuContainer.heightProperty());
-	    gamesTile.fitHeightProperty().bind(menuContainer.heightProperty());
-	    showsTile.fitHeightProperty().bind(menuContainer.heightProperty());
+	        tile.fitHeightProperty().bind(menuContainer.heightProperty().multiply(1));
+	    	}
 	    	
         // Ensure that when a tile expands, it renders on top of the other tiles
         songsTile.setViewOrder(0);
