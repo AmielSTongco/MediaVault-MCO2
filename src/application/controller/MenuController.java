@@ -6,7 +6,10 @@ import application.model.Type;
 import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -31,8 +34,14 @@ public class MenuController {
     @FXML
     private ImageView mediaVaultTitle;
     
+    @FXML
+    private HBox menuContainer;
+    
     @FXML 
     private ImageView profileAvatar;
+    
+    @FXML
+    private BorderPane rootBorderPane;
     
     @FXML
     private ImageView settingsIcon;
@@ -49,6 +58,12 @@ public class MenuController {
 	    	settingsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png")));
 	    	profileAvatar.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png")));        
 	    
+	    	menuContainer.setAlignment(Pos.CENTER);
+
+	    songsTile.fitHeightProperty().bind(menuContainer.heightProperty());
+	    gamesTile.fitHeightProperty().bind(menuContainer.heightProperty());
+	    showsTile.fitHeightProperty().bind(menuContainer.heightProperty());
+	    	
         // Ensure that when a tile expands, it renders on top of the other tiles
         songsTile.setViewOrder(0);
         gamesTile.setViewOrder(0);

@@ -8,7 +8,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane style="-fx-padding: 0px;" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MenuController">
+<BorderPane style="-fx-padding: 0px;" fx:id="rootBorderPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MenuController">
 	<top>
 		<HBox prefHeight="180.0" prefWidth="1280.0" styleClass="nav-bar" BorderPane.alignment="CENTER">
          <children>
@@ -35,11 +35,11 @@
 	</top>
 	
 	<center>
-		<HBox styleClass="menu-container">
+		<HBox styleClass="menu-container" fx:id="menuContainer">
 			<children>
-		      <ImageView fx:id="songsTile" fitWidth="680.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
-			  <ImageView fx:id="gamesTile" fitWidth="680.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
-			  <ImageView fx:id="showsTile" fitWidth="680.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
+		      <ImageView fx:id="songsTile" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
+			  <ImageView fx:id="gamesTile" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
+			  <ImageView fx:id="showsTile" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
 		   </children>
 		</HBox>
 	</center>
