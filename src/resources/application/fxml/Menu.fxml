@@ -30,8 +30,8 @@
             <HBox alignment="CENTER_RIGHT" spacing="25">
                <children>
                   <ImageView fx:id="profileAvatar" fitHeight="65.0" pickOnBounds="true" preserveRatio="true" />
-                  <Label maxWidth="220.0" styleClass="font-public-sans, profile-text" text="chisaepicmoment" />
-                  <ImageView fx:id="settingsIcon" fitHeight="55.0" pickOnBounds="true" preserveRatio="true" />
+                  <Label fx:id="userName" maxWidth="220.0" styleClass="font-public-sans, profile-text" text="chisaepicmoment" />
+                  <ImageView fx:id="settingsIcon" fitHeight="55.0" onMouseClicked="#handleSettingsClick" onMouseEntered="#handleSettingsRotate" onMouseExited="#handleSettingUnrotate" pickOnBounds="true" preserveRatio="true" />
                </children>
             </HBox>
          </children>

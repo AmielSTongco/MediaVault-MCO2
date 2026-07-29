@@ -3,8 +3,10 @@ package application.controller;
 import java.io.IOException;
 
 //import java.util.List;
+import javafx.animation.RotateTransition;
 import java.util.ArrayList;
 import application.model.Type;
+import application.model.UserSession;
 import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,8 +30,6 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.layout.Pane;
 import javafx.scene.control.Label;
-//import javafx.scene.image.Image;
-//import javafx.scene.image.ImageView;
 
 public class MenuController {
     
@@ -114,6 +114,9 @@ public class MenuController {
     @FXML
     private ImageView settingsIcon;
     
+    @FXML
+    private Label userName;
+    
     private final InnerShadow hoverShadow = new InnerShadow(18, Color.rgb(0, 0, 0, 0.35));
     private final DropShadow iconHighlight = new DropShadow(35, Color.rgb(255, 255, 255, 0.16));
     
@@ -122,9 +125,13 @@ public class MenuController {
 	private final ArrayList<Circle> showsDots = new ArrayList<>();
 
     private static final double DOT_SPACING = 55.0;
+    
 
 	@FXML
 	public void initialize() {
+		
+		String username = UserSession.getCurrentUsername();
+		
 		mediaVaultLogo.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png")));
 		mediaVaultTitle.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png")));
 		settingsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png")));
@@ -133,7 +140,9 @@ public class MenuController {
 		songsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/songs-icon.png")));
 		gamesIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/games-icon.png")));
 		showsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/shows-icon.png")));
-
+		
+		userName.setText(username);
+		
 		menuContainer.setAlignment(Pos.CENTER);
 
 		bindTile(songsContainer, songsBackground, songsDotsPane);
@@ -207,6 +216,10 @@ public class MenuController {
     }
     */
     
+	@FXML
+	private void handleSettingsClick(MouseEvent event) {
+	}
+	
     @FXML
     private void handleMouseEntered(MouseEvent event) {
     	StackPane container = (StackPane) event.getSource();
@@ -261,6 +274,26 @@ public class MenuController {
 			shrinkDots(showsDotsPane);
 			removeIconHighlight(showsIcon);
 		}
+	}
+	
+	@FXML
+	private void handleSettingsRotate(MouseEvent event) {
+		ImageView settings = (ImageView)event.getSource();
+
+		RotateTransition rotate = new RotateTransition(Duration.millis(250), settings);
+		rotate.setToAngle(45);
+		highlightIcon(settingsIcon);
+		rotate.play();
+	}
+	
+	@FXML
+	private void handleSettingUnrotate(MouseEvent event) {
+		ImageView settings = (ImageView)event.getSource();
+
+		RotateTransition rotate = new RotateTransition(Duration.millis(250), settings);
+		rotate.setToAngle(0);
+		removeIconHighlight(settingsIcon);
+		rotate.play();
 	}
     
 	@FXML
