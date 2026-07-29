@@ -105,9 +105,9 @@ public class MediaController {
 
     @FXML
     public void initialize() {
-    		mediaType = mediaLabel.getText();		
-    		
-    		Image logoImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png"));
+		mediaType = mediaLabel.getText();		
+		
+		Image logoImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png"));
         Image titleImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png"));
         Image settingsImg = new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png"));
         Image profileImg = new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png"));

@@ -59,25 +59,25 @@ public class MenuController {
     @FXML
     public void initialize() {
         // Load images and icons
-	    	songsTile.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/backgrounds/songs-tile.png")));
-	    	gamesTile.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/backgrounds/games-tile.png")));
-	    	showsTile.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/backgrounds/shows-tile.png")));
-        
-	    	mediaVaultLogo.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png")));
-	    	mediaVaultTitle.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png")));
-	    	settingsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png")));
-	    	profileAvatar.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png")));        
-	    
-	    	menuContainer.setAlignment(Pos.CENTER);
-	    	
-	    	songsTile.fitWidthProperty().bind(songsContainer.widthProperty());
-	    	songsTile.fitHeightProperty().bind(songsContainer.heightProperty());
+    	songsTile.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/backgrounds/songs-tile.png")));
+    	gamesTile.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/backgrounds/games-tile.png")));
+    	showsTile.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/backgrounds/shows-tile.png")));
+    
+    	mediaVaultLogo.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png")));
+    	mediaVaultTitle.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png")));
+    	settingsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png")));
+    	profileAvatar.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png")));        
+    
+    	menuContainer.setAlignment(Pos.CENTER);
+    	
+    	songsTile.fitWidthProperty().bind(songsContainer.widthProperty());
+    	songsTile.fitHeightProperty().bind(songsContainer.heightProperty());
 
-	    	gamesTile.fitWidthProperty().bind(gamesContainer.widthProperty());
-	    	gamesTile.fitHeightProperty().bind(gamesContainer.heightProperty());
+    	gamesTile.fitWidthProperty().bind(gamesContainer.widthProperty());
+    	gamesTile.fitHeightProperty().bind(gamesContainer.heightProperty());
 
-	    	showsTile.fitWidthProperty().bind(showsContainer.widthProperty());
-	    	showsTile.fitHeightProperty().bind(showsContainer.heightProperty());
+    	showsTile.fitWidthProperty().bind(showsContainer.widthProperty());
+    	showsTile.fitHeightProperty().bind(showsContainer.heightProperty());
 	    	
         // Ensure that when a tile expands, it renders on top of the other tiles
         songsTile.setViewOrder(0);
