@@ -81,14 +81,11 @@
             <!-- Extendable Navigation Pane -->
 	      	<HBox fx:id="extendableNavigationPane" alignment="BOTTOM_CENTER" minHeight="64.0" onMouseEntered="#showPane" onMouseExited="#hidePane" prefHeight="64.0" prefWidth="371.0" spacing="25.0">
 	      		<children>
-	      			<Button fx:id="navButton1" mnemonicParsing="false" onAction="#selectPane1" styleClass="navigation-button" text="Add Playlist">
-                     <HBox.margin>
-                        
-                     </HBox.margin></Button>
-	      			<Button fx:id="navButton2" mnemonicParsing="false" onAction="#selectPane2" styleClass="navigation-button" text="Back">
-                     <HBox.margin>
-                        
-                     </HBox.margin></Button>
+	      			<Button fx:id="editButton" mnemonicParsing="false" onAction="#toggleEdit" styleClass="navigation-button" text="Update Details"/>
+	      			<Button fx:id="removeButton" mnemonicParsing="false" onAction="#removeMedia" styleClass="navigation-button" text="Remove From Playlist"/>
+	      			<Button fx:id="deleteButton" mnemonicParsing="false" onAction="#deleteMedia" styleClass="navigation-button" text="Delete Media"/>
+	      			<Button fx:id="backButton" mnemonicParsing="false" onAction="#goToBack" styleClass="navigation-button" text="Back"/>
+	      			<Button fx:id="homeButton" mnemonicParsing="false" onAction="#goToHome" styleClass="navigation-button" text="Home"/>
 	      		</children>
                <VBox.margin>
                   <Insets />
