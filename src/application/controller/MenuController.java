@@ -16,9 +16,19 @@ import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
+import javafx.scene.layout.StackPane;
 
 public class MenuController {
     
+	@FXML
+	private StackPane songsContainer;
+
+	@FXML
+	private StackPane gamesContainer;
+
+	@FXML
+	private StackPane showsContainer;
+	
     @FXML 
     private ImageView songsTile;
     
@@ -60,18 +70,35 @@ public class MenuController {
 	    
 	    	menuContainer.setAlignment(Pos.CENTER);
 	    	
-	    	ImageView[] tiles = {songsTile, gamesTile, showsTile};
-	    	
-	    	for (ImageView tile : tiles) {
-	        tile.fitWidthProperty().bind(menuContainer.widthProperty().divide(3));
+	    	songsTile.fitWidthProperty().bind(songsContainer.widthProperty());
+	    	songsTile.fitHeightProperty().bind(songsContainer.heightProperty());
 
-	        tile.fitHeightProperty().bind(menuContainer.heightProperty().multiply(1));
-	    	}
+	    	gamesTile.fitWidthProperty().bind(gamesContainer.widthProperty());
+	    	gamesTile.fitHeightProperty().bind(gamesContainer.heightProperty());
+
+	    	showsTile.fitWidthProperty().bind(showsContainer.widthProperty());
+	    	showsTile.fitHeightProperty().bind(showsContainer.heightProperty());
 	    	
         // Ensure that when a tile expands, it renders on top of the other tiles
         songsTile.setViewOrder(0);
         gamesTile.setViewOrder(0);
         showsTile.setViewOrder(0);
+        
+        rootBorderPane.widthProperty().addListener((obs, oldVal, newVal) -> {
+            System.out.println("BorderPane width: " + newVal);
+        });
+
+        menuContainer.widthProperty().addListener((obs, oldVal, newVal) -> {
+            System.out.println("Menu width: " + newVal);
+        });
+
+        songsTile.fitWidthProperty().addListener((obs, oldVal, newVal) -> {
+            System.out.println("Song tile fitWidth: " + newVal);
+        });
+
+        songsTile.boundsInParentProperty().addListener((obs, oldVal, newVal) -> {
+            System.out.println("Song tile bounds: " + newVal);
+        });
     }
 
     @FXML
