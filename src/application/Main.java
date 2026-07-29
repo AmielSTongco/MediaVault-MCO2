@@ -24,6 +24,7 @@ public class Main extends Application {
 
 	        stage.setScene(scene);
 	        stage.setTitle("MediaVault");
+	        stage.setFullScreen(true);
 	        stage.setMaximized(true);
 	        stage.show();
 	    } catch(Exception e) {
