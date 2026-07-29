@@ -2,10 +2,14 @@ package application.controller;
 
 import java.io.IOException;
 
+import application.model.Type;
 import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -30,8 +34,14 @@ public class MenuController {
     @FXML
     private ImageView mediaVaultTitle;
     
+    @FXML
+    private HBox menuContainer;
+    
     @FXML 
     private ImageView profileAvatar;
+    
+    @FXML
+    private BorderPane rootBorderPane;
     
     @FXML
     private ImageView settingsIcon;
@@ -48,6 +58,16 @@ public class MenuController {
 	    	settingsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png")));
 	    	profileAvatar.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png")));        
 	    
+	    	menuContainer.setAlignment(Pos.CENTER);
+	    	
+	    	ImageView[] tiles = {songsTile, gamesTile, showsTile};
+	    	
+	    	for (ImageView tile : tiles) {
+	        tile.fitWidthProperty().bind(menuContainer.widthProperty().divide(3));
+
+	        tile.fitHeightProperty().bind(menuContainer.heightProperty().multiply(1));
+	    	}
+	    	
         // Ensure that when a tile expands, it renders on top of the other tiles
         songsTile.setViewOrder(0);
         gamesTile.setViewOrder(0);
@@ -85,28 +105,23 @@ public class MenuController {
     @FXML
     private void handleTileClick(MouseEvent event) {
     		Object source = event.getSource();
-        String fxmlPath = "";
-        String title = null;
-        String styleClass = null;
+        Type mediaType = null;
 
         // Identify which tile was clicked
         if (source == songsTile) {
-            title = "Songs";
-            styleClass = "theme-songs";
+        		mediaType = Type.SONG;
         } else if (source == gamesTile) {
-	        	title = "Games";
-	        	styleClass = "theme-games";
+        		mediaType = Type.GAME;
         } else if (source == showsTile) {
-        		title = "Shows";
-            styleClass = "theme-shows";
+        		mediaType = Type.SHOW;
         }
         
         try {
-        		FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/MediaPlaylistsItemsScene.fxml"));
+        		FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/MediaPlaylistsScene.fxml"));
         		Parent root = loader.load();
         		
-            MediaPlaylistsItemsController controller = loader.getController();
-            controller.setupView(title, styleClass);
+            MediaPlaylistsController controller = loader.getController();
+            controller.setupView(mediaType);
             
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.getScene().setRoot(root);
