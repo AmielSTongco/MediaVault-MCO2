@@ -17,11 +17,14 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.image.ImageView;
 import javafx.scene.effect.GaussianBlur;
-import javafx.scene.layout.Region;
+//import javafx.scene.layout.Region;
 import javafx.geometry.Pos;
+import java.sql.Connection;
+
+import application.dao.UserDAO;
 
 public class LoginController {
-
+	
     @FXML
     private BorderPane rootBorderPane;
 
@@ -52,6 +55,9 @@ public class LoginController {
     @FXML
     private ImageView mediaVaultTitle;
     
+    private UserDAO userDAO;
+    private Connection conn;
+    
     @FXML
     public void initialize() {
     	
@@ -74,6 +80,11 @@ public class LoginController {
         loginOption.setMaxWidth(Double.MAX_VALUE);
         signupOption.setMaxWidth(Double.MAX_VALUE);
         exitOption.setMaxWidth(Double.MAX_VALUE);
+    }
+    
+    
+    public void setConnection(Connection conn) {
+        this.userDAO = new UserDAO(conn);
     }
 
     @FXML
@@ -106,7 +117,7 @@ public class LoginController {
 
     @FXML
     private void handleLoginClick(MouseEvent event) {
-        showPopup("/resources/application/fxml/LoginForm.fxml");
+        showLoginPopup();
     }
 
     @FXML
@@ -213,5 +224,41 @@ public class LoginController {
         loginOption.setPrefHeight(height * 0.12);
         signupOption.setPrefHeight(height * 0.12);
         exitOption.setPrefHeight(height * 0.12);
+    }
+    
+    private void showLoginPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/LoginForm.fxml"));
+            Parent popup = loader.load();
+
+            rootBorderPane.setEffect(new GaussianBlur(12));
+            backgroundCanvas.setEffect(new GaussianBlur(12));
+
+            StackPane overlay = new StackPane();
+            overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.35);");
+            overlay.setPickOnBounds(true);
+            overlay.getChildren().add(popup);
+
+            LoginFormController controller = loader.getController();
+            
+            controller.setConnection(conn);
+            controller.setCloseAction(() -> closePopup(overlay));
+            controller.setLoginSuccessAction(this::openMenu);
+            
+            controller.setCloseAction(() -> closePopup(overlay));
+            controller.setLoginSuccessAction(this::openMenu);
+
+            popup.setOnMouseClicked(event -> event.consume());
+            overlay.setOnMouseClicked(event -> closePopup(overlay));
+
+            rootStackPane.getChildren().add(overlay);
+            StackPane.setAlignment(popup, Pos.CENTER);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void openMenu() {
+        switchScene("/resources/application/fxml/Menu.fxml");
     }
 }
