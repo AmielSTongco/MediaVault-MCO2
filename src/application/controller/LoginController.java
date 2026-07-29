@@ -18,12 +18,19 @@ import javafx.scene.paint.Color;
 import javafx.scene.image.ImageView;
 import javafx.scene.effect.GaussianBlur;
 //import javafx.scene.layout.Region;
+import javafx.scene.shape.Rectangle;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.geometry.Pos;
 import java.sql.Connection;
-
-import application.dao.UserDAO;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 
 public class LoginController {
+	
+    @FXML
+    private StackPane loginBox;
 	
     @FXML
     private BorderPane rootBorderPane;
@@ -32,7 +39,13 @@ public class LoginController {
     private HBox mainContainer;
 
     @FXML
-    private StackPane loginOption;
+    private Rectangle loginHighlight;
+    
+    @FXML
+    private Rectangle signupHighlight;
+
+    @FXML
+    private Rectangle exitHighlight;
 
     @FXML
     private StackPane signupOption;
@@ -55,36 +68,36 @@ public class LoginController {
     @FXML
     private ImageView mediaVaultTitle;
     
-    private UserDAO userDAO;
     private Connection conn;
+    private final PauseTransition resizeDelay = new PauseTransition(Duration.millis(100));
     
     @FXML
     public void initialize() {
-    	
         mediaVaultLogo.setPreserveRatio(true);
-
         mediaVaultTitle.setPreserveRatio(true);
-    	
+
         backgroundCanvas.widthProperty().bind(rootStackPane.widthProperty());
         backgroundCanvas.heightProperty().bind(rootStackPane.heightProperty());
 
-        backgroundCanvas.widthProperty().addListener((obs, oldValue, newValue) -> drawBackground());
-        backgroundCanvas.heightProperty().addListener((obs, oldValue, newValue) -> drawBackground());
-        
-        rootStackPane.widthProperty().addListener((obs, oldVal, newVal) -> updateLayout());
-        rootStackPane.heightProperty().addListener((obs, oldVal, newVal) -> updateLayout());
+        resizeDelay.setOnFinished(event -> drawBackground());
 
-        drawBackground();
-        updateLayout();
-    	
-        loginOption.setMaxWidth(Double.MAX_VALUE);
+        rootStackPane.widthProperty().addListener((obs, oldVal, newVal) -> handleResize());
+        rootStackPane.heightProperty().addListener((obs, oldVal, newVal) -> handleResize());
+
+        loginBox.setMaxWidth(Double.MAX_VALUE);
         signupOption.setMaxWidth(Double.MAX_VALUE);
         exitOption.setMaxWidth(Double.MAX_VALUE);
+
+        addHoverAnimation(loginBox, loginHighlight);
+        addHoverAnimation(signupOption, signupHighlight);
+        addHoverAnimation(exitOption, exitHighlight);
+
+        Platform.runLater(this::handleResize);
     }
     
     
     public void setConnection(Connection conn) {
-        this.userDAO = new UserDAO(conn);
+    	this.conn = conn;
     }
 
     @FXML
@@ -122,7 +135,7 @@ public class LoginController {
 
     @FXML
     private void handleSignupClick(MouseEvent event) {
-        showPopup("/resources/application/fxml/Signup.fxml");
+        showSignupPopup();
     }
 
     @FXML
@@ -158,51 +171,60 @@ public class LoginController {
 
         gc.clearRect(0, 0, width, height);
 
-        double spacing = 42;
+        if (width <= 0 || height <= 0) {
+            return;
+        }
+
+        double spacing = 55;
+        double totalSize = width + height;
 
         gc.setFill(Color.rgb(100, 105, 170, 0.15));
 
         for (double y = spacing / 2; y < height; y += spacing) {
             for (double x = spacing / 2; x < width; x += spacing) {
-            	
-                double positionRatio = (x + y) / (width + height);
+                double positionRatio = (x + y) / totalSize;
                 double radius = 1.5 + positionRatio * 4.5;
 
-                gc.fillOval(
-                    x - radius,
-                    y - radius,
-                    radius * 2,
-                    radius * 2
-                );
+                gc.fillOval(x - radius, y - radius, radius * 2, radius * 2);
             }
         }
     }
     
-    private void showPopup(String fxmlPath) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent popup = loader.load();
+    private void addHoverAnimation(StackPane box, Rectangle highlight) {
+        highlight.setWidth(0);
+        highlight.setManaged(false);
+        highlight.setMouseTransparent(true);
+        highlight.heightProperty().bind(box.heightProperty());
 
-            rootBorderPane.setEffect(new GaussianBlur(12));
-            backgroundCanvas.setEffect(new GaussianBlur(12));
+        StackPane.setAlignment(highlight, Pos.CENTER_LEFT);
 
-            StackPane overlay = new StackPane();
-            overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.35);");
-            overlay.setPickOnBounds(true);
+        box.setOnMouseEntered(event -> animateHighlight(highlight, highlight.getWidth(), box.getWidth()));
+        box.setOnMouseExited(event -> animateHighlight(highlight, highlight.getWidth(), 0));
+    }
 
-            overlay.getChildren().add(popup);
+    private void animateHighlight(
+            Rectangle highlight,
+            double startWidth,
+            double endWidth) {
 
-            popup.setOnMouseClicked(event -> event.consume());
+        Timeline animation = new Timeline(
+            new KeyFrame(
+                Duration.ZERO,
+                new KeyValue(
+                    highlight.widthProperty(),
+                    startWidth
+                )
+            ),
+            new KeyFrame(
+                Duration.millis(125),
+                new KeyValue(
+                    highlight.widthProperty(),
+                    endWidth
+                )
+            )
+        );
 
-            overlay.setOnMouseClicked(event -> closePopup(overlay));
-
-            rootStackPane.getChildren().add(overlay);
-
-            StackPane.setAlignment(popup, Pos.CENTER);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        animation.play();
     }
     
     private void closePopup(StackPane overlay) {
@@ -221,7 +243,7 @@ public class LoginController {
 
         logoContainer.setPrefWidth(width * 0.42);
 
-        loginOption.setPrefHeight(height * 0.12);
+        loginBox.setPrefHeight(height * 0.12);
         signupOption.setPrefHeight(height * 0.12);
         exitOption.setPrefHeight(height * 0.12);
     }
@@ -258,7 +280,40 @@ public class LoginController {
         }
     }
     
+    private void showSignupPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/SigninForm.fxml"));
+            Parent popup = loader.load();
+
+            rootBorderPane.setEffect(new GaussianBlur(12));
+            backgroundCanvas.setEffect(new GaussianBlur(12));
+
+            StackPane overlay = new StackPane();
+            overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.35);");
+            overlay.setPickOnBounds(true);
+            overlay.getChildren().add(popup);
+
+            SignupFormController controller = loader.getController();
+            controller.setConnection(conn);
+            controller.setCloseAction(() -> closePopup(overlay));
+            controller.setSignupSuccessAction(this::openMenu);
+
+            popup.setOnMouseClicked(event -> event.consume());
+            overlay.setOnMouseClicked(event -> closePopup(overlay));
+
+            rootStackPane.getChildren().add(overlay);
+            StackPane.setAlignment(popup, Pos.CENTER);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
     private void openMenu() {
         switchScene("/resources/application/fxml/Menu.fxml");
+    }
+    
+    private void handleResize() {
+        updateLayout();
+        resizeDelay.playFromStart();
     }
 }

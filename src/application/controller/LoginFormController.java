@@ -20,7 +20,7 @@ public class LoginFormController {
 
     @FXML
     private Label errorLabel;
-
+    
     private UserDAO userDAO;
     private Runnable closeAction;
     private Runnable loginSuccessAction;

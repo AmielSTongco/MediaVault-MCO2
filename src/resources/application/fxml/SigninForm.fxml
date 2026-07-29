@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane
+    prefWidth="600.0"
+    prefHeight="560.0"
+    maxWidth="600.0"
+    maxHeight="560.0"
+    style="-fx-background-color: #0b1e49; -fx-background-radius: 22; -fx-border-color: #9aaeff; -fx-border-width: 2; -fx-border-radius: 22;"
+    xmlns="http://javafx.com/javafx/26"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="application.controller.SignupFormController">
+
+    <children>
+        <VBox alignment="CENTER" spacing="22.0">
+
+            <padding>
+                <Insets top="40.0" right="55.0" bottom="40.0" left="55.0"/>
+            </padding>
+
+            <children>
+
+                <Label
+                    text="Sign Up"
+                    textFill="WHITE"
+                    style="-fx-font-family: 'Public Sans'; -fx-font-size: 42px; -fx-font-weight: bold;"/>
+
+                <Label
+                    text="Create your MediaVault account"
+                    textFill="#b9c6ef"
+                    style="-fx-font-family: 'Public Sans'; -fx-font-size: 17px;"/>
+
+                <TextField
+                    fx:id="usernameField"
+                    promptText="Username"
+                    prefHeight="55.0"
+                    style="-fx-background-color: #f4f6ff; -fx-background-radius: 10; -fx-font-family: 'Public Sans'; -fx-font-size: 18px; -fx-padding: 0 16 0 16;"/>
+
+                <PasswordField
+                    fx:id="passwordField"
+                    promptText="Password"
+                    prefHeight="55.0"
+                    style="-fx-background-color: #f4f6ff; -fx-background-radius: 10; -fx-font-family: 'Public Sans'; -fx-font-size: 18px; -fx-padding: 0 16 0 16;"/>
+
+                <PasswordField
+                    fx:id="confirmPasswordField"
+                    promptText="Confirm Password"
+                    prefHeight="55.0"
+                    onAction="#handleSignup"
+                    style="-fx-background-color: #f4f6ff; -fx-background-radius: 10; -fx-font-family: 'Public Sans'; -fx-font-size: 18px; -fx-padding: 0 16 0 16;"/>
+
+                <Label
+                    fx:id="errorLabel"
+                    visible="false"
+                    managed="false"
+                    wrapText="true"
+                    textFill="#ff8f9b"
+                    style="-fx-font-family: 'Public Sans'; -fx-font-size: 15px;"/>
+
+                <HBox alignment="CENTER" spacing="18.0">
+
+                    <children>
+
+                        <Button
+                            text="Cancel"
+                            prefWidth="180.0"
+                            prefHeight="52.0"
+                            onAction="#handleClose"
+                            style="-fx-background-color: transparent; -fx-border-color: #9aaeff; -fx-border-width: 2; -fx-border-radius: 10; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-family: 'Public Sans'; -fx-font-size: 18px; -fx-font-weight: bold; -fx-cursor: hand;"/>
+
+                        <Button
+                            text="Sign Up"
+                            prefWidth="180.0"
+                            prefHeight="52.0"
+                            onAction="#handleSignup"
+                            style="-fx-background-color: #7186d8; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-family: 'Public Sans'; -fx-font-size: 18px; -fx-font-weight: bold; -fx-cursor: hand;"/>
+
+                    </children>
+
+                </HBox>
+
+            </children>
+
+        </VBox>
+
+    </children>
+
+</StackPane>
