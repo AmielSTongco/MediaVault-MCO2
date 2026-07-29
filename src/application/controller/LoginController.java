@@ -69,7 +69,7 @@ public class LoginController {
     private ImageView mediaVaultTitle;
     
     private Connection conn;
-    private final PauseTransition resizeDelay = new PauseTransition(Duration.millis(100));
+    private final PauseTransition resizeDelay = new PauseTransition(Duration.millis(220));
     
     @FXML
     public void initialize() {
@@ -78,6 +78,7 @@ public class LoginController {
 
         backgroundCanvas.widthProperty().bind(rootStackPane.widthProperty());
         backgroundCanvas.heightProperty().bind(rootStackPane.heightProperty());
+        backgroundCanvas.setCache(true);
 
         resizeDelay.setOnFinished(event -> drawBackground());
 
@@ -231,7 +232,7 @@ public class LoginController {
         rootStackPane.getChildren().remove(overlay);
 
         rootBorderPane.setEffect(null);
-        backgroundCanvas.setEffect(null);
+        //backgroundCanvas.setEffect(null);
     }
     
     private void updateLayout() {
@@ -254,7 +255,7 @@ public class LoginController {
             Parent popup = loader.load();
 
             rootBorderPane.setEffect(new GaussianBlur(12));
-            backgroundCanvas.setEffect(new GaussianBlur(12));
+            //backgroundCanvas.setEffect(new GaussianBlur(12));
 
             StackPane overlay = new StackPane();
             overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.35);");

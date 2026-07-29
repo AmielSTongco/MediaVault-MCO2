@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.shape.Circle?>
-<?import javafx.scene.text.Text?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.geometry.Insets?>
 
-<BorderPane style="-fx-padding: 0px;" fx:id="rootBorderPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MenuController">
+<BorderPane fx:id="rootBorderPane" prefHeight="864.0" prefWidth="1536.0" style="-fx-padding: 0px;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MenuController">
 	<top>
-		<HBox prefHeight="130.0" minHeight="130.0" maxHeight="130.0" styleClass="nav-bar" BorderPane.alignment="CENTER">
+		<HBox maxHeight="130.0" minHeight="130.0" prefHeight="130.0" styleClass="nav-bar" BorderPane.alignment="CENTER">
          <children>
             <!-- Logo Section -->
             <HBox alignment="CENTER_LEFT" spacing="10.0">
@@ -38,21 +41,58 @@
 	<center>
 	    <HBox fx:id="menuContainer" fillHeight="true" spacing="4.0" styleClass="menu-container">
 	        <children>
-	            <StackPane fx:id="songsContainer" minWidth="0.0" HBox.hgrow="ALWAYS">
-	                <children>
-	                    <ImageView fx:id="songsTile" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="false" smooth="true" />
-	                </children>
-	            </StackPane>
-	            <StackPane fx:id="gamesContainer" minWidth="0.0" HBox.hgrow="ALWAYS">
-	                <children>
-	                    <ImageView fx:id="gamesTile" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="false" smooth="true" />
-	                </children>
-	            </StackPane>
-	            <StackPane fx:id="showsContainer" minWidth="0.0" HBox.hgrow="ALWAYS">
-	                <children>
-	                    <ImageView fx:id="showsTile" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="false" smooth="true" />
-	                </children>
-	            </StackPane>
+	        
+	            <StackPane fx:id="songsContainer" maxWidth="Infinity" minWidth="0.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" prefWidth="500.0" HBox.hgrow="ALWAYS">
+					<children>
+						<Rectangle fx:id="songsBackground" arcHeight="20.0" arcWidth="20.0" fill="#366B91"/>
+						<Pane fx:id="songsDotsPane" mouseTransparent="true"/>
+						<Label fx:id="songsLabel" id="songs-title" alignment="CENTER" maxWidth="Infinity" mouseTransparent="true" styleClass="menu-title" text="Songs" StackPane.alignment="TOP_CENTER">
+							<StackPane.margin>
+								<Insets top="55.0"/>
+							</StackPane.margin>
+						</Label>
+						<ImageView fx:id="songsIcon" fitHeight="500.0" fitWidth="500.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+							<StackPane.margin>
+								<Insets top="90.0"/>
+							</StackPane.margin>
+						</ImageView>
+					</children>
+				</StackPane>
+				
+	            <StackPane fx:id="gamesContainer" maxWidth="Infinity" minWidth="0.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" prefWidth="500.0" HBox.hgrow="ALWAYS">
+					<children>
+						<Rectangle fx:id="gamesBackground" arcHeight="20.0" arcWidth="20.0" fill="#364591"/>
+						<Pane fx:id="gamesDotsPane" mouseTransparent="true"/>
+						<Label fx:id="gamesLabel" id="games-title" alignment="CENTER" maxWidth="Infinity" mouseTransparent="true" styleClass="menu-title" text="Games" StackPane.alignment="TOP_CENTER">
+							<StackPane.margin>
+								<Insets top="55.0"/>
+							</StackPane.margin>
+						</Label>
+						<ImageView fx:id="gamesIcon" fitHeight="500.0" fitWidth="500.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+							<StackPane.margin>
+								<Insets top="90.0"/>
+							</StackPane.margin>
+						</ImageView>
+					</children>
+				</StackPane>
+				
+	            <StackPane fx:id="showsContainer" maxWidth="Infinity" minWidth="0.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" prefWidth="500.0" HBox.hgrow="ALWAYS">
+					<children>
+						<Rectangle fx:id="showsBackground" arcHeight="20.0" arcWidth="20.0" fill="#675A8C"/>
+						<Pane fx:id="showsDotsPane" mouseTransparent="true"/>
+						<Label fx:id="showsLabel" id="shows-title" alignment="CENTER" maxWidth="Infinity" mouseTransparent="true" styleClass="menu-title" text="Shows" StackPane.alignment="TOP_CENTER">
+							<StackPane.margin>
+								<Insets top="55.0"/>
+							</StackPane.margin>
+						</Label>
+						<ImageView fx:id="showsIcon" fitHeight="500.0" fitWidth="500.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+							<StackPane.margin>
+								<Insets top="90.0"/>
+							</StackPane.margin>
+						</ImageView>
+					</children>
+				</StackPane>
+				
 	        </children>
 	    </HBox>
 	</center>

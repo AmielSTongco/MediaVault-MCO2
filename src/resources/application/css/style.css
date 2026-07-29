@@ -152,6 +152,25 @@
     -fx-spacing: 4; /* Creates the thin black divider line between tiles */
 }
 
+.menu-title {
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 56px;
+	-fx-font-weight: bold;
+	-fx-text-fill: #132F44;
+}
+
+#songs-title {
+	-fx-text-fill: #132F44;
+}
+
+#games-title {
+	-fx-text-fill: #1B235C;
+}
+
+#shows-title {
+	-fx-text-fill: #3A2D58;
+}
+
 .menu-tile {
     -fx-background-color: #d61c29;
     -fx-alignment: center;

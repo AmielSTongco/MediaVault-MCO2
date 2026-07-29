@@ -13,7 +13,6 @@ import java.sql.Connection;
 import application.db.DatabaseConnection;
 import application.db.DatabaseInitializer;
 import application.controller.LoginController;
-import application.dao.UserDAO;
 
 
 public class Main extends Application {
