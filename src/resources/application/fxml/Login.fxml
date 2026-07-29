@@ -44,11 +44,12 @@
 			        </padding>
 			
 			        <children>
-			            <ImageView
-			                fx:id="mediaVaultTitle"
-			                fitWidth="1050.0"
-			                pickOnBounds="true"
-			                preserveRatio="true">
+						<ImageView
+						    fx:id="mediaVaultTitle"
+						    layoutX="55.0"
+						    layoutY="50.0"
+						    pickOnBounds="true"
+						    preserveRatio="true">
 			
 			                <image>
 			                    <Image url="@../images/logos/title.png"/>
@@ -162,11 +163,10 @@
 						    </padding>
 						
 						    <children>
-						        <ImageView
-						            fx:id="mediaVaultLogo"
-						            fitWidth="650.0"
-						            pickOnBounds="true"
-						            preserveRatio="true">
+								<ImageView
+								    fx:id="mediaVaultLogo"
+								    pickOnBounds="true"
+								    preserveRatio="true">
 						
 						            <image>
 						                <Image url="@../images/logos/logo.png"/>

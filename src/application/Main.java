@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.text.Font;
 //import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
 
 public class Main extends Application {
  
@@ -21,7 +22,8 @@ public class Main extends Application {
 	        Font.loadFont(getClass().getResourceAsStream("/resources/application/fonts/OpenSauceSans-Bold.ttf"), 16);
 
 	        Scene scene = new Scene(root);
-
+	        
+	        stage.getIcons().add(new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png")));     
 	        stage.setScene(scene);
 	        stage.setTitle("MediaVault");
 	        stage.setFullScreen(true);

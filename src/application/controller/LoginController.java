@@ -55,22 +55,21 @@ public class LoginController {
     @FXML
     public void initialize() {
     	
-        mediaVaultLogo.setFitWidth(500);
         mediaVaultLogo.setPreserveRatio(true);
 
-        mediaVaultTitle.setFitWidth(1200);
         mediaVaultTitle.setPreserveRatio(true);
     	
         backgroundCanvas.widthProperty().bind(rootStackPane.widthProperty());
         backgroundCanvas.heightProperty().bind(rootStackPane.heightProperty());
 
-        backgroundCanvas.widthProperty().addListener(
-            (obs, oldValue, newValue) -> drawBackground()
-        );
+        backgroundCanvas.widthProperty().addListener((obs, oldValue, newValue) -> drawBackground());
+        backgroundCanvas.heightProperty().addListener((obs, oldValue, newValue) -> drawBackground());
+        
+        rootStackPane.widthProperty().addListener((obs, oldVal, newVal) -> updateLayout());
+        rootStackPane.heightProperty().addListener((obs, oldVal, newVal) -> updateLayout());
 
-        backgroundCanvas.heightProperty().addListener(
-            (obs, oldValue, newValue) -> drawBackground()
-        );
+        drawBackground();
+        updateLayout();
     	
         loginOption.setMaxWidth(Double.MAX_VALUE);
         signupOption.setMaxWidth(Double.MAX_VALUE);
@@ -200,5 +199,19 @@ public class LoginController {
 
         rootBorderPane.setEffect(null);
         backgroundCanvas.setEffect(null);
+    }
+    
+    private void updateLayout() {
+        double width = rootStackPane.getWidth();
+        double height = rootStackPane.getHeight();
+
+        mediaVaultLogo.setFitWidth(width * 0.32);
+        mediaVaultTitle.setFitWidth(width * 0.45);
+
+        logoContainer.setPrefWidth(width * 0.42);
+
+        loginOption.setPrefHeight(height * 0.12);
+        signupOption.setPrefHeight(height * 0.12);
+        exitOption.setPrefHeight(height * 0.12);
     }
 }
