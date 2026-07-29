@@ -7,16 +7,17 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.StackPane?>
 
 <BorderPane style="-fx-padding: 0px;" fx:id="rootBorderPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MenuController">
 	<top>
-		<HBox prefHeight="180.0" styleClass="nav-bar" BorderPane.alignment="CENTER">
+		<HBox prefHeight="130.0" minHeight="130.0" maxHeight="130.0" styleClass="nav-bar" BorderPane.alignment="CENTER">
          <children>
             <!-- Logo Section -->
             <HBox alignment="CENTER_LEFT" spacing="10.0">
                <children>
-               	<ImageView fx:id="mediaVaultLogo" fitHeight="150.0" pickOnBounds="true" preserveRatio="true" />
-                	<ImageView fx:id="mediaVaultTitle" fitHeight="90.0" pickOnBounds="true" preserveRatio="true" />
+               	<ImageView fx:id="mediaVaultLogo" fitHeight="105.0" pickOnBounds="true" preserveRatio="true" />
+                	<ImageView fx:id="mediaVaultTitle" fitHeight="65.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </HBox>
             
@@ -25,9 +26,9 @@
             <!-- Profile Container -->
             <HBox alignment="CENTER_RIGHT" spacing="25">
                <children>
-                  <ImageView fx:id="profileAvatar" fitHeight="100.0" pickOnBounds="true" preserveRatio="true" />
-                  <Label maxWidth="300.0" styleClass="font-public-sans, profile-text" text="chisaepicmoment" />
-                  <ImageView fx:id="settingsIcon" fitHeight="100.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="profileAvatar" fitHeight="65.0" pickOnBounds="true" preserveRatio="true" />
+                  <Label maxWidth="220.0" styleClass="font-public-sans, profile-text" text="chisaepicmoment" />
+                  <ImageView fx:id="settingsIcon" fitHeight="55.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </HBox>
          </children>
@@ -35,12 +36,24 @@
 	</top>
 	
 	<center>
-		<HBox styleClass="menu-container" fx:id="menuContainer">
-			<children>
-		      <ImageView fx:id="songsTile" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
-			  <ImageView fx:id="gamesTile" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
-			  <ImageView fx:id="showsTile" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="true" styleClass="tile-image" />
-		   </children>
-		</HBox>
+	    <HBox fx:id="menuContainer" fillHeight="true" spacing="4.0" styleClass="menu-container">
+	        <children>
+	            <StackPane fx:id="songsContainer" minWidth="0.0" HBox.hgrow="ALWAYS">
+	                <children>
+	                    <ImageView fx:id="songsTile" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="false" smooth="true" />
+	                </children>
+	            </StackPane>
+	            <StackPane fx:id="gamesContainer" minWidth="0.0" HBox.hgrow="ALWAYS">
+	                <children>
+	                    <ImageView fx:id="gamesTile" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="false" smooth="true" />
+	                </children>
+	            </StackPane>
+	            <StackPane fx:id="showsContainer" minWidth="0.0" HBox.hgrow="ALWAYS">
+	                <children>
+	                    <ImageView fx:id="showsTile" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" pickOnBounds="true" preserveRatio="false" smooth="true" />
+	                </children>
+	            </StackPane>
+	        </children>
+	    </HBox>
 	</center>
 </BorderPane>

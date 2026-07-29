@@ -3,7 +3,7 @@ package application.controller;
 import java.io.IOException;
 
 import application.model.Type;
-import javafx.animation.ScaleTransition;
+//import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -15,10 +15,20 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.util.Duration;
+//import javafx.util.Duration;
+import javafx.scene.layout.StackPane;
 
 public class MenuController {
     
+	@FXML
+	private StackPane songsContainer;
+
+	@FXML
+	private StackPane gamesContainer;
+
+	@FXML
+	private StackPane showsContainer;
+	
     @FXML 
     private ImageView songsTile;
     
@@ -60,46 +70,51 @@ public class MenuController {
 	    
 	    	menuContainer.setAlignment(Pos.CENTER);
 	    	
-	    	ImageView[] tiles = {songsTile, gamesTile, showsTile};
-	    	
-	    	for (ImageView tile : tiles) {
-	        tile.fitWidthProperty().bind(menuContainer.widthProperty().divide(3));
+	    	songsTile.fitWidthProperty().bind(songsContainer.widthProperty());
+	    	songsTile.fitHeightProperty().bind(songsContainer.heightProperty());
 
-	        tile.fitHeightProperty().bind(menuContainer.heightProperty().multiply(1));
-	    	}
+	    	gamesTile.fitWidthProperty().bind(gamesContainer.widthProperty());
+	    	gamesTile.fitHeightProperty().bind(gamesContainer.heightProperty());
+
+	    	showsTile.fitWidthProperty().bind(showsContainer.widthProperty());
+	    	showsTile.fitHeightProperty().bind(showsContainer.heightProperty());
 	    	
         // Ensure that when a tile expands, it renders on top of the other tiles
         songsTile.setViewOrder(0);
         gamesTile.setViewOrder(0);
         showsTile.setViewOrder(0);
+        
+        rootBorderPane.widthProperty().addListener((obs, oldVal, newVal) -> {
+            System.out.println("BorderPane width: " + newVal);
+        });
+
+        menuContainer.widthProperty().addListener((obs, oldVal, newVal) -> {
+            System.out.println("Menu width: " + newVal);
+        });
+
+        songsTile.fitWidthProperty().addListener((obs, oldVal, newVal) -> {
+            System.out.println("Song tile fitWidth: " + newVal);
+        });
+
+        songsTile.boundsInParentProperty().addListener((obs, oldVal, newVal) -> {
+            System.out.println("Song tile bounds: " + newVal);
+        });
     }
 
     @FXML
     private void handleMouseEntered(MouseEvent event) {
-    		ImageView hoveredTile = (ImageView) event.getSource();
-        
-        // Bring the hovered tile to the front layer
-        hoveredTile.setViewOrder(-1.0); 
-
-        // Create the pop-out zoom animation
-        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(150), hoveredTile);
-        scaleUp.setToX(1.05);
-        scaleUp.setToY(1.05);
-        scaleUp.play();
+        ImageView tile = (ImageView) event.getSource();
+        tile.setViewOrder(-1);
+        tile.setScaleX(1.05);
+        tile.setScaleY(1.05);
     }
 
     @FXML
     private void handleMouseExited(MouseEvent event) {
-    		ImageView exitedTile = (ImageView) event.getSource();
-        
-        // Reset the layer order
-        exitedTile.setViewOrder(0);
-
-        // Scale back down to standard size
-        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(150), exitedTile);
-        scaleDown.setToX(1.0);
-        scaleDown.setToY(1.0);
-        scaleDown.play();
+        ImageView tile = (ImageView) event.getSource();
+        tile.setViewOrder(0);
+        tile.setScaleX(1.0);
+        tile.setScaleY(1.0);
     }
     
     @FXML
