@@ -18,6 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
+import javafx.scene.effect.Reflection;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -181,7 +182,15 @@ public class MediaController {
         mediaVaultTitle.setImage(titleImg);
         settingsIcon.setImage(settingsImg);
         profileAvatar.setImage(profileImg);
-			
+		
+        // Create a rounded rectangle for media image
+        // code adapted from: https://stackoverflow.com/q/39650031
+        Rectangle rect = new Rectangle(560, 560);
+        rect.setArcHeight(90);
+        rect.setArcWidth(90);
+        rect.setEffect(new Reflection());
+        mediaArt.setClip(rect);
+        
         clipRect = new Rectangle();
 		clipRect.setWidth(extendableNavigationPane.getPrefWidth());
 
@@ -191,13 +200,6 @@ public class MediaController {
 		setIcon(backButton, "/resources/application/images/icons/back-reply-svgrepo-com.png");
 		setIcon(homeButton, "/resources/application/images/icons/home-icon-svgrepo-com.png");
 		hidePane();
-    	
-        // Create a rounded rectangle for media image
-        Rectangle clip = new Rectangle(650, 650); // match prefHeight/prefWidth
-        clip.setArcWidth(65);
-        clip.setArcHeight(65);
-        
-        mediaArt.setClip(clip);
         
         DropShadow shadow = new DropShadow();
         shadow.setRadius(10);
