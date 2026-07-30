@@ -146,22 +146,23 @@ public class LoginController {
     }
 
     private void switchScene(String fxmlPath) {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                getClass().getResource(fxmlPath)
-            );
+    	try {
+    		FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+    		Parent root = loader.load();
 
-            Parent root = loader.load();
+    		if(loader.getController() instanceof MenuController)
+    		{
+    			MenuController controller = loader.getController();
+    			controller.setConnection(conn);
+    		}
 
-            Stage stage = (Stage) rootBorderPane.getScene().getWindow();
-            stage.getScene().setRoot(root);
-        } catch (IOException e) {
-            System.err.println(
-                "Unable to load FXML file: " + fxmlPath
-            );
-
-            e.printStackTrace();
-        }
+    		Stage stage = (Stage)rootBorderPane.getScene().getWindow();
+    		stage.getScene().setRoot(root);
+    	}
+    	catch(IOException e) {
+    		System.err.println("Unable to load FXML file: " + fxmlPath);
+    		e.printStackTrace();
+    	}
     }
     
     private void drawBackground() {

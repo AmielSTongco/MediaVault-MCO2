@@ -12,88 +12,100 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane fx:id="rootBorderPane" prefHeight="864.0" prefWidth="1536.0" style="-fx-padding: 0px;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MenuController">
-	<top>
-		<HBox maxHeight="130.0" minHeight="130.0" prefHeight="130.0" styleClass="nav-bar" BorderPane.alignment="CENTER">
-         <children>
-            <!-- Logo Section -->
-            <HBox alignment="CENTER_LEFT" spacing="10.0">
-               <children>
-               	<ImageView fx:id="mediaVaultLogo" fitHeight="105.0" pickOnBounds="true" preserveRatio="true" />
-                	<ImageView fx:id="mediaVaultTitle" fitHeight="65.0" pickOnBounds="true" preserveRatio="true" />
-               </children>
-            </HBox>
-            
-            <Region HBox.hgrow="ALWAYS" />
+<StackPane fx:id="rootStackPane"
+		   prefHeight="864.0"
+		   prefWidth="1536.0"
+		   style="-fx-padding: 0px;"
+		   stylesheets="@../css/style.css"
+           xmlns="http://javafx.com/javafx/26"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="application.controller.MenuController">
 
-            <!-- Profile Container -->
-            <HBox alignment="CENTER_RIGHT" spacing="25">
-               <children>
-                  <ImageView fx:id="profileAvatar" fitHeight="65.0" pickOnBounds="true" preserveRatio="true" />
-                  <Label fx:id="userName" maxWidth="220.0" styleClass="font-public-sans, profile-text" text="chisaepicmoment" />
-                  <ImageView fx:id="settingsIcon" fitHeight="55.0" onMouseClicked="#handleSettingsClick" onMouseEntered="#handleSettingsRotate" onMouseExited="#handleSettingUnrotate" pickOnBounds="true" preserveRatio="true" />
-               </children>
-            </HBox>
-         </children>
-      </HBox>
-	</top>
-	
-	<center>
-	    <HBox fx:id="menuContainer" fillHeight="true" spacing="4.0" styleClass="menu-container">
-	        <children>
-	        
-	            <StackPane fx:id="songsContainer" maxWidth="Infinity" minWidth="0.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" prefWidth="500.0" HBox.hgrow="ALWAYS">
-					<children>
-						<Rectangle fx:id="songsBackground" arcHeight="20.0" arcWidth="20.0" fill="#366B91"/>
-						<Pane fx:id="songsDotsPane" mouseTransparent="true"/>
-						<Label fx:id="songsLabel" id="songs-title" alignment="CENTER" maxWidth="Infinity" mouseTransparent="true" styleClass="menu-title" text="Songs" StackPane.alignment="TOP_CENTER">
-							<StackPane.margin>
-								<Insets top="55.0"/>
-							</StackPane.margin>
-						</Label>
-						<ImageView fx:id="songsIcon" fitHeight="500.0" fitWidth="500.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
-							<StackPane.margin>
-								<Insets top="90.0"/>
-							</StackPane.margin>
-						</ImageView>
-					</children>
-				</StackPane>
-				
-	            <StackPane fx:id="gamesContainer" maxWidth="Infinity" minWidth="0.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" prefWidth="500.0" HBox.hgrow="ALWAYS">
-					<children>
-						<Rectangle fx:id="gamesBackground" arcHeight="20.0" arcWidth="20.0" fill="#364591"/>
-						<Pane fx:id="gamesDotsPane" mouseTransparent="true"/>
-						<Label fx:id="gamesLabel" id="games-title" alignment="CENTER" maxWidth="Infinity" mouseTransparent="true" styleClass="menu-title" text="Games" StackPane.alignment="TOP_CENTER">
-							<StackPane.margin>
-								<Insets top="55.0"/>
-							</StackPane.margin>
-						</Label>
-						<ImageView fx:id="gamesIcon" fitHeight="500.0" fitWidth="500.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
-							<StackPane.margin>
-								<Insets top="90.0"/>
-							</StackPane.margin>
-						</ImageView>
-					</children>
-				</StackPane>
-				
-	            <StackPane fx:id="showsContainer" maxWidth="Infinity" minWidth="0.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" prefWidth="500.0" HBox.hgrow="ALWAYS">
-					<children>
-						<Rectangle fx:id="showsBackground" arcHeight="20.0" arcWidth="20.0" fill="#675A8C"/>
-						<Pane fx:id="showsDotsPane" mouseTransparent="true"/>
-						<Label fx:id="showsLabel" id="shows-title" alignment="CENTER" maxWidth="Infinity" mouseTransparent="true" styleClass="menu-title" text="Shows" StackPane.alignment="TOP_CENTER">
-							<StackPane.margin>
-								<Insets top="55.0"/>
-							</StackPane.margin>
-						</Label>
-						<ImageView fx:id="showsIcon" fitHeight="500.0" fitWidth="500.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
-							<StackPane.margin>
-								<Insets top="90.0"/>
-							</StackPane.margin>
-						</ImageView>
-					</children>
-				</StackPane>
-				
-	        </children>
-	    </HBox>
-	</center>
-</BorderPane>
+    <children>
+		<BorderPane fx:id="rootBorderPane">
+			<top>
+				<HBox maxHeight="130.0" minHeight="130.0" prefHeight="130.0" styleClass="nav-bar" BorderPane.alignment="CENTER">
+		         <children>
+		            <!-- Logo Section -->
+		            <HBox alignment="CENTER_LEFT" spacing="10.0">
+		               <children>
+		               	<ImageView fx:id="mediaVaultLogo" fitHeight="105.0" pickOnBounds="true" preserveRatio="true" />
+		                	<ImageView fx:id="mediaVaultTitle" fitHeight="65.0" pickOnBounds="true" preserveRatio="true" />
+		               </children>
+		            </HBox>
+		            
+		            <Region HBox.hgrow="ALWAYS" />
+		
+		            <!-- Profile Container -->
+		            <HBox alignment="CENTER_RIGHT" spacing="25">
+		               <children>
+		                  <ImageView fx:id="profileAvatar" fitHeight="65.0" pickOnBounds="true" preserveRatio="true" />
+		                  <Label fx:id="userName" maxWidth="220.0" styleClass="font-public-sans, profile-text" text="chisaepicmoment" />
+		                  <ImageView fx:id="settingsIcon" fitHeight="55.0" onMouseClicked="#handleSettingsClick" onMouseEntered="#handleSettingsRotate" onMouseExited="#handleSettingUnrotate" pickOnBounds="true" preserveRatio="true" />
+		               </children>
+		            </HBox>
+		         </children>
+		      </HBox>
+			</top>
+			
+			<center>
+			    <HBox fx:id="menuContainer" fillHeight="true" spacing="4.0" styleClass="menu-container">
+			        <children>
+			        
+			            <StackPane fx:id="songsContainer" maxWidth="Infinity" minWidth="0.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" prefWidth="500.0" HBox.hgrow="ALWAYS">
+							<children>
+								<Rectangle fx:id="songsBackground" arcHeight="20.0" arcWidth="20.0" fill="#366B91"/>
+								<Pane fx:id="songsDotsPane" mouseTransparent="true"/>
+								<Label fx:id="songsLabel" id="songs-title" alignment="CENTER" maxWidth="Infinity" mouseTransparent="true" styleClass="menu-title" text="Songs" StackPane.alignment="TOP_CENTER">
+									<StackPane.margin>
+										<Insets top="55.0"/>
+									</StackPane.margin>
+								</Label>
+								<ImageView fx:id="songsIcon" fitHeight="500.0" fitWidth="500.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+									<StackPane.margin>
+										<Insets top="90.0"/>
+									</StackPane.margin>
+								</ImageView>
+							</children>
+						</StackPane>
+						
+			            <StackPane fx:id="gamesContainer" maxWidth="Infinity" minWidth="0.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" prefWidth="500.0" HBox.hgrow="ALWAYS">
+							<children>
+								<Rectangle fx:id="gamesBackground" arcHeight="20.0" arcWidth="20.0" fill="#364591"/>
+								<Pane fx:id="gamesDotsPane" mouseTransparent="true"/>
+								<Label fx:id="gamesLabel" id="games-title" alignment="CENTER" maxWidth="Infinity" mouseTransparent="true" styleClass="menu-title" text="Games" StackPane.alignment="TOP_CENTER">
+									<StackPane.margin>
+										<Insets top="55.0"/>
+									</StackPane.margin>
+								</Label>
+								<ImageView fx:id="gamesIcon" fitHeight="500.0" fitWidth="500.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+									<StackPane.margin>
+										<Insets top="90.0"/>
+									</StackPane.margin>
+								</ImageView>
+							</children>
+						</StackPane>
+						
+			            <StackPane fx:id="showsContainer" maxWidth="Infinity" minWidth="0.0" onMouseClicked="#handleTileClick" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" prefWidth="500.0" HBox.hgrow="ALWAYS">
+							<children>
+								<Rectangle fx:id="showsBackground" arcHeight="20.0" arcWidth="20.0" fill="#675A8C"/>
+								<Pane fx:id="showsDotsPane" mouseTransparent="true"/>
+								<Label fx:id="showsLabel" id="shows-title" alignment="CENTER" maxWidth="Infinity" mouseTransparent="true" styleClass="menu-title" text="Shows" StackPane.alignment="TOP_CENTER">
+									<StackPane.margin>
+										<Insets top="55.0"/>
+									</StackPane.margin>
+								</Label>
+								<ImageView fx:id="showsIcon" fitHeight="500.0" fitWidth="500.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+									<StackPane.margin>
+										<Insets top="90.0"/>
+									</StackPane.margin>
+								</ImageView>
+							</children>
+						</StackPane>
+						
+			        </children>
+			    </HBox>
+			</center>
+		</BorderPane>
+    </children>
+</StackPane>

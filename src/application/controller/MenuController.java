@@ -1,6 +1,7 @@
 package application.controller;
 
 import java.io.IOException;
+import java.sql.Connection;
 
 //import java.util.List;
 import javafx.animation.RotateTransition;
@@ -30,6 +31,12 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.layout.Pane;
 import javafx.scene.control.Label;
+import javafx.scene.effect.GaussianBlur;
+import javafx.application.Platform;
+import java.io.File;
+import java.sql.SQLException;
+import application.dao.UserDAO;
+import javafx.geometry.Rectangle2D;
 
 public class MenuController {
     
@@ -112,6 +119,9 @@ public class MenuController {
     private BorderPane rootBorderPane;
     
     @FXML
+    private StackPane rootStackPane;
+    
+    @FXML
     private ImageView settingsIcon;
     
     @FXML
@@ -125,6 +135,7 @@ public class MenuController {
 	private final ArrayList<Circle> showsDots = new ArrayList<>();
 
     private static final double DOT_SPACING = 55.0;
+    private Connection conn;
     
 
 	@FXML
@@ -135,7 +146,6 @@ public class MenuController {
 		mediaVaultLogo.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png")));
 		mediaVaultTitle.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png")));
 		settingsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png")));
-		profileAvatar.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png")));
 
 		songsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/songs-icon.png")));
 		gamesIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/games-icon.png")));
@@ -160,6 +170,11 @@ public class MenuController {
 		clipTile(songsContainer);
 		clipTile(gamesContainer);
 		clipTile(showsContainer);
+	}
+	
+	public void setConnection(Connection conn) {
+		this.conn = conn;
+		loadProfilePicture();
 	}
 	
 	private void bindTile(StackPane container, Rectangle background, Pane dotsPane) {
@@ -218,6 +233,89 @@ public class MenuController {
     
 	@FXML
 	private void handleSettingsClick(MouseEvent event) {
+		event.consume();
+
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/Settings.fxml"));
+			Parent popup = loader.load();
+
+			StackPane overlay = new StackPane();
+			overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.35);");
+			overlay.setPickOnBounds(true);
+			overlay.getChildren().add(popup);
+
+			SettingsController controller = loader.getController();
+			controller.setConnection(conn);
+			controller.setCloseAction(() -> closeSettingsPopup(overlay));
+			controller.setProfileUpdatedAction(this::loadProfilePicture);
+
+			popup.setOnMouseClicked(e -> e.consume());
+			overlay.setOnMouseClicked(e -> {
+				e.consume();
+				closeSettingsPopup(overlay);
+			});
+
+			Parent currentRoot = rootBorderPane.getScene().getRoot();
+
+			if(currentRoot instanceof StackPane) {
+				StackPane root = (StackPane)currentRoot;
+				rootBorderPane.setEffect(new GaussianBlur(6));
+				root.getChildren().add(overlay);
+				StackPane.setAlignment(popup, Pos.CENTER);
+			}
+			else {
+				Platform.runLater(() -> {
+					StackPane newRoot = new StackPane();
+					rootBorderPane.setEffect(new GaussianBlur(6));
+					newRoot.getChildren().addAll(rootBorderPane, overlay);
+					rootBorderPane.getScene().setRoot(newRoot);
+					StackPane.setAlignment(popup, Pos.CENTER);
+				});
+			}
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void loadProfilePicture() {
+		try {
+			UserDAO userDAO = new UserDAO(conn);
+			String path = userDAO.getProfilePicture(UserSession.getCurrentUserId());
+
+			if(path != null && !path.isBlank()) {
+				File file = new File(path);
+
+				if(file.exists()) {
+					Image image = new Image(file.toURI().toString());
+					setCircularProfileImage(profileAvatar, image);
+				}
+				else
+					loadDefaultProfilePicture();
+			}
+			else
+				loadDefaultProfilePicture();
+		}
+		catch(SQLException e) {
+			loadDefaultProfilePicture();
+			e.printStackTrace();
+		}
+	}
+
+	private void loadDefaultProfilePicture() {
+		Image image = new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png"));
+		setCircularProfileImage(profileAvatar, image);
+	}
+	
+	private void closeSettingsPopup(StackPane overlay) {
+		Platform.runLater(() -> {
+			if(overlay.getParent() instanceof StackPane) {
+				StackPane root = (StackPane)overlay.getParent();
+				root.getChildren().remove(overlay);
+			}
+
+			rootBorderPane.setEffect(null);
+		});
 	}
 	
     @FXML
@@ -403,6 +501,26 @@ public class MenuController {
 
 		ScaleTransition scale = new ScaleTransition(Duration.millis(120), icon);
 		scale.play();
+	}
+	
+	private void setCircularProfileImage(ImageView imageView, Image image) {
+		imageView.setFitWidth(65);
+		imageView.setFitHeight(65);
+		imageView.setPreserveRatio(false);
+		imageView.setSmooth(true);
+
+		double imageWidth = image.getWidth();
+		double imageHeight = image.getHeight();
+		double cropSize = Math.min(imageWidth, imageHeight);
+
+		double cropX = (imageWidth - cropSize) / 2.0;
+		double cropY = (imageHeight - cropSize) / 2.0;
+
+		imageView.setViewport(new Rectangle2D(cropX, cropY, cropSize, cropSize));
+		imageView.setImage(image);
+
+		Circle clip = new Circle(32.5, 32.5, 32.5);
+		imageView.setClip(clip);
 	}
  
 }

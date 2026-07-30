@@ -133,4 +133,71 @@ public class UserDAO {
      		DatabaseInitializer.registerUser(conn, userId);
      	}
     }
+    
+    public boolean verifyPassword(int userId, String password) throws SQLException {
+    	String sql = "SELECT 1 FROM users WHERE id = ? AND password = ?";
+
+    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
+    		ps.setInt(1, userId);
+    		ps.setString(2, password);
+
+    		try(ResultSet rs = ps.executeQuery()) {
+    			return rs.next();
+    		}
+    	}
+    }
+
+    public void updateUsername(int userId, String username) throws SQLException {
+    	String sql = "UPDATE users SET username = ? WHERE id = ?";
+
+    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
+    		ps.setString(1, username);
+    		ps.setInt(2, userId);
+    		ps.executeUpdate();
+    	}
+    }
+
+    public void updatePassword(int userId, String password) throws SQLException {
+    	String sql = "UPDATE users SET password = ? WHERE id = ?";
+
+    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
+    		ps.setString(1, password);
+    		ps.setInt(2, userId);
+    		ps.executeUpdate();
+    	}
+    }
+
+    public void updateProfilePicture(int userId, String path) throws SQLException {
+    	String sql = "UPDATE users SET profile_picture = ? WHERE id = ?";
+
+    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
+    		ps.setString(1, path);
+    		ps.setInt(2, userId);
+    		ps.executeUpdate();
+    	}
+    }
+
+    public String getProfilePicture(int userId) throws SQLException {
+    	String sql = "SELECT profile_picture FROM users WHERE id = ?";
+
+    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
+    		ps.setInt(1, userId);
+
+    		try(ResultSet rs = ps.executeQuery()) {
+    			if(rs.next())
+    				return rs.getString("profile_picture");
+    		}
+    	}
+
+    	return null;
+    }
+
+    public void deleteUser(int userId) throws SQLException {
+    	String sql = "DELETE FROM users WHERE id = ?";
+
+    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
+    		ps.setInt(1, userId);
+    		ps.executeUpdate();
+    	}
+    }
 }
