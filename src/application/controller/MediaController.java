@@ -533,6 +533,41 @@ public class MediaController {
 	    }
 	}
 	
+	@FXML
+	private void editAiring() {
+	    if (isEditing) {
+	    		hideLabelShowField(airingLabel, airingField);
+	    }
+	}
+
+	@FXML
+	private void editYearFirstAired() {
+	    if (isEditing) {
+	    		hideLabelShowField(yearFirstAiredLabel, yearFirstAiredField);
+	    }
+	}
+
+	@FXML
+	private void editYearLastAired() {
+	    if (isEditing) {
+	    		hideLabelShowField(yearLastAiredLabel, yearLastAiredField);
+	    }
+	}
+
+	@FXML
+	private void editNumOfEpisodes() {
+	    if (isEditing) {
+	    		hideLabelShowField(numOfEpisodesLabel, numOfEpisodesField);
+	    }
+	}
+
+	@FXML
+	private void editNumOfSeasons() {
+	    if (isEditing) {
+	    		hideLabelShowField(numOfSeasonsLabel, numOfSeasonsField);
+	    }
+	}
+	
 	private void showLabelHideField(Label label, TextField field) {
 	    label.setVisible(true);
 	    label.setManaged(true);
