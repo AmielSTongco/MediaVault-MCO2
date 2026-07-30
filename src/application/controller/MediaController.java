@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
@@ -38,11 +39,17 @@ public class MediaController {
 	 
 	private DropShadow dropShadowForSelectedPane;
 	
+	// For editing details
+	private boolean isEditing = false;
+	
     @FXML
     private ImageView mediaArt;
 
     @FXML
     private Label creatorLabel;
+    
+    @FXML
+    private TextField creatorField;
 
     @FXML
     private HBox extendableNavigationPane;
@@ -132,9 +139,10 @@ public class MediaController {
         mediaVaultTitle.setImage(titleImg);
         settingsIcon.setImage(settingsImg);
         profileAvatar.setImage(profileImg);
-        
+			
         clipRect = new Rectangle();
 		clipRect.setWidth(extendableNavigationPane.getPrefWidth());
+
 		setIcon(editButton, "/resources/application/images/icons/pencil-svgrepo-com.png");
 		setIcon(removeButton, "/resources/application/images/icons/minus-svgrepo-com.png");
 		setIcon(deleteButton, "/resources/application/images/icons/trash-can-svgrepo-com.png");
@@ -187,7 +195,11 @@ public class MediaController {
         			numOfEpisodesLabel.setEffect(shadow);
         			numOfSeasonsLabel.setEffect(shadow);
         			break;
-        }	
+        }
+        
+        creatorField.textProperty().addListener((obs, oldText, newText) ->
+        creatorLabel.setText("Artist: " + newText)
+		);
     }
     
     @FXML
@@ -271,9 +283,23 @@ public class MediaController {
  
 	@FXML
 	private void toggleEdit() {
-		System.out.println("Selecting pane 1");
 		deselectAllPanes();
-		editButton.setEffect(dropShadowForSelectedPane);
+		isEditing = !isEditing;
+		
+		if (!isEditing) {
+			setIcon(editButton, "/resources/application/images/icons/pencil-svgrepo-com.png");
+			
+			creatorField.positionCaret(creatorField.getText().length());
+			
+			creatorLabel.setVisible(true);
+		    creatorLabel.setManaged(true);
+
+		    creatorField.setVisible(false);
+		    creatorField.setManaged(false);
+		}
+		else {
+			setIcon(editButton, "/resources/application/images/icons/minus-svgrepo-com.png");
+		}
 	}
  
 	@FXML
@@ -310,6 +336,17 @@ public class MediaController {
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	    }
+	}
+	
+	@FXML
+	private void editCreator() {
+		if (isEditing) {
+			creatorLabel.setVisible(false);
+		    creatorLabel.setManaged(false);
+
+		    creatorField.setVisible(true);
+		    creatorField.setManaged(true);
+		}
 	}
  
 	private void deselectAllPanes() {
