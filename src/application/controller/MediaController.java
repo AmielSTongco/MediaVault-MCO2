@@ -42,6 +42,9 @@ public class MediaController {
 	// For editing details
 	private boolean isEditing = false;
 	
+	@FXML
+	private Button editPictureButton;
+	
     @FXML
     private ImageView mediaArt;
 
@@ -151,7 +154,10 @@ public class MediaController {
 	private TextField statusField;
 
     @FXML
-    private Label title;
+    private Label titleLabel;
+    
+    @FXML
+    private TextField titleField;
 
     @FXML
     private Label yearLabel;
@@ -215,8 +221,13 @@ public class MediaController {
         statusLabel.setEffect(shadow);
         ratingLabel.setEffect(shadow);
         reviewLabel.setEffect(shadow);
+        editPictureButton.setEffect(shadow);
         
         // Declare listeners
+        titleField.textProperty().addListener((_, _, newText) ->
+			titleLabel.setText(newText)
+		);
+        
         creatorField.textProperty().addListener((_, _, newText) ->
 			creatorLabel.setText("Artist: " + newText)
 		);
@@ -380,6 +391,7 @@ public class MediaController {
 		if (!isEditing) {
 			setIcon(editButton, "/resources/application/images/icons/pencil-svgrepo-com.png");
 			
+			showLabelHideField(titleLabel, titleField);
 			showLabelHideField(creatorLabel, creatorField);
 			showLabelHideField(genreLabel, genreField);
 			showLabelHideField(playtimeLabel, playtimeField);
@@ -447,6 +459,17 @@ public class MediaController {
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	    }
+	}
+	
+	@FXML
+	private void editTitle() {
+		if (isEditing) {
+			titleLabel.setVisible(false);
+			titleLabel.setManaged(false);
+
+			titleField.setVisible(true);
+			titleField.setManaged(true);
+		}
 	}
 	
 	@FXML
@@ -531,6 +554,11 @@ public class MediaController {
 	    label.setManaged(true);
 	    field.setVisible(false);
 	    field.setManaged(false);
+	}
+	
+	@FXML
+	private void choosePicture() {
+		System.out.println("whyy");
 	}
  
 	private void deselectAllPanes() {
