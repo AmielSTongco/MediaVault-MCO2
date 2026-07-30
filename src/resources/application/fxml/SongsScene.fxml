@@ -48,11 +48,19 @@
    <center>
       <VBox prefHeight="200.0" prefWidth="100.0" styleClass="content-card, song" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="title" styleClass="media-title" text="ANAHEIM">
-               <VBox.margin>
-                  <Insets left="65.0" right="65.0" />
-               </VBox.margin></Label>
-            
+         	<StackPane alignment="CENTER_LEFT">
+            		<Label fx:id="titleLabel" styleClass="media-title" onMouseClicked="#editTitle" text="ANAHEIM">
+	            		<StackPane.margin>
+	                  <Insets left="65.0" right="65.0" />
+	               	</StackPane.margin>
+            		</Label>
+            		<TextField fx:id="titleField" styleClass="media-title" visible="false" managed="false">
+            			<StackPane.margin>
+	                  <Insets left="65.0" right="65.0" />
+	               	</StackPane.margin>
+            		</TextField>
+            	</StackPane>
+             
             <HBox alignment="CENTER_LEFT" spacing="20.0">
 			    <!-- Album Art -->
 			    <ImageView fx:id="mediaArt" fitHeight="600.0" fitWidth="600.0" preserveRatio="true">
