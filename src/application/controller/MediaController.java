@@ -430,7 +430,7 @@ public class MediaController {
 
 		}
 		else {
-			setIcon(editButton, "/resources/application/images/icons/minus-svgrepo-com.png");
+			setIcon(editButton, "/resources/application/images/icons/check-svgrepo-com.png");
 		}
 	}
  
