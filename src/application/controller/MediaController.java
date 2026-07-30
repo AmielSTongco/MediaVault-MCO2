@@ -185,7 +185,14 @@ public class MediaController {
 		
         // Create a rounded rectangle for media image
         // code adapted from: https://stackoverflow.com/q/39650031
-        Rectangle rect = new Rectangle(560, 560);
+        Rectangle rect; 
+        if (mediaType.equalsIgnoreCase("shows")) {
+        		rect = new Rectangle(500, 500);
+        }
+        else {
+        		rect = new Rectangle(560, 560);
+        }
+        
         rect.setArcHeight(90);
         rect.setArcWidth(90);
         rect.setEffect(new Reflection());
