@@ -293,7 +293,15 @@
     -fx-max-width: infinity;       /* Makes all pills stretch to fill VBox width */
 }
 
-
+.edit-picture-button {
+	-fx-background-color: #8fa2e6;
+	-fx-background-radius: 90px;
+	-fx-padding: 8px 10px 8px 10px;
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Open Sauce One";
+    -fx-font-size: 20px;
+    -fx-font-weight: bold; 
+}
 
 /* ----- Expandable Navigation Buttons ----- */
 .pane{
