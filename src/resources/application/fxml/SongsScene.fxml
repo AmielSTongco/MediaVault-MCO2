@@ -68,12 +68,30 @@
 						    <Label fx:id="creatorLabel" styleClass="info-pill" onMouseClicked="#editCreator" text="Artist: NIKI" />
 						    <TextField fx:id="creatorField" styleClass="info-pill" visible="false" managed="false"/>
 						</StackPane>
-			            <Label fx:id="yearLabel" styleClass="info-pill" text="Year: 2022" />
-			            <Label fx:id="genreLabel" styleClass="info-pill" text="Genre: Alternative pop and folk-pop" />
-			            <Label fx:id="playtimeLabel" styleClass="info-pill" text="Average Playtime:" />
-			            <Label fx:id="statusLabel" styleClass="info-pill" text="Status:" />
-			            <Label fx:id="ratingLabel" styleClass="info-pill" text="Rating: 100000000000" />
-			            <Label fx:id="reviewLabel" styleClass="info-pill" text="Review: Tagos sa bones" />
+			            <StackPane alignment="CENTER_LEFT">
+						    <Label fx:id="yearLabel" styleClass="info-pill" onMouseClicked="#editYear" text="Year: 2022" />
+						    <TextField fx:id="yearField" styleClass="info-pill" visible="false" managed="false"/>
+						</StackPane>
+						<StackPane alignment="CENTER_LEFT">
+						    <Label fx:id="genreLabel" styleClass="info-pill" onMouseClicked="#editGenre" text="Genre: Alternative pop and folk-pop" />
+						    <TextField fx:id="genreField" styleClass="info-pill" visible="false" managed="false"/>
+						</StackPane>
+						<StackPane alignment="CENTER_LEFT">
+						    <Label fx:id="playtimeLabel" styleClass="info-pill" onMouseClicked="#editPlaytime" text="Average Playtime:" />
+						    <TextField fx:id="playtimeField" styleClass="info-pill" visible="false" managed="false"/>
+						</StackPane>
+						<StackPane alignment="CENTER_LEFT">
+						    <Label fx:id="statusLabel" styleClass="info-pill" onMouseClicked="#editStatus" text="Status:" />
+						    <TextField fx:id="statusField" styleClass="info-pill" visible="false" managed="false"/>
+						</StackPane>
+						<StackPane alignment="CENTER_LEFT">
+						    <Label fx:id="ratingLabel" styleClass="info-pill" onMouseClicked="#editRating" text="Rating: 100000000000" />
+						    <TextField fx:id="ratingField" styleClass="info-pill" visible="false" managed="false"/>
+						</StackPane>
+						<StackPane alignment="CENTER_LEFT">
+						    <Label fx:id="reviewLabel" styleClass="info-pill" onMouseClicked="#editReview" text="Review: Tagos sa bones" />
+						    <TextField fx:id="reviewField" styleClass="info-pill" visible="false" managed="false"/>
+						</StackPane>
 			        </children>
 			    </VBox>
                <VBox.margin>
