@@ -472,108 +472,79 @@ public class MediaController {
 	
 	@FXML
 	private void editTitle() {
-		if (isEditing) {
-			titleLabel.setVisible(false);
-			titleLabel.setManaged(false);
-
-			titleField.setVisible(true);
-			titleField.setManaged(true);
-		}
+	    if (isEditing) {
+	    		hideLabelShowField(titleLabel, titleField);
+	    }
 	}
-	
+
 	@FXML
 	private void editCreator() {
-		if (isEditing) {
-			creatorLabel.setVisible(false);
-		    creatorLabel.setManaged(false);
-
-		    creatorField.setVisible(true);
-		    creatorField.setManaged(true);
-		}
+	    if (isEditing) {
+	    		hideLabelShowField(creatorLabel, creatorField);
+	    }
 	}
-	
+
 	@FXML
 	private void editYear() {
 	    if (isEditing) {
-	        yearLabel.setVisible(false);
-	        yearLabel.setManaged(false);
-
-	        yearField.setVisible(true);
-	        yearField.setManaged(true);
+	    		hideLabelShowField(yearLabel, yearField);
 	    }
 	}
-	
+
 	@FXML
 	private void editGenre() {
 	    if (isEditing) {
-	        genreLabel.setVisible(false);
-	        genreLabel.setManaged(false);
-
-	        genreField.setVisible(true);
-	        genreField.setManaged(true);
+	    		hideLabelShowField(genreLabel, genreField);
 	    }
 	}
 
 	@FXML
 	private void editPlaytime() {
 	    if (isEditing) {
-	        playtimeLabel.setVisible(false);
-	        playtimeLabel.setManaged(false);
-
-	        playtimeField.setVisible(true);
-	        playtimeField.setManaged(true);
+	    		hideLabelShowField(playtimeLabel, playtimeField);
 	    }
 	}
 
 	@FXML
 	private void editStatus() {
 	    if (isEditing) {
-	        statusLabel.setVisible(false);
-	        statusLabel.setManaged(false);
-
-	        statusField.setVisible(true);
-	        statusField.setManaged(true);
+	    		hideLabelShowField(statusLabel, statusField);
 	    }
 	}
 
 	@FXML
 	private void editRating() {
 	    if (isEditing) {
-	        ratingLabel.setVisible(false);
-	        ratingLabel.setManaged(false);
-
-	        ratingField.setVisible(true);
-	        ratingField.setManaged(true);
+	    		hideLabelShowField(ratingLabel, ratingField);
 	    }
 	}
 
 	@FXML
 	private void editReview() {
 	    if (isEditing) {
-	        reviewLabel.setVisible(false);
-	        reviewLabel.setManaged(false);
-
-	        reviewField.setVisible(true);
-	        reviewField.setManaged(true);
+	    		hideLabelShowField(reviewLabel, reviewField);
 	    }
 	}
-	
+
 	@FXML
 	private void editAvgPlaytime() {
 	    if (isEditing) {
-	        avgPlaytimeLabel.setVisible(false);
-	        avgPlaytimeLabel.setManaged(false);
-
-	        avgPlaytimeField.setVisible(true);
-	        avgPlaytimeField.setManaged(true);
+	    		hideLabelShowField(avgPlaytimeLabel, avgPlaytimeField);
 	    }
 	}
 	
 	private void showLabelHideField(Label label, TextField field) {
-		label.setVisible(true);
+	    label.setVisible(true);
 	    label.setManaged(true);
 	    field.setVisible(false);
 	    field.setManaged(false);
+	}
+
+	private void hideLabelShowField(Label label, TextField field) {
+	    label.setVisible(false);
+	    label.setManaged(false);
+	    field.setVisible(true);
+	    field.setManaged(true);
 	}
 	
 	@FXML
