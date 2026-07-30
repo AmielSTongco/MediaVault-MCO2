@@ -1,5 +1,6 @@
 package application.controller;
 
+/*
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -7,7 +8,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import application.model.MediaPlaylist;
-import application.model.Type;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -15,53 +15,53 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+*/
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.fxml.FXML;
+import application.model.Type;
+import application.model.UserSession;
 import javafx.scene.shape.Rectangle;
+/*
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+*/
+import javafx.scene.control.ComboBox;
 
-public class MediaPlaylistsController implements Initializable {
-
-    @FXML 
-    private TableView<MediaPlaylist> tableView;
-    
-    @FXML 
-    private TextField songName;
-    
-    @FXML 
-    private Label pageLabel;
-    
+public class MediaPlaylistsController{
+	
     @FXML
-    private ImageView profileAvatar;
-    
+    private StackPane rootStackPane;
+	
     @FXML
-    private Label mediaLabel;
+    private BorderPane rootBorderPane;
     
     @FXML 
     private ImageView mediaVaultLogo;
@@ -70,14 +70,53 @@ public class MediaPlaylistsController implements Initializable {
     private ImageView mediaVaultTitle;
     
     @FXML
-    private BorderPane rootPane;
+    private ImageView profileAvatar;
+    
+    @FXML
+    private Label userName;
     
     @FXML
     private ImageView settingsIcon;
     
+    @FXML 
+    private ImageView mediaLogo;
+    
+    @FXML
+    private ComboBox<String> titleComboBox;
+
+    @FXML
+    private ComboBox<String> creatorComboBox;
+
+    @FXML
+    private ComboBox<String> yearComboBox;
+
+    @FXML
+    private ComboBox<String> albumComboBox;
+
+    @FXML
+    private ComboBox<String> statusComboBox;
+
+    @FXML
+    private ComboBox<String> reviewedComboBox;
+    
+    @FXML
+    private VBox resultsVBox;
+    
+    @FXML 
+    private TextField songName;
+    
+    @FXML 
+    private Label pageLabel;
+    
+    @FXML
+    private Label mediaLabel;
+    
+    @FXML
+    private BorderPane rootPane;
+    
     // For Expandable Navigation Bar
- 	private static final int deltaXNavButton1 = 10;
- 	private static final int deltaXNavButton2 = -10;
+ 	//private static final int deltaXNavButton1 = 10;
+ 	//private static final int deltaXNavButton2 = -10;
   
  	@FXML
  	private HBox extendableNavigationPane;
@@ -88,10 +127,22 @@ public class MediaPlaylistsController implements Initializable {
 	@FXML
 	private Button homeButton;
  
-	private Rectangle clipRect;
+	//private Rectangle clipRect;
  
-	private DropShadow dropShadowForSelectedPane;
+	//private DropShadow dropShadowForSelectedPane;
 	
+	@FXML
+	private StackPane contentPane;
+
+	@FXML
+	private Rectangle backgroundRectangle;
+	
+	@FXML
+	private VBox contentVBox;
+	
+	private Type mediaType;
+	
+	/*
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		Image logoImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png"));
@@ -370,4 +421,150 @@ public class MediaPlaylistsController implements Initializable {
     private void updateTablePage() {
         // Table page rendering logic
     }
+    */
+	
+	@FXML
+	public void initialize() {
+		
+		String username = UserSession.getCurrentUsername();
+		
+		mediaVaultLogo.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png")));
+		mediaVaultTitle.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png")));
+		settingsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png")));
+		mediaLogo.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/songs-icon.png")));
+		
+		userName.setText(username);
+		
+		backgroundRectangle.widthProperty().bind(contentPane.widthProperty().multiply(0.97));
+		backgroundRectangle.heightProperty().bind(contentPane.heightProperty());
+		
+		contentVBox.maxWidthProperty().bind(backgroundRectangle.widthProperty().multiply(0.97));
+		contentVBox.prefWidthProperty().bind(backgroundRectangle.widthProperty());
+		
+		statusComboBox.getItems().addAll("All", "Completed", "In Progress", "Planned");
+		reviewedComboBox.getItems().addAll("All", "Reviewed", "Not Reviewed");
+
+		statusComboBox.setValue("All");
+		reviewedComboBox.setValue("All");
+
+		setupFilters();
+	}
+
+	public void setupView(Type mediaType) {
+		this.mediaType = mediaType;
+
+		if(mediaType == Type.SONG)
+			setupSongView();
+		else if(mediaType == Type.GAME)
+			setupGameView();
+		else if(mediaType == Type.SHOW)
+			setupShowView();
+
+		loadResults();
+	}
+
+	private void setupSongView() {
+		titleComboBox.setPromptText("Title");
+		creatorComboBox.setPromptText("Artist");
+		yearComboBox.setPromptText("Year");
+		albumComboBox.setPromptText("Album");
+
+		albumComboBox.setVisible(true);
+		albumComboBox.setManaged(true);
+	}
+
+	private void setupGameView() {
+		titleComboBox.setPromptText("Title");
+		creatorComboBox.setPromptText("Developer");
+		yearComboBox.setPromptText("Year");
+
+		albumComboBox.setVisible(false);
+		albumComboBox.setManaged(false);
+	}
+
+	private void setupShowView() {
+		titleComboBox.setPromptText("Title");
+		creatorComboBox.setPromptText("Creator");
+		yearComboBox.setPromptText("Year");
+
+		albumComboBox.setVisible(false);
+		albumComboBox.setManaged(false);
+	}
+
+	private void setupFilters() {
+		titleComboBox.setOnAction(event -> loadResults());
+		creatorComboBox.setOnAction(event -> loadResults());
+		yearComboBox.setOnAction(event -> loadResults());
+		albumComboBox.setOnAction(event -> loadResults());
+		statusComboBox.setOnAction(event -> loadResults());
+		reviewedComboBox.setOnAction(event -> loadResults());
+	}
+
+	private void loadResults() {
+		resultsVBox.getChildren().clear();
+
+		if(mediaType != null) {
+			if(mediaType == Type.SONG)
+				addTemporarySongResult();
+			else if(mediaType == Type.GAME)
+				addTemporaryGameResult();
+			else if(mediaType == Type.SHOW)
+				addTemporaryShowResult();
+		}
+	}
+
+	private void addTemporarySongResult() {
+		HBox row = new HBox();
+		row.setSpacing(15.0);
+
+		Label buttonPlaceholder = new Label(">");
+		buttonPlaceholder.setMinWidth(40.0);
+
+		Label numberLabel = new Label("1");
+		numberLabel.setMinWidth(40.0);
+
+		Label titleLabel = new Label("Sample Song");
+		titleLabel.setMinWidth(150.0);
+
+		Label creatorLabel = new Label("Sample Artist");
+		creatorLabel.setMinWidth(150.0);
+
+		Label yearLabel = new Label("2026");
+		yearLabel.setMinWidth(100.0);
+
+		Label albumLabel = new Label("Sample Album");
+		albumLabel.setMinWidth(150.0);
+
+		Label runtimeLabel = new Label("3:25");
+		runtimeLabel.setMinWidth(100.0);
+
+		Label statusLabel = new Label("Completed");
+		statusLabel.setMinWidth(130.0);
+
+		Label ratingLabel = new Label("9");
+		ratingLabel.setMinWidth(80.0);
+
+		Label reviewedLabel = new Label("Yes");
+		reviewedLabel.setMinWidth(130.0);
+
+		Label infoLabel = new Label("View");
+		infoLabel.setMinWidth(80.0);
+
+		row.getChildren().addAll(buttonPlaceholder, numberLabel, titleLabel, creatorLabel, yearLabel, albumLabel, runtimeLabel, statusLabel, ratingLabel, reviewedLabel, infoLabel);
+		resultsVBox.getChildren().add(row);
+	}
+
+	private void addTemporaryGameResult() {
+		HBox row = new HBox();
+		row.setSpacing(15.0);
+		row.getChildren().addAll(new Label("Sample Game"), new Label("Sample Developer"));
+		resultsVBox.getChildren().add(row);
+	}
+
+	private void addTemporaryShowResult() {
+		HBox row = new HBox();
+		row.setSpacing(15.0);
+		row.getChildren().addAll(new Label("Sample Show"), new Label("Sample Creator"));
+		resultsVBox.getChildren().add(row);
+	}
 }

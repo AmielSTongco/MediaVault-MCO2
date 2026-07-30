@@ -201,36 +201,6 @@ public class MenuController {
 		container.setClip(clip);
 	}
     
-    /*
-    @FXML
-    private void handleMouseEntered(MouseEvent event) {
-    	ImageView hoveredTile = (ImageView) event.getSource();
-        
-        // Bring the hovered tile to the front layer
-        hoveredTile.setViewOrder(-1.0); 
-
-        // Create the pop-out zoom animation
-        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(150), hoveredTile);
-        scaleUp.setToX(1.05);
-        scaleUp.setToY(1.05);
-        scaleUp.play();
-    }
-
-    @FXML
-    private void handleMouseExited(MouseEvent event) {
-    	ImageView exitedTile = (ImageView) event.getSource();
-        
-        // Reset the layer order
-        exitedTile.setViewOrder(0);
-
-        // Scale back down to standard size
-        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(150), exitedTile);
-        scaleDown.setToX(1.0);
-        scaleDown.setToY(1.0);
-        scaleDown.play();
-    }
-    */
-    
 	@FXML
 	private void handleSettingsClick(MouseEvent event) {
 		event.consume();
