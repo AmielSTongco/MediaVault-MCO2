@@ -61,7 +61,7 @@
             	</StackPane>
              
             <HBox alignment="CENTER_LEFT" spacing="20.0">
-               <VBox spacing="5.0">
+               <VBox spacing="10.0">
                   <children>
       			    <!-- Album Art -->
       			    <ImageView fx:id="mediaArt" fitHeight="560.0" fitWidth="560.0" preserveRatio="true">
@@ -71,7 +71,7 @@
       			    </ImageView>
                      <StackPane>
                         <children>
-							<Button text="Edit Picture" styleClass="edit-picture-button">
+							<Button fx:id="editPictureButton" text="Edit Picture" styleClass="edit-picture-button" onMouseClicked="#choosePicture">
 								<graphic>
 									<ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
 										<image>
