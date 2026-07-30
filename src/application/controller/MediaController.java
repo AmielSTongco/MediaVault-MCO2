@@ -229,10 +229,6 @@ public class MediaController {
         titleField.textProperty().addListener((_, _, newText) ->
 			titleLabel.setText(newText)
 		);
-        
-        creatorField.textProperty().addListener((_, _, newText) ->
-			creatorLabel.setText("Artist: " + newText)
-		);
 		
 		genreField.textProperty().addListener((_, _, newText) ->
 		    genreLabel.setText("Genre: " + newText)
@@ -256,6 +252,10 @@ public class MediaController {
 	        		playtimeLabel.setEffect(shadow);
 	        		yearLabel.setEffect(shadow);
 	        		
+	        		creatorField.textProperty().addListener((_, _, newText) ->
+		    			creatorLabel.setText("Artist: " + newText)
+		    		);
+	        		
 	        		playtimeField.textProperty().addListener((_, _, newText) ->
 		    	        playtimeLabel.setText("Playtime: " + newText)
 		    	    );
@@ -267,6 +267,10 @@ public class MediaController {
         		case "GAMES":
         			avgPlaytimeLabel.setEffect(shadow);
         			yearLabel.setEffect(shadow);
+        			
+        			creatorField.textProperty().addListener((_, _, newText) ->
+	        			creatorLabel.setText("Developer: " + newText)
+	        		);
         			
         			avgPlaytimeField.textProperty().addListener((_, _, newText) ->
 	        	        avgPlaytimeLabel.setText("Average Playtime: " + newText)
@@ -282,6 +286,10 @@ public class MediaController {
         			yearLastAiredLabel.setEffect(shadow);
         			numOfEpisodesLabel.setEffect(shadow);
         			numOfSeasonsLabel.setEffect(shadow);
+        			
+        			creatorField.textProperty().addListener((_, _, newText) ->
+	        			creatorLabel.setText("Director/s: " + newText)
+	        		);
         			
         			airingField.textProperty().addListener((_, _, newText) ->
 	        	        airingLabel.setText("Airing: " + newText)
@@ -396,7 +404,6 @@ public class MediaController {
 			showLabelHideField(titleLabel, titleField);
 			showLabelHideField(creatorLabel, creatorField);
 			showLabelHideField(genreLabel, genreField);
-			showLabelHideField(playtimeLabel, playtimeField);
 			showLabelHideField(statusLabel, statusField);
 			showLabelHideField(ratingLabel, ratingField);
 			showLabelHideField(reviewLabel, reviewField);
@@ -551,6 +558,17 @@ public class MediaController {
 	    }
 	}
 	
+	@FXML
+	private void editAvgPlaytime() {
+	    if (isEditing) {
+	        avgPlaytimeLabel.setVisible(false);
+	        avgPlaytimeLabel.setManaged(false);
+
+	        avgPlaytimeField.setVisible(true);
+	        avgPlaytimeField.setManaged(true);
+	    }
+	}
+	
 	private void showLabelHideField(Label label, TextField field) {
 		label.setVisible(true);
 	    label.setManaged(true);
@@ -560,7 +578,6 @@ public class MediaController {
 	
 	@FXML
 	private void choosePicture() {
-		System.out.println("whyy");
 	}
  
 	private void deselectAllPanes() {
