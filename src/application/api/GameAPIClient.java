@@ -111,7 +111,7 @@ public class GameAPIClient {
             double userRating = 0.0;
             String review = "";
 
-            games.add(new Game(title, creator, yearReleased, status, userRating, review, genre, avgPlaytimeMins));
+            games.add(new Game(title, creator, yearReleased, status, userRating, review, genre, avgPlaytimeMins, ""));
         }
 
         return games;

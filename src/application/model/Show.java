@@ -13,13 +13,13 @@ public class Show extends Media {
 	// constructor
 	public Show(String title, String creator, int yearStart, int yearEnd, Status status, double userRating, String review, String genre, int numOfSeasons, boolean airing) {
 		super(0,
-		      Type.GAME,
+		      Type.SHOW,
 		      title,
 		      creator,
 		      status,
 		      userRating,
 		      review,
-		      "");
+		      "", "");
 		
 		this.yearStart = yearStart;
 		this.yearEnd = yearEnd;

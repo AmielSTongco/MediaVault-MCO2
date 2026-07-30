@@ -12,9 +12,10 @@ public class Media {
 	private String review;
 	private String info;
 	private String yearString;
+	private String imagePath;
 	
 	// constructors
-	public Media(int mediaId, Type type, String title, String creator, Status status, double userRating, String review, String info) {
+	public Media(int mediaId, Type type, String title, String creator, Status status, double userRating, String review, String info, String imagePath) {
 		this.mediaId = mediaId;
 		this.type = type;
 		this.title = title;
@@ -23,16 +24,18 @@ public class Media {
 		this.userRating = userRating;
 		this.review = review;
 		this.info = info;
+		this.imagePath = imagePath;
 	}
 	
 	// new
-	public Media(String title, String creator, int year, Status status, double userRating, String review) {
+	public Media(String title, String creator, int year, Status status, double userRating, String review, String imagePath) {
 		this.title = title;
 		this.creator = creator;
 		this.year = year;
 		this.status = status;
 		this.userRating = userRating;
 		this.review = review;
+		this.imagePath = imagePath;
 	}
 	
 	// getters and setters
@@ -66,6 +69,10 @@ public class Media {
 	}
 	public String getYearString() {
 		return yearString;
+	}
+	
+	public String getImagePath() {
+		return imagePath;
 	}
 	
 	public void setMediaId(int mediaId) {this.mediaId = mediaId;}

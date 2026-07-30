@@ -28,6 +28,7 @@ public class DatabaseInitializer {
 				creator TEXT,
 				year INTEGER,
 				genre TEXT,
+				image_path TEXT,
 				avg_playtime_mins INTEGER
 			)""");
 			
@@ -40,6 +41,7 @@ public class DatabaseInitializer {
 				creator TEXT,
 				year INTEGER,
 				runtime_seconds INTEGER,
+				image_path TEXT,
 				UNIQUE(title, creator)
 			)""");
 			
@@ -55,6 +57,7 @@ public class DatabaseInitializer {
 				num_of_seasons INTEGER,
 				num_of_episodes INTEGER,
 				avg_mins_per_ep INTEGER,
+				image_path TEXT,
 				airing BOOLEAN
 			)""");
 			

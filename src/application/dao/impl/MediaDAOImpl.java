@@ -281,7 +281,7 @@ public class MediaDAOImpl{
 	    
 	    // Retrieve each song together with its review information.
 	    String sql =
-	            "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, "
+	            "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, m.image_path "
 	            + "m.album, m.runtime_seconds "
 	            + "FROM songs_playlists mp "
 	            + "INNER JOIN songs_playlist_items mpi ON mp.id = mpi.playlist_id "
@@ -309,7 +309,8 @@ public class MediaDAOImpl{
 	                        rs.getString("creator"),
 	                        rs.getInt("year"),
 	                        rs.getInt("runtime_seconds"),
-	                        review);
+	                        review,
+	                        rs.getString("image_path"));
 
 	                song.setMediaId(rs.getInt("id"));
 	                songs.add(song);
@@ -335,7 +336,7 @@ public class MediaDAOImpl{
 
 		// Retrieve game information together with the user's review.
 	    String sql =
-	            "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, m.genre, "
+	            "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, m.genre, m.image_path "
 	            + "m.avg_playtime_mins "
 	            + "FROM games_playlists mp "
 	            + "INNER JOIN games_playlist_items mpi ON mp.id = mpi.playlist_id "
@@ -363,7 +364,8 @@ public class MediaDAOImpl{
 	                        rs.getDouble("user_rating"),
 	                        review,
 	                        rs.getString("genre"),
-	                        rs.getInt("avg_playtime_mins"));
+	                        rs.getInt("avg_playtime_mins"),
+	                        rs.getString("image_path"));
 
 	                game.setMediaId(rs.getInt("id"));
 	                games.add(game);
@@ -449,7 +451,7 @@ public class MediaDAOImpl{
 	        // Retrieve the requested song together with its review information.
 	        String sql = """
 	            SELECT s.id, s.title, s.album, s.creator, s.year, s.runtime_seconds,
-	                   sr.status, sr.user_rating, sr.review
+	                   sr.status, sr.user_rating, sr.review, s.image_path
 	            FROM songs_playlists sp
 	            INNER JOIN songs_playlist_items spi ON sp.id = spi.playlist_id
 	            INNER JOIN songs s ON spi.song_id = s.id
@@ -485,7 +487,8 @@ public class MediaDAOImpl{
 	                            rs.getString("creator"),
 	                            rs.getInt("year"),
 	                            rs.getInt("runtime_seconds"),
-	                            review
+	                            review,
+	                            rs.getString("image_path")
 	                    );
 
 	                    song.setMediaId(rs.getInt("id"));
@@ -499,7 +502,7 @@ public class MediaDAOImpl{
 	        // Retrieve the requested game together with its review information.
 	        String sql = """
 	            SELECT g.id, g.title, g.creator, g.year, g.genre,
-	                   g.avg_playtime_mins, gr.status, gr.user_rating, gr.review
+	                   g.avg_playtime_mins, gr.status, gr.user_rating, gr.review, g.image_path
 	            FROM games_playlists gp
 	            INNER JOIN games_playlist_items gpi ON gp.id = gpi.playlist_id
 	            INNER JOIN games g ON gpi.game_id = g.id
@@ -535,7 +538,8 @@ public class MediaDAOImpl{
 	                            rs.getDouble("user_rating"),
 	                            review,
 	                            rs.getString("genre"),
-	                            rs.getInt("avg_playtime_mins")
+	                            rs.getInt("avg_playtime_mins"),
+	                            rs.getString("image_path")
 	                    );
 
 	                    game.setMediaId(rs.getInt("id"));

@@ -222,7 +222,7 @@ public class MediaPlaylistDAOImpl {
 		
 		List<Song> mediaItems = new ArrayList<Song>();
 		
-		String sql = "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, "
+		String sql = "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, m.image_path "
 	            + "m.album, m.runtime_seconds "
 	            + "FROM songs_playlists mp "
 	            + "JOIN songs_playlist_items mpi "
@@ -263,7 +263,8 @@ public class MediaPlaylistDAOImpl {
 							  			  creator,
 							  			  year,
 							  			  rs.getInt("runtime_seconds"),
-							  			  review);
+							  			  review,
+							  			  rs.getString("image_path"));
 	    			 
 				    media.setMediaId(rs.getInt("id"));
 					mediaItems.add(media);
@@ -286,7 +287,7 @@ public class MediaPlaylistDAOImpl {
 		
 		List<Game> mediaItems = new ArrayList<Game>();
 		
-		String sql = "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, "
+		String sql = "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, m.image_path "
 		            + "m.genre, m.avg_playtime_mins "
 		            + "FROM games_playlists mp "
 		            + "JOIN games_playlist_items mpi "
@@ -323,7 +324,8 @@ public class MediaPlaylistDAOImpl {
 	                        rs.getDouble("user_rating"),
 	                        review,
 	                        rs.getString("genre"),
-	                        rs.getInt("avg_playtime_mins"));
+	                        rs.getInt("avg_playtime_mins"),
+	                        rs.getString("image_path"));
 				    
 				    media.setMediaId(rs.getInt("id"));
 					mediaItems.add(media);

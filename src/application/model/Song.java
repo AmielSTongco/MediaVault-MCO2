@@ -6,9 +6,9 @@ public class Song extends Media{
 	private int yearReleased;
 	private int runtimeSeconds;
 
-    public Song(String title, Status status, double userRating, String album, String artist, int yearReleased, int runtimeSeconds, String review) {
+    public Song(String title, Status status, double userRating, String album, String artist, int yearReleased, int runtimeSeconds, String review, String imagePath) {
     	
-        super(0, Type.SONG, title, artist, status, userRating, review, "");
+        super(0, Type.SONG, title, artist, status, userRating, review, "", imagePath);
         this.yearReleased = yearReleased;
     	this.album = album;
         this.runtimeSeconds = runtimeSeconds;

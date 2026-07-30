@@ -173,69 +173,6 @@ public class MediaPlaylistsItemsController implements Initializable {
         });
 	}
 	
-	public void setupView(Type mediaType) {
-		mediaLabel.setText(mediaType.getTitle());
-		
-		rootPane.getStyleClass().removeAll("theme-songs", "theme-games", "theme-shows");
-		rootPane.getStyleClass().add(mediaType.getStyleClass());
-
-        tableView.getColumns().clear();
-        
-        setupTable(mediaType);
-        
-        // TODO: sample data, this is where DAO will go
-        List<Media> sample = new ArrayList<>();
-        
-        sample.add(new Song("Midnight Drive",
-                Status.COMPLETED,
-                4.2,
-                "Neon Nights",
-                "Luna Waves",
-                2021,
-                215,
-                "Energetic synthwave track"));
-
-        sample.add(new Song("Echoes of Time",
-                Status.COMPLETED,
-                3.9,
-                "Timeless",
-                "Aurora Sky",
-                2019,
-                298,
-                "Dreamy ballad with orchestral layers"));
-
-        sample.add(new Song("Firestorm",
-                Status.COMPLETED,
-                4.7,
-                "Inferno",
-                "Blaze Horizon",
-                2023,
-                185,
-                "Fast-paced rock anthem"));
-
-        sample.add(new Song("Ocean Whispers",
-                Status.COMPLETED,
-                4.0,
-                "Blue Horizon",
-                "Coral Reef",
-                2020,
-                242,
-                "Calm acoustic song with oceanic themes"));
-
-        sample.add(new Song("Digital Heartbeat",
-                Status.COMPLETED,
-                4.5,
-                "Circuit Dreams",
-                "Pixel Pulse",
-                2022,
-                199,
-                "Upbeat electronic dance track"));
-        
-        ObservableList<Media> data = FXCollections.observableArrayList(sample);
-        
-        tableView.setItems(data);
-	}
-	
 	public void setupTable(Type mediaType) {
 		// Declare Columns
 		TableColumn<Media, String> dragCol = new TableColumn<>("");

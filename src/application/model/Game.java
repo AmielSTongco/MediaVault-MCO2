@@ -6,7 +6,7 @@ public class Game extends Media{
 	private int yearReleased;
 	private int avgPlaytimeMins;
 	
-	public Game(String title, String creator, int yearReleased, Status status, double userRating, String review, String genre, int avgPlaytimeMins) {
+	public Game(String title, String creator, int yearReleased, Status status, double userRating, String review, String genre, int avgPlaytimeMins, String imagePath) {
 		super(0,
 	          Type.GAME,
 	          title,
@@ -14,7 +14,7 @@ public class Game extends Media{
 	          status,
 	          userRating,
 	          review,
-	          "");
+	          "", imagePath);
 		
 		this.yearReleased = yearReleased;
 		this.genre = genre;
