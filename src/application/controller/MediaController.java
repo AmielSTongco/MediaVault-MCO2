@@ -1,45 +1,68 @@
 package application.controller;
 
+import java.io.IOException;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
+import javafx.scene.effect.Reflection;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class MediaController {
 
 	// For Expandable Navigation Bar
-	private static final int deltaXNavButton1 = 10;
-	private static final int deltaXNavButton2 = -10;
+	private static final int deltaXEditButton   = 40;
+	private static final int deltaXRemoveButton = 20;
+	private static final int deltaXDeleteButton = 0;
+	private static final int deltaXBackButton   = -20;
+	private static final int deltaXHomeButton   = -40;
 	
 	private Rectangle clipRect;
 	 
 	private DropShadow dropShadowForSelectedPane;
+	
+	// For editing details
+	private boolean isEditing = false;
+	
+	@FXML
+	private Button editPictureButton;
 	
     @FXML
     private ImageView mediaArt;
 
     @FXML
     private Label creatorLabel;
+    
+    @FXML
+    private TextField creatorField;
 
     @FXML
     private HBox extendableNavigationPane;
 
     @FXML
     private Label genreLabel;
+    
+    @FXML
+    private TextField genreField;
     
     @FXML
     private Label mediaLabel;
@@ -54,52 +77,94 @@ public class MediaController {
     private ImageView profileAvatar;
 
     @FXML
-    private Button navButton1;
+    private Button editButton;
 
     @FXML
-    private Button navButton2;
+    private Button removeButton;
     
     @FXML
-    private Button navButton3;
+    private Button deleteButton;
+    
+    @FXML
+    private Button backButton;
+
+    @FXML
+    private Button homeButton;
 
     	@FXML 
     	private Label avgPlaytimeLabel;
+    	
+    	@FXML
+    	private TextField avgPlaytimeField;
     
     @FXML
     private Label playtimeLabel;
+    
+	@FXML
+	private TextField playtimeField;
 
     @FXML
     private Label ratingLabel;
+    
+	@FXML
+	private TextField ratingField;
 
     @FXML
     private Label reviewLabel;
     
+	@FXML
+	private TextField reviewField;
+    
     @FXML
     private Label yearFirstAiredLabel;
+    
+	@FXML
+	private TextField yearFirstAiredField;
     
     @FXML
     private Label yearLastAiredLabel;
     
+	@FXML
+	private TextField yearLastAiredField;
+    
     @FXML
     private Label numOfEpisodesLabel;
+    
+	@FXML
+	private TextField numOfEpisodesField;
     
     @FXML
     private Label numOfSeasonsLabel;
     
+	@FXML
+	private TextField numOfSeasonsField;
+    
     @FXML
     private Label airingLabel;
+    
+	@FXML
+	private TextField airingField;
 
     @FXML
     private ImageView settingsIcon;
 
     @FXML
     private Label statusLabel;
+    
+	@FXML
+	private TextField statusField;
 
     @FXML
-    private Label title;
+    private Label titleLabel;
+    
+    @FXML
+    private TextField titleField;
 
     @FXML
     private Label yearLabel;
+    
+	@FXML
+	private TextField yearField;
     
 	private String mediaType;
 
@@ -117,23 +182,27 @@ public class MediaController {
         mediaVaultTitle.setImage(titleImg);
         settingsIcon.setImage(settingsImg);
         profileAvatar.setImage(profileImg);
+		
+        // Create a rounded rectangle for media image
+        // code adapted from: https://stackoverflow.com/q/39650031
+        Rectangle rect = new Rectangle(560, 560);
+        rect.setArcHeight(90);
+        rect.setArcWidth(90);
+        rect.setEffect(new Reflection());
+        mediaArt.setClip(rect);
         
         clipRect = new Rectangle();
 		clipRect.setWidth(extendableNavigationPane.getPrefWidth());
-		setIcon(navButton1, "/resources/application/images/icons/plus-svgrepo-com.png");
-		setIcon(navButton2, "/resources/application/images/icons/back-reply-svgrepo-com.png");
+
+		setIcon(editButton, "/resources/application/images/icons/pencil-svgrepo-com.png");
+		setIcon(removeButton, "/resources/application/images/icons/minus-svgrepo-com.png");
+		setIcon(deleteButton, "/resources/application/images/icons/trash-can-svgrepo-com.png");
+		setIcon(backButton, "/resources/application/images/icons/back-reply-svgrepo-com.png");
+		setIcon(homeButton, "/resources/application/images/icons/home-icon-svgrepo-com.png");
 		hidePane();
-    	
-        // Create a rounded rectangle for media image
-        Rectangle clip = new Rectangle(650, 650); // match prefHeight/prefWidth
-        clip.setArcWidth(65);
-        clip.setArcHeight(65);
-        
-        mediaArt.setClip(clip);
         
         DropShadow shadow = new DropShadow();
         shadow.setRadius(10);
-        //shadow.setOffsetX(5);
         shadow.setOffsetY(5);
         shadow.setColor(Color.color(0, 0, 0, 0.4));
         
@@ -147,21 +216,65 @@ public class MediaController {
         
         shadow.setInput(lighting);
         
+        // Add shadows for aesthetics
         mediaLabel.setEffect(shadow);
         creatorLabel.setEffect(shadow);
         genreLabel.setEffect(shadow);
         statusLabel.setEffect(shadow);
         ratingLabel.setEffect(shadow);
         reviewLabel.setEffect(shadow);
+        editPictureButton.setEffect(shadow);
         
+        // Declare listeners
+        titleField.textProperty().addListener((_, _, newText) ->
+			titleLabel.setText(newText)
+		);
+        
+        creatorField.textProperty().addListener((_, _, newText) ->
+			creatorLabel.setText("Artist: " + newText)
+		);
+		
+		genreField.textProperty().addListener((_, _, newText) ->
+		    genreLabel.setText("Genre: " + newText)
+		);
+		
+		statusField.textProperty().addListener((_, _, newText) ->
+	        statusLabel.setText("Status: " + newText)
+	    );
+		
+		ratingField.textProperty().addListener((_, _, newText) ->
+	        ratingLabel.setText("Rating: " + newText)
+	    );
+	
+	    reviewField.textProperty().addListener((_, _, newText) ->
+	        reviewLabel.setText("Review: " + newText)
+	    );
+        
+        // Add shadows and declare listeners
         switch(mediaType) {
         		case "SONGS":
 	        		playtimeLabel.setEffect(shadow);
 	        		yearLabel.setEffect(shadow);
+	        		
+	        		playtimeField.textProperty().addListener((_, _, newText) ->
+		    	        playtimeLabel.setText("Playtime: " + newText)
+		    	    );
+	        		
+	        		yearField.textProperty().addListener((_, _, newText) ->
+		    	        yearLabel.setText("Year: " + newText)
+		    	    );
 	        		break;
         		case "GAMES":
         			avgPlaytimeLabel.setEffect(shadow);
         			yearLabel.setEffect(shadow);
+        			
+        			avgPlaytimeField.textProperty().addListener((_, _, newText) ->
+	        	        avgPlaytimeLabel.setText("Average Playtime: " + newText)
+	        	    );
+        			
+        			yearField.textProperty().addListener((_, _, newText) ->
+	        	        yearLabel.setText("Year: " + newText)
+	        	    );
         			break;
         		case "SHOWS":
         			airingLabel.setEffect(shadow);
@@ -169,12 +282,38 @@ public class MediaController {
         			yearLastAiredLabel.setEffect(shadow);
         			numOfEpisodesLabel.setEffect(shadow);
         			numOfSeasonsLabel.setEffect(shadow);
+        			
+        			airingField.textProperty().addListener((_, _, newText) ->
+	        	        airingLabel.setText("Airing: " + newText)
+	        	    );
+        			
+        			yearFirstAiredField.textProperty().addListener((_, _, newText) ->
+	        	        yearFirstAiredLabel.setText("Year First Aired: " + newText)
+	        	    );
+	        	
+	        	    yearLastAiredField.textProperty().addListener((_, _, newText) ->
+	        	        yearLastAiredLabel.setText("Year Last Aired: " + newText)
+	        	    );
+	        	
+	        	    numOfEpisodesField.textProperty().addListener((_, _, newText) ->
+	        	        numOfEpisodesLabel.setText("Episodes: " + newText)
+	        	    );
+	        	
+	        	    numOfSeasonsField.textProperty().addListener((_, _, newText) ->
+	        	        numOfSeasonsLabel.setText("Seasons: " + newText)
+	        	    );
         			break;
-        }	
+        } 
     }
     
     @FXML
 	private void showPane() { 
+	    	editButton.setText("Update Details");
+	    	removeButton.setText("Remove From Playlist");
+	    	deleteButton.setText("Delete Media");
+	    	backButton.setText("Back");
+	    	homeButton.setText("Home");
+    	
 		// Animation for showing the pane completely
 		Timeline timelineDown = new Timeline();
  
@@ -183,22 +322,38 @@ public class MediaController {
 		final KeyValue kvDwn3 = new KeyValue(extendableNavigationPane.translateYProperty(), 0);
 		final KeyFrame kfDwn = new KeyFrame(Duration.millis(100), createBouncingEffect(extendableNavigationPane.getHeight()), kvDwn1, kvDwn2, kvDwn3);
  
-		// Animation for moving button 1
-		final KeyValue kvB1 = new KeyValue(navButton1.translateXProperty(), -deltaXNavButton1);
-		final KeyFrame kfB1 = new KeyFrame(Duration.millis(200), kvB1);
- 
-		// Animation for moving button 2
-		final KeyValue kvB2 = new KeyValue(navButton2.translateXProperty(), -deltaXNavButton2);
-		final KeyFrame kfB2 = new KeyFrame(Duration.millis(200), kvB2);
- 
-		navButton1.setText("Add Playlist");
-		navButton2.setText("Back");
-		timelineDown.getKeyFrames().addAll(kfDwn, kfB1, kfB2);
+		// Animation for moving Edit button
+		final KeyValue kvEdit = new KeyValue(editButton.translateXProperty(), -deltaXEditButton);
+		final KeyFrame kfEdit = new KeyFrame(Duration.millis(200), kvEdit);
+
+		// Animation for moving Remove button
+		final KeyValue kvRemove = new KeyValue(removeButton.translateXProperty(), -deltaXRemoveButton);
+		final KeyFrame kfRemove = new KeyFrame(Duration.millis(200), kvRemove);
+
+		// Animation for moving Delete button
+		final KeyValue kvDelete = new KeyValue(deleteButton.translateXProperty(), -deltaXDeleteButton);
+		final KeyFrame kfDelete = new KeyFrame(Duration.millis(200), kvDelete);
+
+		// Animation for moving Back button
+		final KeyValue kvBack = new KeyValue(backButton.translateXProperty(), -deltaXBackButton);
+		final KeyFrame kfBack = new KeyFrame(Duration.millis(200), kvBack);
+
+		// Animation for moving Home button
+		final KeyValue kvHome = new KeyValue(homeButton.translateXProperty(), -deltaXHomeButton);
+		final KeyFrame kfHome = new KeyFrame(Duration.millis(200), kvHome);
+
+		timelineDown.getKeyFrames().addAll(kfDwn, kfEdit, kfRemove, kfDelete, kfBack, kfHome);
 		timelineDown.play();
 	}
  
 	@FXML
-	private void hidePane() { 
+	private void hidePane() {
+		editButton.setText(null);
+		removeButton.setText(null);
+		deleteButton.setText(null);
+		backButton.setText(null);
+		homeButton.setText(null);
+		
 		// Animation for hiding the pane..
 		Timeline timelineUp = new Timeline();
  
@@ -206,36 +361,214 @@ public class MediaController {
 		final KeyValue kvUp2 = new KeyValue(extendableNavigationPane.translateYProperty(), 10);
 		final KeyFrame kfUp = new KeyFrame(Duration.millis(200), kvUp1, kvUp2);
  
-		// Animation for moving button 1
-		final KeyValue kvB1 = new KeyValue(navButton1.translateXProperty(), deltaXNavButton1);
-		final KeyFrame kfB1 = new KeyFrame(Duration.millis(200), kvB1);
- 
-		final KeyValue kvB2 = new KeyValue(navButton2.translateXProperty(), deltaXNavButton2);
-		final KeyFrame kfB2 = new KeyFrame(Duration.millis(200), kvB2);
- 
-		navButton1.setText(null);
-		navButton2.setText(null);
-		timelineUp.getKeyFrames().addAll(kfUp, kfB1, kfB2);
+		// Animation for moving Edit button
+		final KeyValue kvEdit = new KeyValue(editButton.translateXProperty(), deltaXEditButton);
+		final KeyFrame kfEdit = new KeyFrame(Duration.millis(200), kvEdit);
+
+		// Animation for moving Remove button
+		final KeyValue kvRemove = new KeyValue(removeButton.translateXProperty(), deltaXRemoveButton);
+		final KeyFrame kfRemove = new KeyFrame(Duration.millis(200), kvRemove);
+
+		// Animation for moving Delete button
+		final KeyValue kvDelete = new KeyValue(deleteButton.translateXProperty(), deltaXDeleteButton);
+		final KeyFrame kfDelete = new KeyFrame(Duration.millis(200), kvDelete);
+		
+		// Animation for moving Back button
+		final KeyValue kvBack = new KeyValue(backButton.translateXProperty(), deltaXBackButton);
+		final KeyFrame kfBack = new KeyFrame(Duration.millis(200), kvBack);
+
+		// Animation for moving Home button
+		final KeyValue kvHome = new KeyValue(homeButton.translateXProperty(), deltaXHomeButton);
+		final KeyFrame kfHome = new KeyFrame(Duration.millis(200), kvHome);
+
+		timelineUp.getKeyFrames().addAll(kfUp, kfEdit, kfRemove, kfDelete, kfBack, kfHome);
 		timelineUp.play();
 	}
  
 	@FXML
-	private void selectPane1() {
-		System.out.println("Selecting pane 1");
+	private void toggleEdit() {
 		deselectAllPanes();
-		navButton1.setEffect(dropShadowForSelectedPane);
+		isEditing = !isEditing;
+		
+		if (!isEditing) {
+			setIcon(editButton, "/resources/application/images/icons/pencil-svgrepo-com.png");
+			
+			showLabelHideField(titleLabel, titleField);
+			showLabelHideField(creatorLabel, creatorField);
+			showLabelHideField(genreLabel, genreField);
+			showLabelHideField(playtimeLabel, playtimeField);
+			showLabelHideField(statusLabel, statusField);
+			showLabelHideField(ratingLabel, ratingField);
+			showLabelHideField(reviewLabel, reviewField);
+		    
+			switch (mediaType) {
+			    case "SONGS":
+			        showLabelHideField(playtimeLabel, playtimeField);
+			        showLabelHideField(yearLabel, yearField);
+			        break;
+	
+			    case "GAMES":
+			        showLabelHideField(avgPlaytimeLabel, avgPlaytimeField);
+			        showLabelHideField(yearLabel, yearField);
+			        break;
+	
+			    case "SHOWS":
+			        showLabelHideField(airingLabel, airingField);
+			        showLabelHideField(yearFirstAiredLabel, yearFirstAiredField);
+			        showLabelHideField(yearLastAiredLabel, yearLastAiredField);
+			        showLabelHideField(numOfEpisodesLabel, numOfEpisodesField);
+			        showLabelHideField(numOfSeasonsLabel, numOfSeasonsField);
+			        break;
+			}
+
+		}
+		else {
+			setIcon(editButton, "/resources/application/images/icons/minus-svgrepo-com.png");
+		}
 	}
  
 	@FXML
-	private void selectPane2() {
+	private void removeMedia() {
 		System.out.println("Selecting pane 2");
 		deselectAllPanes();
-		navButton2.setEffect(dropShadowForSelectedPane);
+		removeButton.setEffect(dropShadowForSelectedPane);
+	}
+	
+	@FXML
+	private void deleteMedia() {
+		System.out.println("Selecting pane 3");
+		deselectAllPanes();
+		deleteButton.setEffect(dropShadowForSelectedPane);
+	}
+	
+	@FXML
+	private void goToBack() {
+		System.out.println("Selecting pane 4");
+		deselectAllPanes();
+		backButton.setEffect(dropShadowForSelectedPane);
+	}
+	
+	@FXML
+	private void goToHome(ActionEvent event) {
+		deselectAllPanes();
+		
+		try {
+	    		FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/Menu.fxml"));
+	    		Parent root = loader.load();
+	        
+	        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+	        stage.getScene().setRoot(root);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	@FXML
+	private void editTitle() {
+		if (isEditing) {
+			titleLabel.setVisible(false);
+			titleLabel.setManaged(false);
+
+			titleField.setVisible(true);
+			titleField.setManaged(true);
+		}
+	}
+	
+	@FXML
+	private void editCreator() {
+		if (isEditing) {
+			creatorLabel.setVisible(false);
+		    creatorLabel.setManaged(false);
+
+		    creatorField.setVisible(true);
+		    creatorField.setManaged(true);
+		}
+	}
+	
+	@FXML
+	private void editYear() {
+	    if (isEditing) {
+	        yearLabel.setVisible(false);
+	        yearLabel.setManaged(false);
+
+	        yearField.setVisible(true);
+	        yearField.setManaged(true);
+	    }
+	}
+	
+	@FXML
+	private void editGenre() {
+	    if (isEditing) {
+	        genreLabel.setVisible(false);
+	        genreLabel.setManaged(false);
+
+	        genreField.setVisible(true);
+	        genreField.setManaged(true);
+	    }
+	}
+
+	@FXML
+	private void editPlaytime() {
+	    if (isEditing) {
+	        playtimeLabel.setVisible(false);
+	        playtimeLabel.setManaged(false);
+
+	        playtimeField.setVisible(true);
+	        playtimeField.setManaged(true);
+	    }
+	}
+
+	@FXML
+	private void editStatus() {
+	    if (isEditing) {
+	        statusLabel.setVisible(false);
+	        statusLabel.setManaged(false);
+
+	        statusField.setVisible(true);
+	        statusField.setManaged(true);
+	    }
+	}
+
+	@FXML
+	private void editRating() {
+	    if (isEditing) {
+	        ratingLabel.setVisible(false);
+	        ratingLabel.setManaged(false);
+
+	        ratingField.setVisible(true);
+	        ratingField.setManaged(true);
+	    }
+	}
+
+	@FXML
+	private void editReview() {
+	    if (isEditing) {
+	        reviewLabel.setVisible(false);
+	        reviewLabel.setManaged(false);
+
+	        reviewField.setVisible(true);
+	        reviewField.setManaged(true);
+	    }
+	}
+	
+	private void showLabelHideField(Label label, TextField field) {
+		label.setVisible(true);
+	    label.setManaged(true);
+	    field.setVisible(false);
+	    field.setManaged(false);
+	}
+	
+	@FXML
+	private void choosePicture() {
+		System.out.println("whyy");
 	}
  
 	private void deselectAllPanes() {
-		navButton1.setEffect(null);
-		navButton2.setEffect(null);
+		editButton.setEffect(null);
+		removeButton.setEffect(null);
+		deleteButton.setEffect(null);
+		backButton.setEffect(null);
+		homeButton.setEffect(null);
 	}
  
 	private EventHandler<ActionEvent> createBouncingEffect(double height) {
