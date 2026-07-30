@@ -257,9 +257,17 @@
 
 .media-title {
 	-fx-text-fill: #ffffff;
+	-fx-background-color: transparent;
 	-fx-font-family: "Open Sauce One";
 	-fx-font-size: 150px;
 	-fx-font-weight: bold;
+}
+
+/* Removes the paddings and other spacings in the text field*/
+.text-field.media-title {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-width: 0;
 }
 
 /* VBox holding the pills */
