@@ -92,7 +92,7 @@
 			    <VBox styleClass="info-vbox" HBox.hgrow="ALWAYS">
 			        <children>
 			            <StackPane alignment="CENTER_LEFT">
-			                <Label fx:id="creatorLabel" onMouseClicked="#editCreator" styleClass="info-pill shows" text="Director/s:" />
+			                <Label fx:id="creatorLabel" onMouseClicked="#editCreator" styleClass="info-pill, shows" text="Director/s:" />
 			                <TextField fx:id="creatorField" managed="false" styleClass="info-pill shows" visible="false" />
 			            </StackPane>
 			
@@ -109,35 +109,35 @@
 			                </rowConstraints>
 			                <children>
 			                    <StackPane alignment="CENTER_LEFT">
-			                        <Label fx:id="airingLabel" onMouseClicked="#editAiring" styleClass="info-pill shows" text="Airing: No" />
+			                        <Label fx:id="airingLabel" onMouseClicked="#editAiring" styleClass="info-pill, shows" text="Airing: No" />
 			                        <TextField fx:id="airingField" managed="false" styleClass="info-pill shows" visible="false" />
 			                    </StackPane>
 			                    <StackPane alignment="CENTER_LEFT" GridPane.columnIndex="1">
-			                        <Label fx:id="genreLabel" onMouseClicked="#editGenre" styleClass="info-pill shows" text="Genre: Teen Drama" />
+			                        <Label fx:id="genreLabel" onMouseClicked="#editGenre" styleClass="info-pill, shows" text="Genre: Teen Drama" />
 			                        <TextField fx:id="genreField" managed="false" styleClass="info-pill shows" visible="false" />
 			                    </StackPane>
 			                    <StackPane alignment="CENTER_LEFT" GridPane.rowIndex="1">
-			                        <Label fx:id="yearFirstAiredLabel" onMouseClicked="#editYearFirstAired" styleClass="info-pill shows" text="Year First Aired: 2007" />
+			                        <Label fx:id="yearFirstAiredLabel" onMouseClicked="#editYearFirstAired" styleClass="info-pill, shows" text="Year First Aired: 2007" />
 			                        <TextField fx:id="yearFirstAiredField" managed="false" styleClass="info-pill shows" visible="false" />
 			                    </StackPane>
 			                    <StackPane alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="1">
-			                        <Label fx:id="yearLastAiredLabel" onMouseClicked="#editYearLastAired" styleClass="info-pill shows" text="Year Last Aired: 2012" />
+			                        <Label fx:id="yearLastAiredLabel" onMouseClicked="#editYearLastAired" styleClass="info-pill, shows" text="Year Last Aired: 2012" />
 			                        <TextField fx:id="yearLastAiredField" managed="false" styleClass="info-pill shows" visible="false" />
 			                    </StackPane>
 			                    <StackPane alignment="CENTER_LEFT" GridPane.rowIndex="2">
-			                        <Label fx:id="numOfEpisodesLabel" onMouseClicked="#editNumOfEpisodes" styleClass="info-pill shows" text="Number of Episodes: 121" />
+			                        <Label fx:id="numOfEpisodesLabel" onMouseClicked="#editNumOfEpisodes" styleClass="info-pill, shows" text="Number of Episodes: 121" />
 			                        <TextField fx:id="numOfEpisodesField" managed="false" styleClass="info-pill shows" visible="false" />
 			                    </StackPane>
 			                    <StackPane alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="2">
-			                        <Label fx:id="numOfSeasonsLabel" onMouseClicked="#editNumOfSeasons" styleClass="info-pill shows" text="Number of Seasons: 6" />
+			                        <Label fx:id="numOfSeasonsLabel" onMouseClicked="#editNumOfSeasons" styleClass="info-pill, shows" text="Number of Seasons: 6" />
 			                        <TextField fx:id="numOfSeasonsField" managed="false" styleClass="info-pill shows" visible="false" />
 			                    </StackPane>
 			                    <StackPane alignment="CENTER_LEFT" GridPane.rowIndex="3">
-			                        <Label fx:id="statusLabel" onMouseClicked="#editStatus" styleClass="info-pill shows" text="Status: Completed" />
+			                        <Label fx:id="statusLabel" onMouseClicked="#editStatus" styleClass="info-pill, shows" text="Status: Completed" />
 			                        <TextField fx:id="statusField" managed="false" styleClass="info-pill shows" visible="false" />
 			                    </StackPane>
 			                    <StackPane alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="3">
-			                        <Label fx:id="ratingLabel" onMouseClicked="#editRating" styleClass="info-pill shows" text="Rating: 10000" />
+			                        <Label fx:id="ratingLabel" onMouseClicked="#editRating" styleClass="info-pill, shows" text="Rating: 10000" />
 			                        <TextField fx:id="ratingField" managed="false" styleClass="info-pill shows" visible="false" />
 			                    </StackPane>
 			                </children>
@@ -147,7 +147,7 @@
 			            </GridPane>
 			
 			            <StackPane alignment="CENTER_LEFT">
-			                <Label fx:id="reviewLabel" onMouseClicked="#editReview" styleClass="info-pill shows" text="Review: wow" />
+			                <Label fx:id="reviewLabel" onMouseClicked="#editReview" styleClass="info-pill, shows" text="Review: wow" />
 			                <TextField fx:id="reviewField" managed="false" styleClass="info-pill shows" visible="false" />
 			            </StackPane>
 			        </children>
