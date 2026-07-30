@@ -309,30 +309,45 @@
 
 /* ----- TABLE ROWS ----- */
 
+.root.theme-songs {
+	-fx-table-row-odd: #162e3f;
+	-fx-table-row-even: #1a3345;
+	-fx-table-selected: #0e1e29;
+	/*-fx-table-accent: #366b91;*/
+}
+
+.root.theme-games {
+	-fx-table-row-odd: #162051;
+	-fx-table-row-even: #1a255e;
+	-fx-table-selected: #0b112c;
+	/*-fx-table-accent: #364591;*/
+}
+
+.root.theme-shows {
+	-fx-table-row-odd: #31274f;
+	-fx-table-row-even: #362b57;
+	-fx-table-selected: #1b152c;
+	/*-fx-table-accent: #675a8c;*/
+}
+
 .table-row-cell {
-	-fx-background-color: #162e3f;
+	-fx-background-color: -fx-table-row-odd;
 	-fx-background-insets: 0;
 	-fx-padding: 0;
 }
 
 .table-row-cell:odd {
-	-fx-background-color: #1a3345;
+	-fx-background-color: -fx-table-row-even;
 }
 
 .table-row-cell:even {
-	-fx-background-color: #162e3f;
+	-fx-background-color: -fx-table-row-odd;
 }
 
-.table-row-cell:selected {
-	-fx-background-color: #0e1e29;
-}
-
-.table-row-cell:selected:odd {
-	-fx-background-color: #0e1e29;
-}
-
+.table-row-cell:selected,
+.table-row-cell:selected:odd,
 .table-row-cell:selected:even {
-	-fx-background-color: #0e1e29;
+	-fx-background-color: -fx-table-selected;
 }
 
 .table-row-cell .table-cell {
