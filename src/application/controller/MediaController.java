@@ -58,6 +58,9 @@ public class MediaController {
     private Label genreLabel;
     
     @FXML
+    private TextField genreField;
+    
+    @FXML
     private Label mediaLabel;
 
     @FXML
@@ -86,42 +89,75 @@ public class MediaController {
 
     	@FXML 
     	private Label avgPlaytimeLabel;
+    	
+    	@FXML
+    	private TextField avgPlaytimeField;
     
     @FXML
     private Label playtimeLabel;
+    
+	@FXML
+	private TextField playtimeField;
 
     @FXML
     private Label ratingLabel;
+    
+	@FXML
+	private TextField ratingField;
 
     @FXML
     private Label reviewLabel;
     
+	@FXML
+	private TextField reviewField;
+    
     @FXML
     private Label yearFirstAiredLabel;
+    
+	@FXML
+	private TextField yearFirstAiredField;
     
     @FXML
     private Label yearLastAiredLabel;
     
+	@FXML
+	private TextField yearLastAiredField;
+    
     @FXML
     private Label numOfEpisodesLabel;
+    
+	@FXML
+	private TextField numOfEpisodesField;
     
     @FXML
     private Label numOfSeasonsLabel;
     
+	@FXML
+	private TextField numOfSeasonsField;
+    
     @FXML
     private Label airingLabel;
+    
+	@FXML
+	private TextField airingField;
 
     @FXML
     private ImageView settingsIcon;
 
     @FXML
     private Label statusLabel;
+    
+	@FXML
+	private TextField statusField;
 
     @FXML
     private Label title;
 
     @FXML
     private Label yearLabel;
+    
+	@FXML
+	private TextField yearField;
     
 	private String mediaType;
 
@@ -172,6 +208,7 @@ public class MediaController {
         
         shadow.setInput(lighting);
         
+        // Add shadows for aesthetics
         mediaLabel.setEffect(shadow);
         creatorLabel.setEffect(shadow);
         genreLabel.setEffect(shadow);
@@ -179,14 +216,52 @@ public class MediaController {
         ratingLabel.setEffect(shadow);
         reviewLabel.setEffect(shadow);
         
+        // Declare listeners
+        creatorField.textProperty().addListener((_, _, newText) ->
+			creatorLabel.setText("Artist: " + newText)
+		);
+		
+		genreField.textProperty().addListener((_, _, newText) ->
+		    genreLabel.setText("Genre: " + newText)
+		);
+		
+		statusField.textProperty().addListener((_, _, newText) ->
+	        statusLabel.setText("Status: " + newText)
+	    );
+		
+		ratingField.textProperty().addListener((_, _, newText) ->
+	        ratingLabel.setText("Rating: " + newText)
+	    );
+	
+	    reviewField.textProperty().addListener((_, _, newText) ->
+	        reviewLabel.setText("Review: " + newText)
+	    );
+        
+        // Add shadows and declare listeners
         switch(mediaType) {
         		case "SONGS":
 	        		playtimeLabel.setEffect(shadow);
 	        		yearLabel.setEffect(shadow);
+	        		
+	        		playtimeField.textProperty().addListener((_, _, newText) ->
+		    	        playtimeLabel.setText("Playtime: " + newText)
+		    	    );
+	        		
+	        		yearField.textProperty().addListener((_, _, newText) ->
+		    	        yearLabel.setText("Year: " + newText)
+		    	    );
 	        		break;
         		case "GAMES":
         			avgPlaytimeLabel.setEffect(shadow);
         			yearLabel.setEffect(shadow);
+        			
+        			avgPlaytimeField.textProperty().addListener((_, _, newText) ->
+	        	        avgPlaytimeLabel.setText("Average Playtime: " + newText)
+	        	    );
+        			
+        			yearField.textProperty().addListener((_, _, newText) ->
+	        	        yearLabel.setText("Year: " + newText)
+	        	    );
         			break;
         		case "SHOWS":
         			airingLabel.setEffect(shadow);
@@ -194,12 +269,28 @@ public class MediaController {
         			yearLastAiredLabel.setEffect(shadow);
         			numOfEpisodesLabel.setEffect(shadow);
         			numOfSeasonsLabel.setEffect(shadow);
+        			
+        			airingField.textProperty().addListener((_, _, newText) ->
+	        	        airingLabel.setText("Airing: " + newText)
+	        	    );
+        			
+        			yearFirstAiredField.textProperty().addListener((_, _, newText) ->
+	        	        yearFirstAiredLabel.setText("Year First Aired: " + newText)
+	        	    );
+	        	
+	        	    yearLastAiredField.textProperty().addListener((_, _, newText) ->
+	        	        yearLastAiredLabel.setText("Year Last Aired: " + newText)
+	        	    );
+	        	
+	        	    numOfEpisodesField.textProperty().addListener((_, _, newText) ->
+	        	        numOfEpisodesLabel.setText("Episodes: " + newText)
+	        	    );
+	        	
+	        	    numOfSeasonsField.textProperty().addListener((_, _, newText) ->
+	        	        numOfSeasonsLabel.setText("Seasons: " + newText)
+	        	    );
         			break;
-        }
-        
-        creatorField.textProperty().addListener((obs, oldText, newText) ->
-        creatorLabel.setText("Artist: " + newText)
-		);
+        } 
     }
     
     @FXML
@@ -289,13 +380,33 @@ public class MediaController {
 		if (!isEditing) {
 			setIcon(editButton, "/resources/application/images/icons/pencil-svgrepo-com.png");
 			
-			creatorField.positionCaret(creatorField.getText().length());
-			
-			creatorLabel.setVisible(true);
-		    creatorLabel.setManaged(true);
+			showLabelHideField(creatorLabel, creatorField);
+			showLabelHideField(genreLabel, genreField);
+			showLabelHideField(playtimeLabel, playtimeField);
+			showLabelHideField(statusLabel, statusField);
+			showLabelHideField(ratingLabel, ratingField);
+			showLabelHideField(reviewLabel, reviewField);
+		    
+			switch (mediaType) {
+			    case "SONGS":
+			        showLabelHideField(playtimeLabel, playtimeField);
+			        showLabelHideField(yearLabel, yearField);
+			        break;
+	
+			    case "GAMES":
+			        showLabelHideField(avgPlaytimeLabel, avgPlaytimeField);
+			        showLabelHideField(yearLabel, yearField);
+			        break;
+	
+			    case "SHOWS":
+			        showLabelHideField(airingLabel, airingField);
+			        showLabelHideField(yearFirstAiredLabel, yearFirstAiredField);
+			        showLabelHideField(yearLastAiredLabel, yearLastAiredField);
+			        showLabelHideField(numOfEpisodesLabel, numOfEpisodesField);
+			        showLabelHideField(numOfSeasonsLabel, numOfSeasonsField);
+			        break;
+			}
 
-		    creatorField.setVisible(false);
-		    creatorField.setManaged(false);
 		}
 		else {
 			setIcon(editButton, "/resources/application/images/icons/minus-svgrepo-com.png");
@@ -347,6 +458,79 @@ public class MediaController {
 		    creatorField.setVisible(true);
 		    creatorField.setManaged(true);
 		}
+	}
+	
+	@FXML
+	private void editYear() {
+	    if (isEditing) {
+	        yearLabel.setVisible(false);
+	        yearLabel.setManaged(false);
+
+	        yearField.setVisible(true);
+	        yearField.setManaged(true);
+	    }
+	}
+	
+	@FXML
+	private void editGenre() {
+	    if (isEditing) {
+	        genreLabel.setVisible(false);
+	        genreLabel.setManaged(false);
+
+	        genreField.setVisible(true);
+	        genreField.setManaged(true);
+	    }
+	}
+
+	@FXML
+	private void editPlaytime() {
+	    if (isEditing) {
+	        playtimeLabel.setVisible(false);
+	        playtimeLabel.setManaged(false);
+
+	        playtimeField.setVisible(true);
+	        playtimeField.setManaged(true);
+	    }
+	}
+
+	@FXML
+	private void editStatus() {
+	    if (isEditing) {
+	        statusLabel.setVisible(false);
+	        statusLabel.setManaged(false);
+
+	        statusField.setVisible(true);
+	        statusField.setManaged(true);
+	    }
+	}
+
+	@FXML
+	private void editRating() {
+	    if (isEditing) {
+	        ratingLabel.setVisible(false);
+	        ratingLabel.setManaged(false);
+
+	        ratingField.setVisible(true);
+	        ratingField.setManaged(true);
+	    }
+	}
+
+	@FXML
+	private void editReview() {
+	    if (isEditing) {
+	        reviewLabel.setVisible(false);
+	        reviewLabel.setManaged(false);
+
+	        reviewField.setVisible(true);
+	        reviewField.setManaged(true);
+	    }
+	}
+	
+	private void showLabelHideField(Label label, TextField field) {
+		label.setVisible(true);
+	    label.setManaged(true);
+	    field.setVisible(false);
+	    field.setManaged(false);
 	}
  
 	private void deselectAllPanes() {
