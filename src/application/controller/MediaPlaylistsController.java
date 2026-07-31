@@ -149,6 +149,10 @@ public class MediaPlaylistsController implements Initializable {
 	private Connection conn;
 	private Type mediaType;
 	
+	public void setConnection(Connection conn) {
+		this.conn = conn;
+	}
+	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		
