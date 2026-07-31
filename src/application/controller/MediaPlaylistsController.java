@@ -426,16 +426,17 @@ public class MediaPlaylistsController implements Initializable {
 				else {
 					title.setText(media.getTitle());
 
-					if(media.getImagePath() != null && !media.getImagePath().isBlank()) {
-						URL imageUrl = getClass().getResource(media.getImagePath());
+					if (media.getImagePath() != null && !media.getImagePath().isBlank()) {
+					    File imageFile = new File(media.getImagePath());
 
-						if(imageUrl != null)
-							cover.setImage(new Image(imageUrl.toExternalForm()));
-						else
-							cover.setImage(null);
+					    if (imageFile.exists()) {
+					        cover.setImage(new Image(imageFile.toURI().toString()));
+					    } else {
+					        cover.setImage(null);
+					    }
+					} else {
+					    cover.setImage(null);
 					}
-					else
-						cover.setImage(null);
 
 					setText(null);
 					setGraphic(wrapper);
