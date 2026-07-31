@@ -469,28 +469,31 @@ public class MediaPlaylistDAOImpl {
 	 * @pre  {@code playlistId} refers to an existing playlist owned by {@code userId}
 	 * @post returns a count; no data is modified
 	 */
-	public int countStatusedMedia(int playlistId, Status status, String mediaType) throws SQLException {
-	    
-		String media = mediaType.toLowerCase();
-		
-		String sql = "SELECT COUNT(*) FROM " + media + "s_reviews mr "
-				   + "JOIN " + media + "s_playlist_items mpi ON mr." + media + "_id = mpi." + media +"_id "
-				   + "WHERE mpi.playlist_id = ? AND mr.user_id = ? AND LOWER(REPLACE(mr.status, '_', ' ')) = LOWER(?)";
-	
-		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-			stmt.setInt(1, playlistId);
-			stmt.setInt(2, userId);
-		    stmt.setString(3, status.toDbString());
-	
-		    try (ResultSet rs = stmt.executeQuery()) {
-		    	return rs.next() ? rs.getInt(1) : 0;
-		    }
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return 0;
+	public int countStatusedMedia(int playlistId, Status status, Type mediaType) throws SQLException {
 
+	    String media = mediaType.name().toLowerCase();
+
+	    String sql = "SELECT COUNT(*) FROM " + media + "s_reviews mr "
+	               + "JOIN " + media + "s_playlist_items mpi "
+	               + "ON mr." + media + "_id = mpi." + media + "_id "
+	               + "WHERE mpi.playlist_id = ? "
+	               + "AND mr.user_id = ? "
+	               + "AND LOWER(REPLACE(mr.status, '_', ' ')) = LOWER(?)";
+
+	    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+	        stmt.setInt(1, playlistId);
+	        stmt.setInt(2, userId);
+	        stmt.setString(3, status.toDbString());
+
+	        try (ResultSet rs = stmt.executeQuery()) {
+	            return rs.next() ? rs.getInt(1) : 0;
+	        }
+	    } catch (SQLException e) {
+	    		e.printStackTrace();
+	    }
+	    
+	    return 0;
 	}
 	
 	/**
@@ -504,9 +507,9 @@ public class MediaPlaylistDAOImpl {
 	 * @pre  {@code playlistId} refers to an existing playlist owned by {@code userId}
 	 * @post returns an average rating; no data is modified
 	 */
-	public double calculateAvgRating(int playlistId, String mediaType) throws SQLException {
+	public double calculateAvgRating(int playlistId, Type mediaType) throws SQLException {
 
-	    String media = mediaType.toLowerCase();
+	    String media = mediaType.name().toLowerCase();
 
 	    String sql =
 	        "SELECT AVG(mr.user_rating) " +
@@ -524,12 +527,12 @@ public class MediaPlaylistDAOImpl {
 	        stmt.setString(3, Status.COMPLETED.toDbString());
 
 	        try (ResultSet rs = stmt.executeQuery()) {
-	            if (rs.next()) {
-	                return rs.getDouble(1);
-	            }
+	        		if (rs.next()) {
+	        			return rs.getDouble(1);
+	        		}
 	        }
 	    }
-
+	    
 	    return 0.0;
 	}
 	
