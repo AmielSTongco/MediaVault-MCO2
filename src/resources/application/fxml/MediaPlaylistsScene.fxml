@@ -8,12 +8,14 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 
-<BorderPane fx:id="rootPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MediaPlaylistsController">
+<StackPane fx:id="rootPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MediaPlaylistsController">
+<BorderPane>
 	<top>
 		<HBox maxHeight="130.0" minHeight="130.0" prefHeight="130.0" styleClass="nav-bar" BorderPane.alignment="CENTER">
          <children>
@@ -86,3 +88,4 @@
       </VBox>
     </center>
 </BorderPane>
+</StackPane>
