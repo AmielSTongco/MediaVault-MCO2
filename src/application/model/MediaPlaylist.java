@@ -15,7 +15,7 @@ public class MediaPlaylist {
     private int completedCount;
     private int inProgressCount;
     private int plannedCount;
-    private double avgRating;
+    private double avgRatingCount;
 	
 	// constructor
 	public MediaPlaylist(String title, List<? extends Media> medias, int playlistId) {
@@ -25,7 +25,7 @@ public class MediaPlaylist {
 	}
 	
 	// constructor to be populated by DAO
-    public MediaPlaylist(int playlistId, String title, String imagePath, int totalCount, int completedCount, int inProgressCount, int plannedCount, double avgRating) {
+    public MediaPlaylist(int playlistId, String title, String imagePath, int totalCount, int completedCount, int inProgressCount, int plannedCount, double avgRatingCount) {
         this.playlistId = playlistId;
         this.title = title;
         this.totalCount = totalCount;
@@ -33,7 +33,7 @@ public class MediaPlaylist {
         this.completedCount = completedCount;
         this.inProgressCount = inProgressCount;
         this.plannedCount = plannedCount;
-        this.avgRating = avgRating;
+        this.avgRatingCount = avgRatingCount;
     }
 	
 	// getters and setters
