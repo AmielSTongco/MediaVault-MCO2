@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import application.api.SpotifyClient;
 import application.model.Song;
 import application.model.Status;
+import application.model.UserSession;
 
 import java.io.IOException;
 import java.net.URL;
@@ -34,6 +35,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -41,6 +43,27 @@ import javafx.util.Duration;
 
 public class SearchController implements Initializable{
 	
+    @FXML
+    private Label userName;
+    
+    @FXML
+    private ImageView settingsIcon;
+	
+    @FXML
+    private ImageView profileAvatar;
+    
+    @FXML
+    private Label mediaLabel;
+	
+    @FXML
+    private BorderPane rootPane;
+    
+    @FXML 
+    private ImageView mediaVaultLogo;
+    
+    @FXML
+    private ImageView mediaVaultTitle;
+    
 	@FXML private Label pageLabel;
 
     // 1. Create your master data list and track pagination states
@@ -91,17 +114,33 @@ public class SearchController implements Initializable{
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		
+		//String username = UserSession.getCurrentUsername();
+		
+		//Image logoImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png"));
+        //Image titleImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png"));
+        //Image settingsImg = new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png"));
+        //Image profileImg = new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png"));
+        
+        // Assign images to ImageView nodes
+        //mediaVaultLogo.setImage(logoImg);
+        //mediaVaultTitle.setImage(titleImg);
+        //settingsIcon.setImage(settingsImg);
+        //profileAvatar.setImage(profileImg);
+		
 	    tableView.getColumns().clear();
+	    
+        //userName.setText(username);
 
 	    // 3. Create them entirely in Java
-	    TableColumn<Song, String> title = new TableColumn<>("TITLE");
-	    TableColumn<Song, String> creator = new TableColumn<>("CREATOR");
-	    TableColumn<Song, String> year = new TableColumn<>("YEAR");
-	    TableColumn<Song, Status> status = new TableColumn<>("STATUS");
-	    TableColumn<Song, String> userRating = new TableColumn<>("USER RATING");
-	    TableColumn<Song, String> review = new TableColumn<>("REVIEW");
-	    TableColumn<Song, String> album = new TableColumn<>("ALBUM");
-	    TableColumn<Song, String> runtime = new TableColumn<>("RUNTIME");
+	    TableColumn<Song, String> title = new TableColumn<>("Title");
+	    TableColumn<Song, String> creator = new TableColumn<>("Creator");
+	    TableColumn<Song, String> year = new TableColumn<>("Year");
+	    TableColumn<Song, Status> status = new TableColumn<>("Status");
+	    TableColumn<Song, String> userRating = new TableColumn<>("User Rating");
+	    TableColumn<Song, String> review = new TableColumn<>("Review");
+	    TableColumn<Song, String> album = new TableColumn<>("Album");
+	    TableColumn<Song, String> runtime = new TableColumn<>("Runtime");
 
 	    title.setCellValueFactory(new PropertyValueFactory<>("title"));
 	    creator.setCellValueFactory(new PropertyValueFactory<>("creator"));

@@ -24,15 +24,15 @@ public class Main extends Application {
 	    	Connection conn = DatabaseConnection.connect();
 	    	DatabaseInitializer.initialize(conn);
 	    	
-	    	FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/Login.fxml"));
+	    	FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/SearchSong.fxml"));
 	        Parent root = loader.load();
 	        
 	        Font.loadFont(getClass().getResourceAsStream("/resources/application/fonts/PublicSans-VariableFont_wght.ttf"), 16);
 	        Font.loadFont(getClass().getResourceAsStream("/resources/application/fonts/OpenSauceSans-Regular.ttf"), 16);
 	        Font.loadFont(getClass().getResourceAsStream("/resources/application/fonts/OpenSauceSans-Bold.ttf"), 16);
 	        
-	        LoginController controller = loader.getController();
-	        controller.setConnection(conn);
+	        //LoginController controller = loader.getController();
+	        //controller.setConnection(conn);
 	        
 	        Scene scene = new Scene(root);
 	        
