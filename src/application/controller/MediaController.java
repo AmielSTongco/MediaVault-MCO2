@@ -185,7 +185,14 @@ public class MediaController {
 		
         // Create a rounded rectangle for media image
         // code adapted from: https://stackoverflow.com/q/39650031
-        Rectangle rect = new Rectangle(560, 560);
+        Rectangle rect; 
+        if (mediaType.equalsIgnoreCase("shows")) {
+        		rect = new Rectangle(500, 500);
+        }
+        else {
+        		rect = new Rectangle(560, 560);
+        }
+        
         rect.setArcHeight(90);
         rect.setArcWidth(90);
         rect.setEffect(new Reflection());
@@ -230,10 +237,6 @@ public class MediaController {
         titleField.textProperty().addListener((_, _, newText) ->
 			titleLabel.setText(newText)
 		);
-        
-        creatorField.textProperty().addListener((_, _, newText) ->
-			creatorLabel.setText("Artist: " + newText)
-		);
 		
 		genreField.textProperty().addListener((_, _, newText) ->
 		    genreLabel.setText("Genre: " + newText)
@@ -257,6 +260,10 @@ public class MediaController {
 	        		playtimeLabel.setEffect(shadow);
 	        		yearLabel.setEffect(shadow);
 	        		
+	        		creatorField.textProperty().addListener((_, _, newText) ->
+		    			creatorLabel.setText("Artist: " + newText)
+		    		);
+	        		
 	        		playtimeField.textProperty().addListener((_, _, newText) ->
 		    	        playtimeLabel.setText("Playtime: " + newText)
 		    	    );
@@ -268,6 +275,10 @@ public class MediaController {
         		case "GAMES":
         			avgPlaytimeLabel.setEffect(shadow);
         			yearLabel.setEffect(shadow);
+        			
+        			creatorField.textProperty().addListener((_, _, newText) ->
+	        			creatorLabel.setText("Developer: " + newText)
+	        		);
         			
         			avgPlaytimeField.textProperty().addListener((_, _, newText) ->
 	        	        avgPlaytimeLabel.setText("Average Playtime: " + newText)
@@ -283,6 +294,10 @@ public class MediaController {
         			yearLastAiredLabel.setEffect(shadow);
         			numOfEpisodesLabel.setEffect(shadow);
         			numOfSeasonsLabel.setEffect(shadow);
+        			
+        			creatorField.textProperty().addListener((_, _, newText) ->
+	        			creatorLabel.setText("Director/s: " + newText)
+	        		);
         			
         			airingField.textProperty().addListener((_, _, newText) ->
 	        	        airingLabel.setText("Airing: " + newText)
@@ -398,7 +413,6 @@ public class MediaController {
 			showLabelHideField(titleLabel, titleField);
 			showLabelHideField(creatorLabel, creatorField);
 			showLabelHideField(genreLabel, genreField);
-			showLabelHideField(playtimeLabel, playtimeField);
 			showLabelHideField(statusLabel, statusField);
 			showLabelHideField(ratingLabel, ratingField);
 			showLabelHideField(reviewLabel, reviewField);
@@ -425,7 +439,7 @@ public class MediaController {
 
 		}
 		else {
-			setIcon(editButton, "/resources/application/images/icons/minus-svgrepo-com.png");
+			setIcon(editButton, "/resources/application/images/icons/check-svgrepo-com.png");
 		}
 	}
  
@@ -467,102 +481,118 @@ public class MediaController {
 	
 	@FXML
 	private void editTitle() {
-		if (isEditing) {
-			titleLabel.setVisible(false);
-			titleLabel.setManaged(false);
-
-			titleField.setVisible(true);
-			titleField.setManaged(true);
-		}
+	    if (isEditing) {
+	    		hideLabelShowField(titleLabel, titleField);
+	    }
 	}
-	
+
 	@FXML
 	private void editCreator() {
-		if (isEditing) {
-			creatorLabel.setVisible(false);
-		    creatorLabel.setManaged(false);
-
-		    creatorField.setVisible(true);
-		    creatorField.setManaged(true);
-		}
+	    if (isEditing) {
+	    		hideLabelShowField(creatorLabel, creatorField);
+	    }
 	}
-	
+
 	@FXML
 	private void editYear() {
 	    if (isEditing) {
-	        yearLabel.setVisible(false);
-	        yearLabel.setManaged(false);
-
-	        yearField.setVisible(true);
-	        yearField.setManaged(true);
+	    		hideLabelShowField(yearLabel, yearField);
 	    }
 	}
-	
+
 	@FXML
 	private void editGenre() {
 	    if (isEditing) {
-	        genreLabel.setVisible(false);
-	        genreLabel.setManaged(false);
-
-	        genreField.setVisible(true);
-	        genreField.setManaged(true);
+	    		hideLabelShowField(genreLabel, genreField);
 	    }
 	}
 
 	@FXML
 	private void editPlaytime() {
 	    if (isEditing) {
-	        playtimeLabel.setVisible(false);
-	        playtimeLabel.setManaged(false);
-
-	        playtimeField.setVisible(true);
-	        playtimeField.setManaged(true);
+	    		hideLabelShowField(playtimeLabel, playtimeField);
 	    }
 	}
 
 	@FXML
 	private void editStatus() {
 	    if (isEditing) {
-	        statusLabel.setVisible(false);
-	        statusLabel.setManaged(false);
-
-	        statusField.setVisible(true);
-	        statusField.setManaged(true);
+	    		hideLabelShowField(statusLabel, statusField);
 	    }
 	}
 
 	@FXML
 	private void editRating() {
 	    if (isEditing) {
-	        ratingLabel.setVisible(false);
-	        ratingLabel.setManaged(false);
-
-	        ratingField.setVisible(true);
-	        ratingField.setManaged(true);
+	    		hideLabelShowField(ratingLabel, ratingField);
 	    }
 	}
 
 	@FXML
 	private void editReview() {
 	    if (isEditing) {
-	        reviewLabel.setVisible(false);
-	        reviewLabel.setManaged(false);
+	    		hideLabelShowField(reviewLabel, reviewField);
+	    }
+	}
 
-	        reviewField.setVisible(true);
-	        reviewField.setManaged(true);
+	@FXML
+	private void editAvgPlaytime() {
+	    if (isEditing) {
+	    		hideLabelShowField(avgPlaytimeLabel, avgPlaytimeField);
+	    }
+	}
+	
+	@FXML
+	private void editAiring() {
+	    if (isEditing) {
+	    		hideLabelShowField(airingLabel, airingField);
+	    }
+	}
+
+	@FXML
+	private void editYearFirstAired() {
+	    if (isEditing) {
+	    		hideLabelShowField(yearFirstAiredLabel, yearFirstAiredField);
+	    }
+	}
+
+	@FXML
+	private void editYearLastAired() {
+	    if (isEditing) {
+	    		hideLabelShowField(yearLastAiredLabel, yearLastAiredField);
+	    }
+	}
+
+	@FXML
+	private void editNumOfEpisodes() {
+	    if (isEditing) {
+	    		hideLabelShowField(numOfEpisodesLabel, numOfEpisodesField);
+	    }
+	}
+
+	@FXML
+	private void editNumOfSeasons() {
+	    if (isEditing) {
+	    		hideLabelShowField(numOfSeasonsLabel, numOfSeasonsField);
 	    }
 	}
 	
 	private void showLabelHideField(Label label, TextField field) {
-		label.setVisible(true);
+	    label.setVisible(true);
 	    label.setManaged(true);
 	    field.setVisible(false);
 	    field.setManaged(false);
 	}
+
+	private void hideLabelShowField(Label label, TextField field) {
+	    label.setVisible(false);
+	    label.setManaged(false);
+	    field.setVisible(true);
+	    field.setManaged(true);
+	}
 	
 	@FXML
 	private void choosePicture() {
-		System.out.println("whyy");
 	}
  
 	private void deselectAllPanes() {
