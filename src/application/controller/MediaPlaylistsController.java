@@ -3,10 +3,12 @@ package application.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import application.dao.impl.MediaPlaylistDAOImpl;
 import application.model.Media;
 import application.model.Song;
 import application.model.MediaPlaylist;
@@ -111,34 +113,31 @@ public class MediaPlaylistsController implements Initializable {
     private ImageView mediaLogo;
     
     @FXML
-    private TableView<Media> mediaTable;
+    private TableView<MediaPlaylist> mediaPlaylistTable;
 
     @FXML
-    private TableColumn<Media, Void> dragColumn;
+    private TableColumn<MediaPlaylist, Void> dragColumn;
 
     @FXML
-    private TableColumn<Media, Number> numberColumn;
+    private TableColumn<MediaPlaylist, Number> numberColumn;
 
     @FXML
-    private TableColumn<Media, Media> titleColumn;
+    private TableColumn<MediaPlaylist, MediaPlaylist> titleColumn;
 
     @FXML
-    private TableColumn<Media, String> creatorColumn;
+    private TableColumn<MediaPlaylist, String> totalColumn;
 
     @FXML
-    private TableColumn<Media, String> yearColumn;
+    private TableColumn<MediaPlaylist, String> completedColumn;
 
     @FXML
-    private TableColumn<Media, String> statusColumn;
+    private TableColumn<MediaPlaylist, String> inProgressColumn;
 
     @FXML
-    private TableColumn<Media, String> ratingColumn;
+    private TableColumn<MediaPlaylist, String> plannedColumn;
 
     @FXML
-    private TableColumn<Media, String> reviewColumn;
-    
-    @FXML
-    private TableColumn<Media, String> infoColumn;
+    private TableColumn<MediaPlaylist, String> avgRatingColumn;
  
 	private Rectangle clipRect;
  
@@ -146,6 +145,7 @@ public class MediaPlaylistsController implements Initializable {
 	
 	private static final int navigationYOffset = 20;
 	
+	private MediaPlaylistDAOImpl mediaPlaylistDAO;
 	private Connection conn;
 	private Type mediaType;
 	
@@ -171,10 +171,10 @@ public class MediaPlaylistsController implements Initializable {
         profileAvatar.setImage(profileImg);
         mediaLogo.setImage(mediaIcon);
         
-        mediaTable.setPrefWidth(1360);
-        mediaTable.setPrefHeight(550);
-        mediaTable.setMinHeight(550);
-        mediaTable.setMaxHeight(550);
+        mediaPlaylistTable.setPrefWidth(1360);
+        mediaPlaylistTable.setPrefHeight(550);
+        mediaPlaylistTable.setMinHeight(550);
+        mediaPlaylistTable.setMaxHeight(550);
         
         userName.setText(username);
         
@@ -203,47 +203,71 @@ public class MediaPlaylistsController implements Initializable {
         
         mediaLabel.setEffect(shadow);
         
-        mediaTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
-        
-        setupColumnWidths();
-        setupHeaders();
-        setupTableCells();
-        loadTestData();
+        mediaPlaylistTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 	}
 	
+	public void setupView(Type mediaType) {
+		this.mediaType = mediaType;
+		mediaLabel.setText(mediaType.getTitle());
+
+		rootPane.getStyleClass().removeAll("theme-songs", "theme-games", "theme-shows");
+		rootPane.getStyleClass().add(mediaType.getStyleClass());
+		
+		mediaPlaylistDAO = new MediaPlaylistDAOImpl(conn, UserSession.getCurrentUserId());
+		
+		setupColumnWidths();
+        setupHeaders();
+        setupTableCells();
+        loadUserData();
+        //loadTestData();
+	}
+	
+	private void loadUserData() {
+		ObservableList<MediaPlaylist> media = FXCollections.observableArrayList();
+		List<MediaPlaylist> mediaItems = new ArrayList<MediaPlaylist>();
+
+		try {
+			mediaItems = mediaPlaylistDAO.getPlaylistsByUser(UserSession.getCurrentUserId(), mediaType);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		media.addAll(mediaItems);
+
+		mediaPlaylistTable.setItems(media);
+	}
+
 	private void setupColumnWidths() {
 
 		numberColumn.setPrefWidth(70);
 		numberColumn.getStyleClass().add("number-column");
 		titleColumn.setPrefWidth(310);
-		creatorColumn.setPrefWidth(230);
-		yearColumn.setPrefWidth(130);
-		statusColumn.setPrefWidth(220);
-		ratingColumn.setPrefWidth(90);
-		reviewColumn.setPrefWidth(220);
-		infoColumn.setPrefWidth(300);
+		totalColumn.setPrefWidth(230);
+		completedColumn.setPrefWidth(130);
+		inProgressColumn.setPrefWidth(220);
+		plannedColumn.setPrefWidth(90);
+		avgRatingColumn.setPrefWidth(220);
 
 		numberColumn.setResizable(false);
 		titleColumn.setResizable(false);
-		creatorColumn.setResizable(false);
-		yearColumn.setResizable(false);
-		statusColumn.setResizable(false);
-		ratingColumn.setResizable(false);
-		reviewColumn.setResizable(false);
-		infoColumn.setResizable(false);
+		totalColumn.setResizable(false);
+		completedColumn.setResizable(false);
+		inProgressColumn.setResizable(false);
+		plannedColumn.setResizable(false);
+		avgRatingColumn.setResizable(false);
 		
 		numberColumn.setReorderable(false);
 		titleColumn.setReorderable(false);
-		creatorColumn.setReorderable(false);
-		yearColumn.setReorderable(false);
-		statusColumn.setReorderable(false);
-		ratingColumn.setReorderable(false);
-		reviewColumn.setReorderable(false);
-		infoColumn.setReorderable(false);
+		totalColumn.setReorderable(false);
+		completedColumn.setReorderable(false);
+		inProgressColumn.setReorderable(false);
+		plannedColumn.setReorderable(false);
+		avgRatingColumn.setReorderable(false);
 	}
 	
+	/*
 	private void loadTestData() {
-		ObservableList<Media> media = FXCollections.observableArrayList();
+		ObservableList<MediaPlaylist> media = FXCollections.observableArrayList();
 
 		media.add(new Song(
 				"Baby Powder",
@@ -276,34 +300,19 @@ public class MediaPlaylistsController implements Initializable {
 
 		mediaTable.setItems(media);
 	}
+	*/
 	
 	private void setupHeaders() {
-		setupSearchHeader(titleColumn, "Title");
-		setupSearchHeader(creatorColumn, "Creator");
-		
-		List<String> statuses = new ArrayList<>();
-
-		statuses.add("All");
-		statuses.add("Planned");
-		statuses.add("In Progress");
-		statuses.add("Completed");
-		
-		List<String> reviews = new ArrayList<>();
-
-		reviews.add("All");
-		reviews.add("Unreviewed");
-		reviews.add("Reviewed");
-		
-		setupDropdownHeader(statusColumn, "Status", statuses);
-		setupDropdownHeader(reviewColumn, "Reviewed", reviews);
-		
 		setupTextHeader(numberColumn, "#");
-		setupTextHeader(yearColumn, "Year");
-		setupTextHeader(ratingColumn, "Rating");
-		setupTextHeader(infoColumn, "Details");
+		setupSearchHeader(titleColumn, "Title");
+		setupSearchHeader(totalColumn, "Creator");
+		setupTextHeader(completedColumn, "Year");
+		setupTextHeader(inProgressColumn, "Status");
+		setupTextHeader(plannedColumn, "Rating");
+		setupTextHeader(avgRatingColumn, "Reviewed");
 	}
 	
-	private void setupTextHeader(TableColumn<Media, ?> column, String text) {
+	private void setupTextHeader(TableColumn<MediaPlaylist, ?> column, String text) {
 		Label label = new Label(text);
 		label.getStyleClass().add("header-label");
 
@@ -315,7 +324,7 @@ public class MediaPlaylistsController implements Initializable {
 		column.setGraphic(header);
 	}
 	
-	private void setupSearchHeader(TableColumn<Media, ?> column, String prompt) {
+	private void setupSearchHeader(TableColumn<MediaPlaylist, ?> column, String prompt) {
 		TextField searchField = new TextField();
 		searchField.setPromptText(prompt);
 		searchField.getStyleClass().add("header-search");
@@ -341,40 +350,12 @@ public class MediaPlaylistsController implements Initializable {
 		column.setText(null);
 		column.setGraphic(header);
 	}
-
-	private void setupDropdownHeader(TableColumn<Media, ?> column, String prompt, List<String> items) {
-		ComboBox<String> comboBox = new ComboBox<>();
-		comboBox.getItems().addAll(items);
-		comboBox.setPromptText(prompt);
-		comboBox.getStyleClass().add("header-combo");
-		comboBox.setPrefHeight(32);
-		comboBox.setMinHeight(32);
-		comboBox.setMaxHeight(32);
-
-		ImageView dropdownIcon = new ImageView(new Image(getClass().getResourceAsStream("/resources/application/images/icons/dropdown-icon.png")));
-		dropdownIcon.setFitWidth(12);
-		dropdownIcon.setFitHeight(4);
-		dropdownIcon.setPreserveRatio(true);
-		dropdownIcon.setMouseTransparent(true);
-
-		StackPane header = new StackPane(comboBox, dropdownIcon);
-		header.setAlignment(Pos.CENTER_LEFT);
-		header.setPadding(new Insets(0, 30, 0, 6));
-
-		comboBox.prefWidthProperty().bind(header.widthProperty().subtract(36));
-
-		StackPane.setAlignment(dropdownIcon, Pos.CENTER_LEFT);
-		StackPane.setMargin(dropdownIcon, new Insets(0, 0, 0, 10));
-
-		column.setText(null);
-		column.setGraphic(header);
-	}
 	
 	private void setupTableCells() {
 		
-		numberColumn.setCellValueFactory(cell -> new ReadOnlyIntegerWrapper(mediaTable.getItems().indexOf(cell.getValue()) + 1));
+		numberColumn.setCellValueFactory(cell -> new ReadOnlyIntegerWrapper(mediaPlaylistTable.getItems().indexOf(cell.getValue()) + 1));
 
-		numberColumn.setCellFactory(column -> new TableCell<Media, Number>() {
+		numberColumn.setCellFactory(column -> new TableCell<MediaPlaylist, Number>() {
 			private final Label label = new Label();
 			private final StackPane wrapper = new StackPane(label);
 
@@ -403,7 +384,7 @@ public class MediaPlaylistsController implements Initializable {
 		
 		titleColumn.setCellValueFactory(cell -> new ReadOnlyObjectWrapper<>(cell.getValue()));
 
-		titleColumn.setCellFactory(column -> new TableCell<Media, Media>() {
+		titleColumn.setCellFactory(column -> new TableCell<MediaPlaylist, MediaPlaylist>() {
 			private final ImageView cover = new ImageView();
 			private final Label title = new Label();
 			private final StackPane imagePane = new StackPane(cover);
@@ -433,7 +414,7 @@ public class MediaPlaylistsController implements Initializable {
 			}
 
 			@Override
-			protected void updateItem(Media media, boolean empty) {
+			protected void updateItem(MediaPlaylist media, boolean empty) {
 				super.updateItem(media, empty);
 
 				if(empty || media == null) {
@@ -462,25 +443,15 @@ public class MediaPlaylistsController implements Initializable {
 			}
 		});
 
-		creatorColumn.setCellValueFactory(new PropertyValueFactory<>("creator"));
+		totalColumn.setCellValueFactory(new PropertyValueFactory<>("creator"));
 
-		yearColumn.setCellValueFactory(new PropertyValueFactory<>("yearString"));
+		completedColumn.setCellValueFactory(new PropertyValueFactory<>("completedCount"));
 
-		statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+		inProgressColumn.setCellValueFactory(new PropertyValueFactory<>("inProgressCount"));
 
-		ratingColumn.setCellValueFactory(new PropertyValueFactory<>("userRatingString"));
+		plannedColumn.setCellValueFactory(new PropertyValueFactory<>("plannedCount"));
 
-		reviewColumn.setCellValueFactory(new PropertyValueFactory<>("reviewedStatus"));
-
-		infoColumn.setCellValueFactory(new PropertyValueFactory<>("mediaInfo"));
-	}
-	
-	public void setupView(Type mediaType) {
-		this.mediaType = mediaType;
-		mediaLabel.setText(mediaType.getTitle());
-
-		rootPane.getStyleClass().removeAll("theme-songs", "theme-games", "theme-shows");
-		rootPane.getStyleClass().add(mediaType.getStyleClass());
+		avgRatingColumn.setCellValueFactory(new PropertyValueFactory<>("avgRatingCount"));
 	}
     
     private void setIcon(Button button, String name) {
