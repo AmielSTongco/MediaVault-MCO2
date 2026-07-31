@@ -2,6 +2,7 @@ package application.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -15,6 +16,7 @@ import application.model.UserSession;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -36,6 +38,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
@@ -83,7 +86,7 @@ public class MediaPlaylistsController implements Initializable {
     private ImageView mediaVaultTitle;
     
     @FXML
-    private BorderPane rootPane;
+    private StackPane rootPane;
     
     @FXML
     private ImageView settingsIcon;
@@ -143,6 +146,8 @@ public class MediaPlaylistsController implements Initializable {
 	
 	private static final int navigationYOffset = 20;
 	
+	private Connection conn;
+	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		
@@ -165,8 +170,6 @@ public class MediaPlaylistsController implements Initializable {
         mediaTable.setPrefHeight(550);
         mediaTable.setMinHeight(550);
         mediaTable.setMaxHeight(550);
-        
-        
         
         userName.setText(username);
         
@@ -534,7 +537,20 @@ public class MediaPlaylistsController implements Initializable {
  
 	@FXML
 	private void addPlaylist() {
-		// TODO: Add logic here
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/AddPlaylist.fxml"));
+		    StackPane popup = loader.load();
+		    
+		    AddPlaylistController controller = loader.getController();
+
+		    controller.setCloseAction(() -> rootPane.getChildren().remove(popup));
+
+		    rootPane.getChildren().add(popup);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		deselectAllPanes();
 		addButton.setEffect(dropShadowForSelectedPane);
 	}

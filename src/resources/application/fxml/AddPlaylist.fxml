@@ -24,7 +24,7 @@
 				<HBox alignment="CENTER" spacing="18.0">
 					<children>
       					<Button onAction="#handleCreate" prefHeight="52.0" prefWidth="220.0" style="-fx-background-color: #7186d8; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-family: 'Public Sans'; -fx-font-size: 18px; -fx-font-weight: bold;" text="Create" />
-						<Button onAction="#handleCancel" prefHeight="52.0" prefWidth="220.0" style="-fx-background-color: #c63d50; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-family: 'Public Sans'; -fx-font-size: 18px; -fx-font-weight: bold;" text="Cancel" />
+						<Button onAction="#handleClose" prefHeight="52.0" prefWidth="220.0" style="-fx-background-color: #c63d50; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-family: 'Public Sans'; -fx-font-size: 18px; -fx-font-weight: bold;" text="Close" />
 					</children>
 				</HBox>
 			</children>
