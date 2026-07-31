@@ -32,6 +32,7 @@ public class MediaPlaylistDAOImpl {
 	 * for this user, the playlist is not created.
 	 *
 	 * @param name the desired name for the new playlist
+	 * @param playlistPicturePath the file path of the chosen playlist picture
 	 * @param mediaType the type of media the playlist is for (e.g. "Song", "Game",
 	 *                  "Show"); used to determine which playlists table to insert into
 	 * @return {@code true} if the playlist was successfully created; otherwise {@code false}
@@ -45,56 +46,31 @@ public class MediaPlaylistDAOImpl {
 	 *       user, a new row is inserted into the corresponding playlists table
 	 *       with {@code userId} and {@code name}; otherwise, no row is inserted
 	 */
-	public boolean createPlaylist(String name, String mediaType) throws SQLException {
+	public boolean createPlaylist(String name, String playlistPicturePath, Type mediaType) throws SQLException {
 
-	    String normalizedName = name.trim().toLowerCase();
-	    String normalizedType = mediaType.trim().toLowerCase();
+		String normalizedName = name.trim().toLowerCase();
 
 	    if (normalizedName.isEmpty()) {
-	        System.out.println(" - Please input a title!");
 	        return false;
 	    }
 
-	    String tableName;
-	    String reservedName;
+	    String tableName = mediaType.getTitle().toLowerCase() + "_playlists";
 
-	    switch (normalizedType) {
-	        case "song":
-	            tableName = "songs_playlists";
-	            reservedName = "all_songs";
-	            break;
-
-	        case "game":
-	            tableName = "games_playlists";
-	            reservedName = "all_games";
-	            break;
-
-	        case "show":
-	            tableName = "shows_playlists";
-	            reservedName = "all_shows";
-	            break;
-
-	        default:
-	            System.out.println(" - Invalid media type: " + mediaType);
-	            return false;
-	    }
-
-	    String normalizedReservedName = reservedName.replace("_", " ");
+	    String reservedName = "all_" + mediaType.getTitle().toLowerCase();
 
 	    if (normalizedName.equals(reservedName)
-	            || normalizedName.equals(normalizedReservedName)) {
-
-	        System.out.println(" - \"" + name + "\" is a reserved playlist name.");
+	            || normalizedName.equals(reservedName.replace("_", " "))) {
 	        return false;
 	    }
 
 	    String sql = "INSERT INTO " + tableName
-	               + " (user_id, title) VALUES (?, ?)";
+	               + " (user_id, title, picture_path) VALUES (?, ?, ?)";
 
 	    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
 	        stmt.setInt(1, userId);
 	        stmt.setString(2, name.trim());
+	        stmt.setString(3, playlistPicturePath);
 
 	        stmt.executeUpdate();
 	        return true;
@@ -103,14 +79,8 @@ public class MediaPlaylistDAOImpl {
 
 	        if (e.getMessage() != null
 	                && e.getMessage().contains("UNIQUE constraint failed")) {
-
-	            System.out.println(" -");
-	            System.out.println(" - Playlist \"" + name + "\" already exists!");
 	            return false;
 	        }
-
-	        System.out.println(" - Failed to create " + mediaType + " playlist.");
-	        System.out.println(" - SQL error: " + e.getMessage());
 
 	        throw e;
 	    }
