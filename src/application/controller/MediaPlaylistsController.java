@@ -147,6 +147,7 @@ public class MediaPlaylistsController implements Initializable {
 	private static final int navigationYOffset = 20;
 	
 	private Connection conn;
+	private Type mediaType;
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -471,6 +472,7 @@ public class MediaPlaylistsController implements Initializable {
 	}
 	
 	public void setupView(Type mediaType) {
+		this.mediaType = mediaType;
 		mediaLabel.setText(mediaType.getTitle());
 
 		rootPane.getStyleClass().removeAll("theme-songs", "theme-games", "theme-shows");
@@ -543,6 +545,8 @@ public class MediaPlaylistsController implements Initializable {
 		    
 		    AddPlaylistController controller = loader.getController();
 
+		    controller.setConnection(conn);
+		    controller.setMediaType(mediaType);
 		    controller.setCloseAction(() -> rootPane.getChildren().remove(popup));
 
 		    rootPane.getChildren().add(popup);
