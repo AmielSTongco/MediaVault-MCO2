@@ -98,6 +98,7 @@ public class DatabaseInitializer {
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				user_id INTEGER NOT NULL,
 				title TEXT NOT NULL,
+				playlist_picture TEXT,
 				UNIQUE (user_id, title),
 				
 				FOREIGN KEY (user_id) REFERENCES users(id)
@@ -110,6 +111,7 @@ public class DatabaseInitializer {
 				user_id INTEGER NOT NULL,
 				title TEXT NOT NULL,
 				user_rating REAL,
+				playlist_picture TEXT,
 				UNIQUE (user_id, title),
 				
 				UNIQUE(user_id, title),
@@ -122,6 +124,7 @@ public class DatabaseInitializer {
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				user_id INTEGER NOT NULL,
 				title TEXT NOT NULL,
+				playlist_picture TEXT,
 				UNIQUE (user_id, title),
 				
 				FOREIGN KEY (user_id) REFERENCES users(id)
