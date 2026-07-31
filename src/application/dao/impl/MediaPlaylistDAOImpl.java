@@ -64,7 +64,7 @@ public class MediaPlaylistDAOImpl {
 	    }
 
 	    String sql = "INSERT INTO " + tableName
-	               + " (user_id, title, picture_path) VALUES (?, ?, ?)";
+	               + " (user_id, title, image_path) VALUES (?, ?, ?)";
 
 	    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
