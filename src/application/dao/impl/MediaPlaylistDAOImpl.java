@@ -403,6 +403,7 @@ public class MediaPlaylistDAOImpl {
 	            MediaPlaylist playlist = new MediaPlaylist(
 	            		playlistId,  
 	            		rs.getString("title"),
+	            		rs.getString("image_path"),
 	            		totalCount,
 	            		completedCount,
 	            		inProgressCount,
