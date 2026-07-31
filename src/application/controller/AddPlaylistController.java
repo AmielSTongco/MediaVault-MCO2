@@ -38,7 +38,7 @@ public class AddPlaylistController {
 	private Runnable deleteSuccessAction;
 	private String playlistPicturePath;
 	
-	private static Type mediaType;
+	private Type mediaType;
 
 	@FXML
 	public void initialize() {
@@ -52,6 +52,10 @@ public class AddPlaylistController {
 
 	public void setCloseAction(Runnable closeAction) {
 		this.closeAction = closeAction;
+	}
+	
+	public void setMediaType(Type mediaType) {
+		this.mediaType = mediaType;
 	}
 
 	@FXML
@@ -74,6 +78,7 @@ public class AddPlaylistController {
 					
 					if (created) {
 			            showStatus("Playlist created successfully.", false);
+			            System.out.println("Playlist created successfully.");
 			            playlistNameField.clear();
 			        } else {
 			            showStatus("Failed to create playlist. The name may already exist or be reserved.", true);
