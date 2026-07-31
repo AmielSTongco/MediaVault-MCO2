@@ -45,7 +45,7 @@ public class MediaPlaylist {
     public int getCompletedCount() {return completedCount;}
     public int getInProgressCount() {return inProgressCount;}
     public int getPlannedCount() {return plannedCount;}
-    public double getAvgRating() {return avgRating;}
+    public double getAvgRatingCount() {return avgRatingCount;}
 	
 	public void setTitle(String title) {this.title = title;}
 	public void setMedias(List<Media> medias) {this.medias = medias;}
