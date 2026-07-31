@@ -379,39 +379,51 @@ public class MediaPlaylistDAOImpl {
 	 * @pre  {@code playlistId} refers to an existing playlist owned by {@code userId}
 	 * @post returns the full list of media in the playlist; database state is unchanged
 	 */
-	public List<MediaPlaylist> getPlaylistsByUser(int userId, String mediaType) throws SQLException {
-		
-		List<MediaPlaylist> playlists = new ArrayList<>();
-		List<? extends Media> items = new ArrayList<>();
-		String sql = "SELECT id, title FROM " + mediaType.toLowerCase() + "s_playlists WHERE user_id = ?";
-		
-		try (PreparedStatement stmt = conn.prepareStatement(sql)){
-			stmt.setInt(1, userId);
-			
-			ResultSet rs = stmt.executeQuery();
-			while (rs.next()) {
-				int playlistId = rs.getInt("id");
-				
-				if(mediaType.equalsIgnoreCase("song"))
-				{
-					items = getSongsInPlaylist(playlistId);
-				}
-				else if(mediaType.equalsIgnoreCase("game"))
-				{
-					items = getGamesInPlaylist(playlistId);
-				}
-				else if(mediaType.equalsIgnoreCase("show"))
-				{
-					items = getShowsInPlaylist(playlistId);
-				}
-				
-				MediaPlaylist playlist = new MediaPlaylist(rs.getString("title"), items, playlistId);
-				
-				playlists.add(playlist);
-			}
-		}
-		
-		return playlists;
+	public List<MediaPlaylist> getPlaylistsByUser(int userId, Type mediaType) throws SQLException {
+
+	    List<MediaPlaylist> playlists = new ArrayList<>();
+	    String tableName = mediaType.getTitle().toLowerCase() + "_playlists";
+
+	    String sql = "SELECT id, title FROM " + tableName + " WHERE user_id = ?";
+
+	    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+	        stmt.setInt(1, userId);
+
+	        ResultSet rs = stmt.executeQuery();
+
+	        while (rs.next()) {
+	            int playlistId = rs.getInt("id");
+
+	            List<? extends Media> items;
+
+	            switch (mediaType) {
+	                case SONG:
+	                    items = getSongsInPlaylist(playlistId);
+	                    break;
+
+	                case GAME:
+	                    items = getGamesInPlaylist(playlistId);
+	                    break;
+
+	                case SHOW:
+	                    items = getShowsInPlaylist(playlistId);
+	                    break;
+
+	                default:
+	                    throw new IllegalArgumentException("Unsupported media type: " + mediaType);
+	            }
+
+	            MediaPlaylist playlist = new MediaPlaylist(
+	                    rs.getString("title"),
+	                    items,
+	                    playlistId
+	            );
+
+	            playlists.add(playlist);
+	        }
+	    }
+
+	    return playlists;
 	}
 	
 	/**
