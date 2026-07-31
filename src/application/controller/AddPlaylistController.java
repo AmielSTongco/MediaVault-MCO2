@@ -78,7 +78,6 @@ public class AddPlaylistController {
 					
 					if (created) {
 			            showStatus("Playlist created successfully.", false);
-			            System.out.println("Playlist created successfully.");
 			            playlistNameField.clear();
 			        } else {
 			            showStatus("Failed to create playlist. The name may already exist or be reserved.", true);
