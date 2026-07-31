@@ -393,31 +393,22 @@ public class MediaPlaylistDAOImpl {
 
 	        while (rs.next()) {
 	            int playlistId = rs.getInt("id");
-
-	            List<? extends Media> items;
-
-	            switch (mediaType) {
-	                case SONG:
-	                    items = getSongsInPlaylist(playlistId);
-	                    break;
-
-	                case GAME:
-	                    items = getGamesInPlaylist(playlistId);
-	                    break;
-
-	                case SHOW:
-	                    items = getShowsInPlaylist(playlistId);
-	                    break;
-
-	                default:
-	                    throw new IllegalArgumentException("Unsupported media type: " + mediaType);
-	            }
+	            
+	            int completedCount = countStatusedMedia(playlistId, Status.COMPLETED, mediaType);
+	            int inProgressCount = countStatusedMedia(playlistId, Status.IN_PROGRESS, mediaType);
+	            int plannedCount = countStatusedMedia(playlistId, Status.PLANNED, mediaType);
+	            int totalCount = completedCount + inProgressCount + plannedCount;
+	            double avgRatingCount = calculateAvgRating(playlistId, mediaType);
 
 	            MediaPlaylist playlist = new MediaPlaylist(
-	                    rs.getString("title"),
-	                    items,
-	                    playlistId
-	            );
+	            		playlistId,  
+	            		rs.getString("title"),
+	            		totalCount,
+	            		completedCount,
+	            		inProgressCount,
+	            		plannedCount,
+	            		avgRatingCount
+	            	);
 
 	            playlists.add(playlist);
 	        }
