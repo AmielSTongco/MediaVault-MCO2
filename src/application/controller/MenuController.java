@@ -382,6 +382,7 @@ public class MenuController {
 				Parent root = loader.load();
 
 				MediaPlaylistsController controller = loader.getController();
+				controller.setConnection(conn);
 				controller.setupView(mediaType);
 
 				Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
