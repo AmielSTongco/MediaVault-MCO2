@@ -305,11 +305,11 @@ public class MediaPlaylistsController implements Initializable {
 	private void setupHeaders() {
 		setupTextHeader(numberColumn, "#");
 		setupSearchHeader(titleColumn, "Title");
-		setupSearchHeader(totalColumn, "Creator");
-		setupTextHeader(completedColumn, "Year");
-		setupTextHeader(inProgressColumn, "Status");
-		setupTextHeader(plannedColumn, "Rating");
-		setupTextHeader(avgRatingColumn, "Reviewed");
+		setupSearchHeader(totalColumn, "Total");
+		setupTextHeader(completedColumn, "Completed");
+		setupTextHeader(inProgressColumn, "In Progress");
+		setupTextHeader(plannedColumn, "Planned");
+		setupTextHeader(avgRatingColumn, "Average Rating");
 	}
 	
 	private void setupTextHeader(TableColumn<MediaPlaylist, ?> column, String text) {
@@ -443,7 +443,7 @@ public class MediaPlaylistsController implements Initializable {
 			}
 		});
 
-		totalColumn.setCellValueFactory(new PropertyValueFactory<>("creator"));
+		totalColumn.setCellValueFactory(new PropertyValueFactory<>("totalCount"));
 
 		completedColumn.setCellValueFactory(new PropertyValueFactory<>("completedCount"));
 
