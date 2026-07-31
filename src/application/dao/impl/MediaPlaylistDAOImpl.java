@@ -384,22 +384,21 @@ public class MediaPlaylistDAOImpl {
 	    List<MediaPlaylist> playlists = new ArrayList<>();
 	    String tableName = mediaType.getTitle().toLowerCase() + "_playlists";
 
-	    String sql = "SELECT id, title FROM " + tableName + " WHERE user_id = ?";
+	    String sql = "SELECT id, title, image_path FROM " + tableName + " WHERE user_id = ?";
 
 	    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 	        stmt.setInt(1, userId);
 
 	        ResultSet rs = stmt.executeQuery();
-
 	        while (rs.next()) {
 	            int playlistId = rs.getInt("id");
-	            
+
 	            int completedCount = countStatusedMedia(playlistId, Status.COMPLETED, mediaType);
 	            int inProgressCount = countStatusedMedia(playlistId, Status.IN_PROGRESS, mediaType);
 	            int plannedCount = countStatusedMedia(playlistId, Status.PLANNED, mediaType);
 	            int totalCount = completedCount + inProgressCount + plannedCount;
 	            double avgRatingCount = calculateAvgRating(playlistId, mediaType);
-
+	            
 	            MediaPlaylist playlist = new MediaPlaylist(
 	            		playlistId,  
 	            		rs.getString("title"),
