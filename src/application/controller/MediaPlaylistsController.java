@@ -74,6 +74,11 @@ public class MediaPlaylistsController extends BaseMediaPageController implements
 		initializeNavigationBar();
 
 		TableBuilder.createPlaylistTable(this);
+		TableBuilder.enableRowReordering(
+				mediaPlaylistTable,
+				playlist -> !isDefaultPlaylist(playlist),
+				this::savePlaylistOrder
+			);
 		
 		handleDoubleClick(mediaPlaylistTable, this::openPlaylist);
 	}
@@ -141,6 +146,20 @@ public class MediaPlaylistsController extends BaseMediaPageController implements
 			rootStackPane.getChildren().add(popup);
 		}
 		catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private boolean isDefaultPlaylist(MediaPlaylist playlist) {
+		String defaultTitle = "all_" + mediaType.getTitle().toLowerCase();
+		return playlist.getTitle().equals(defaultTitle);
+	}
+	
+	private void savePlaylistOrder() {
+		try {
+			mediaPlaylistDAO.updatePlaylistOrder(mediaPlaylistTable.getItems(), mediaType);
+		}
+		catch(SQLException e) {
 			e.printStackTrace();
 		}
 	}

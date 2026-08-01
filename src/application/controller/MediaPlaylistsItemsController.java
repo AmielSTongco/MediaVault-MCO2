@@ -107,6 +107,11 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 		initializeNavigationBar();
 
 		TableBuilder.createMediaTable(this);
+		TableBuilder.enableRowReordering(
+				mediaTable,
+				media -> true,
+				this::saveMediaOrder
+			);
 
 		handleDoubleClick(mediaTable, this::openMedia);
 	}
@@ -213,6 +218,19 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 			rootPane.getScene().setRoot(root);
 		}
 		catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void saveMediaOrder() {
+		try {
+			mediaPlaylistDAO.updateMediaOrder(
+				playlist.getPlaylistId(),
+				mediaTable.getItems(),
+				mediaType
+			);
+		}
+		catch(Exception e) {
 			e.printStackTrace();
 		}
 	}

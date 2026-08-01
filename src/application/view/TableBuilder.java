@@ -27,6 +27,12 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
+import javafx.scene.control.TableRow;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
+import java.util.function.Predicate;
+
 public abstract class TableBuilder {
 
 	private TableBuilder() {}
@@ -514,6 +520,76 @@ public abstract class TableBuilder {
 
 	private static Image loadImage(String path) {
 		return new Image(TableBuilder.class.getResourceAsStream(path));
+	}
+	
+	public static <T> void enableRowReordering(TableView<T> table, Predicate<T> canMove, Runnable saveAction) {
+		final Object[] draggedItem = new Object[1];
+
+		table.setRowFactory(view -> {
+			TableRow<T> row = new TableRow<>();
+
+			row.setOnDragDetected(event -> {
+				if(!row.isEmpty() && canMove.test(row.getItem())) {
+					draggedItem[0] = row.getItem();
+
+					Dragboard dragboard = row.startDragAndDrop(TransferMode.MOVE);
+					ClipboardContent content = new ClipboardContent();
+					content.putString(String.valueOf(row.getIndex()));
+					dragboard.setContent(content);
+
+					event.consume();
+				}
+			});
+
+			row.setOnDragOver(event -> {
+				if(draggedItem[0] != null && row.getItem() != draggedItem[0]) {
+					if(row.isEmpty() || canMove.test(row.getItem()))
+						event.acceptTransferModes(TransferMode.MOVE);
+				}
+
+				event.consume();
+			});
+
+			row.setOnDragDropped(event -> {
+				boolean completed = false;
+
+				if(draggedItem[0] != null) {
+					@SuppressWarnings("unchecked")
+					T item = (T)draggedItem[0];
+
+					int fromIndex = table.getItems().indexOf(item);
+					int toIndex = row.isEmpty() ? table.getItems().size() : row.getIndex();
+
+					if(toIndex == 0)
+						toIndex = 1;
+
+					T movedItem = table.getItems().remove(fromIndex);
+
+					if(fromIndex < toIndex)
+						toIndex--;
+
+					if(toIndex < 1)
+						toIndex = 1;
+
+					if(toIndex > table.getItems().size())
+						toIndex = table.getItems().size();
+
+					table.getItems().add(toIndex, movedItem);
+					table.getSelectionModel().select(toIndex);
+
+					if(saveAction != null)
+						saveAction.run();
+
+					completed = true;
+				}
+
+				draggedItem[0] = null;
+				event.setDropCompleted(completed);
+				event.consume();
+			});
+
+			return row;
+		});
 	}
 	
 	protected abstract void loadTableData();
