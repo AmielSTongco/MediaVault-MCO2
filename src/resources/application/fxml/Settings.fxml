@@ -20,14 +20,14 @@
          <children>
             <HBox alignment="TOP_RIGHT" maxWidth="1.7976931348623157E308">
                <children>
-                  <ImageView fitHeight="30.0" fitWidth="30.0" onMouseClicked="#handleClose" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="25.0" fitWidth="25.0" onMouseClicked="#handleClose" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../images/icons/close-svgrepo-com.png" />
                      </image>
                   </ImageView>
                </children>
                <VBox.margin>
-                  <Insets right="20.0" top="15.0" />
+                  <Insets right="25.0" top="25.0" />
                </VBox.margin>
             </HBox>
       		<VBox alignment="TOP_CENTER" spacing="10.0">
