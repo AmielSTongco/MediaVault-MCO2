@@ -172,6 +172,8 @@ public class SettingsController {
 				e.printStackTrace();
 			}
 		}
+		
+		navigateToLogin();
 	}
 
 	@FXML
@@ -182,16 +184,25 @@ public class SettingsController {
 	
 	@FXML
 	private void handleLogOut(ActionEvent event) {
+		navigateToLogin();
+	}
+	
+	/**
+	 * Switches the scene back to the login screen
+	 */
+	private void navigateToLogin() {
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/Login.fxml"));
-			Parent root = loader.load();
-			
-			Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-			stage.getScene().setRoot(root);
-		}
-		catch(IOException e) {
-			e.printStackTrace();
-		}
+	        FXMLLoader loader = new FXMLLoader(
+	        getClass().getResource("/resources/application/fxml/Login.fxml"));
+
+	        Parent root = loader.load();
+
+	        Stage stage = (Stage) usernameField.getScene().getWindow(); // or any node in this controller
+	        stage.getScene().setRoot(root);
+
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
 	}
 
 	private void loadCurrentProfilePicture() {
