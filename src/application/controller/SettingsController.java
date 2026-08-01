@@ -1,12 +1,17 @@
 package application.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import application.dao.UserDAO;
 import application.model.UserSession;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -14,7 +19,9 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.shape.Circle;
 
@@ -165,12 +172,37 @@ public class SettingsController {
 				e.printStackTrace();
 			}
 		}
+		
+		navigateToLogin();
 	}
 
 	@FXML
 	private void handleClose() {
 		if(closeAction != null)
 			closeAction.run();
+	}
+	
+	@FXML
+	private void handleLogOut(ActionEvent event) {
+		navigateToLogin();
+	}
+	
+	/**
+	 * Switches the scene back to the login screen
+	 */
+	private void navigateToLogin() {
+		try {
+	        FXMLLoader loader = new FXMLLoader(
+	        getClass().getResource("/resources/application/fxml/Login.fxml"));
+
+	        Parent root = loader.load();
+
+	        Stage stage = (Stage) usernameField.getScene().getWindow(); // or any node in this controller
+	        stage.getScene().setRoot(root);
+
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
 	}
 
 	private void loadCurrentProfilePicture() {
