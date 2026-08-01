@@ -1,4 +1,6 @@
 package application.model;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Show extends Media {
 	
@@ -9,6 +11,9 @@ public class Show extends Media {
 	private int numOfEpisodes;
 	private int avgMinsPerEp;
 	private boolean airing;
+	private int apiId;
+	private List<String> seasonImagePaths = new ArrayList<>();
+	private List<List<String>> episodeImagePaths = new ArrayList<>();
 	
 	// constructor
 	public Show(String title, String creator, int yearStart, int yearEnd, Status status, double userRating, String review, String genre, int numOfSeasons, boolean airing, String imagePath) {
@@ -54,10 +59,45 @@ public class Show extends Media {
 	public int getAvgMinsPerEp() {return avgMinsPerEp;}
 	public boolean isAiring() {return airing;}
 	public String getGenre() {return genre;}
+	public List<String> getSeasonImagePaths() {
+		return seasonImagePaths;
+	}
+	public int getApiId() {
+		return apiId;
+	}
+	public List<List<String>> getEpisodeImagePaths() {
+		return episodeImagePaths;
+	}
+	
+	
+	public List<String> getEpisodeImagePaths(int seasonNumber) {
+		if(seasonNumber <= 0 || seasonNumber > episodeImagePaths.size())
+			return new ArrayList<>();
+
+		return episodeImagePaths.get(seasonNumber - 1);
+	}
+	
 	
 	public void setNumOfSeasons(int numOfSeasons) {this.numOfSeasons=numOfSeasons;}
 	public void setNumOfEpisodes(int numOfEpisodes) {this.numOfEpisodes=numOfEpisodes;}
 	public void setAvgMinsPerEp(int avgMinsPerEp) {this.avgMinsPerEp=avgMinsPerEp;}
+	public void setSeasonImagePaths(List<String> seasonImagePaths) {
+		if(seasonImagePaths == null)
+			this.seasonImagePaths = new ArrayList<>();
+		else
+			this.seasonImagePaths = seasonImagePaths;
+	}
+
+	public void setApiId(int apiId) {
+		this.apiId = apiId;
+	}
+	public void setEpisodeImagePaths(List<List<String>> episodeImagePaths) {
+		if(episodeImagePaths == null)
+			this.episodeImagePaths = new ArrayList<>();
+		else
+			this.episodeImagePaths = episodeImagePaths;
+	}
+
 	
 	private void updateMediaInfo() {
 		if(airing)

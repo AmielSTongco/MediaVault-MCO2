@@ -4,21 +4,21 @@ import application.model.MediaPlaylist;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-public interface PlaylistTableOwner {
+public interface PlaylistTableOwner<T extends MediaPlaylist> {
 
-	TableView<MediaPlaylist> getMediaPlaylistTable();
+	TableView<T> getMediaPlaylistTable();
 
-	TableColumn<MediaPlaylist, Number> getNumberColumn();
+	TableColumn<T, Number> getNumberColumn();
 
-	TableColumn<MediaPlaylist, MediaPlaylist> getTitleColumn();
+	TableColumn<T, T> getTitleColumn();
 
-	TableColumn<MediaPlaylist, String> getTotalColumn();
+	TableColumn<T, String> getTotalColumn();
 
-	TableColumn<MediaPlaylist, String> getCompletedColumn();
+	TableColumn<T, String> getCompletedColumn();
 
-	TableColumn<MediaPlaylist, String> getInProgressColumn();
+	TableColumn<T, String> getInProgressColumn();
 
-	TableColumn<MediaPlaylist, String> getPlannedColumn();
+	TableColumn<T, String> getPlannedColumn();
 
-	TableColumn<MediaPlaylist, String> getAvgRatingColumn();
+	TableColumn<T, String> getAvgRatingColumn();
 }

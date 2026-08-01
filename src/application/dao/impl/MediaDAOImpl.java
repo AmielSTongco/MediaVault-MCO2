@@ -204,7 +204,7 @@ public class MediaDAOImpl{
 				Show show = (Show)media;
 
 				String updateShow = "UPDATE shows "
-								  + "SET num_of_seasons = ?, year_start = ?, year_end = ?, airing = ?, genre = ?, image_path = ? "
+								  + "SET num_of_seasons = ?, year_start = ?, year_end = ?, airing = ?, genre = ?, image_path = ?, api_id = ? "
 								  + "WHERE id = ?";
 
 				try(PreparedStatement stmt = conn.prepareStatement(updateShow)) {
@@ -214,7 +214,8 @@ public class MediaDAOImpl{
 					stmt.setBoolean(4, show.isAiring());
 					stmt.setString(5, show.getGenre());
 					stmt.setString(6, show.getImagePath());
-					stmt.setInt(7, mediaId);
+					stmt.setInt(7, show.getApiId());
+					stmt.setInt(8, mediaId);
 					stmt.executeUpdate();
 				}
 				break;

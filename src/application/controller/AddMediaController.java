@@ -35,6 +35,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.ContextMenu;
+import application.dao.impl.SeasonDAOImpl;
 
 public class AddMediaController {
 
@@ -147,6 +148,7 @@ public class AddMediaController {
 	private Consumer<Media> saveAction;
 	private MediaPlaylist playlist;
 	private MediaDAOImpl mediaDAO;
+	private SeasonDAOImpl seasonDAO;
 	private MediaPlaylistDAOImpl mediaPlaylistDAO;
 	private Connection conn;
 
@@ -199,6 +201,7 @@ public class AddMediaController {
 		this.conn = conn;
 		mediaDAO = new MediaDAOImpl(conn, UserSession.getCurrentUserId());
 		mediaPlaylistDAO = new MediaPlaylistDAOImpl(conn, UserSession.getCurrentUserId());
+		seasonDAO = new SeasonDAOImpl(conn, UserSession.getCurrentUserId());
 	}
 
 	public void setPlaylist(MediaPlaylist playlist) {
@@ -424,6 +427,12 @@ public class AddMediaController {
 			mediaId = mediaDAO.addMedia(newMedia);
 
 		newMedia.setMediaId(mediaId);
+		
+		if(newMedia instanceof Show) {
+			Show show = (Show)newMedia;
+			System.out.println("Saving TMDB API ID: " + show.getApiId());
+			seasonDAO.generateSeasons(mediaId, show.getNumOfSeasons(), show.getSeasonImagePaths());
+		}
 
 		if(oldMedia != null) {
 			boolean statusChanged = oldMedia.getStatus() != newMedia.getStatus();

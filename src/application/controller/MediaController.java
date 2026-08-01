@@ -234,92 +234,93 @@ public class MediaController {
         
         
         // Declare listeners
-        titleField.textProperty().addListener((_, _, newText) ->
-			titleLabel.setText(newText)
-		);
-		
-		genreField.textProperty().addListener((_, _, newText) ->
-		    genreLabel.setText("Genre: " + newText)
-		);
-		
-		statusField.textProperty().addListener((_, _, newText) ->
-	        statusLabel.setText("Status: " + newText)
-	    );
-		
-		ratingField.textProperty().addListener((_, _, newText) ->
-	        ratingLabel.setText("Rating: " + newText)
+        titleField.textProperty().addListener((observable, oldText, newText) ->
+	    	titleLabel.setText(newText)
 	    );
 	
-	    reviewField.textProperty().addListener((_, _, newText) ->
-	        reviewLabel.setText("Review: " + newText)
+	    genreField.textProperty().addListener((observable, oldText, newText) ->
+	    	genreLabel.setText("Genre: " + newText)
 	    );
-        
-        // Add shadows and declare listeners
-        switch(mediaType) {
-        		case "SONGS":
-	        		playtimeLabel.setEffect(shadow);
-	        		yearLabel.setEffect(shadow);
-	        		
-	        		creatorField.textProperty().addListener((_, _, newText) ->
-		    			creatorLabel.setText("Artist: " + newText)
-		    		);
-	        		
-	        		playtimeField.textProperty().addListener((_, _, newText) ->
-		    	        playtimeLabel.setText("Playtime: " + newText)
-		    	    );
-	        		
-	        		yearField.textProperty().addListener((_, _, newText) ->
-		    	        yearLabel.setText("Year: " + newText)
-		    	    );
-	        		break;
-        		case "GAMES":
-        			avgPlaytimeLabel.setEffect(shadow);
-        			yearLabel.setEffect(shadow);
-        			
-        			creatorField.textProperty().addListener((_, _, newText) ->
-	        			creatorLabel.setText("Developer: " + newText)
-	        		);
-        			
-        			avgPlaytimeField.textProperty().addListener((_, _, newText) ->
-	        	        avgPlaytimeLabel.setText("Average Playtime: " + newText)
-	        	    );
-        			
-        			yearField.textProperty().addListener((_, _, newText) ->
-	        	        yearLabel.setText("Year: " + newText)
-	        	    );
-        			break;
-        		case "SHOWS":
-        			airingLabel.setEffect(shadow);
-        			yearFirstAiredLabel.setEffect(shadow);
-        			yearLastAiredLabel.setEffect(shadow);
-        			numOfEpisodesLabel.setEffect(shadow);
-        			numOfSeasonsLabel.setEffect(shadow);
-        			
-        			creatorField.textProperty().addListener((_, _, newText) ->
-	        			creatorLabel.setText("Director/s: " + newText)
-	        		);
-        			
-        			airingField.textProperty().addListener((_, _, newText) ->
-	        	        airingLabel.setText("Airing: " + newText)
-	        	    );
-        			
-        			yearFirstAiredField.textProperty().addListener((_, _, newText) ->
-	        	        yearFirstAiredLabel.setText("Year First Aired: " + newText)
-	        	    );
-	        	
-	        	    yearLastAiredField.textProperty().addListener((_, _, newText) ->
-	        	        yearLastAiredLabel.setText("Year Last Aired: " + newText)
-	        	    );
-	        	
-	        	    numOfEpisodesField.textProperty().addListener((_, _, newText) ->
-	        	        numOfEpisodesLabel.setText("Episodes: " + newText)
-	        	    );
-	        	
-	        	    numOfSeasonsField.textProperty().addListener((_, _, newText) ->
-	        	        numOfSeasonsLabel.setText("Seasons: " + newText)
-	        	    );
-        			break;
-        }
+	
+	    statusField.textProperty().addListener((observable, oldText, newText) ->
+	    	statusLabel.setText("Status: " + newText)
+	    );
+	
+	    ratingField.textProperty().addListener((observable, oldText, newText) ->
+	    	ratingLabel.setText("Rating: " + newText)
+	    );
+	
+	    reviewField.textProperty().addListener((observable, oldText, newText) ->
+	    	reviewLabel.setText("Review: " + newText)
+	    );
+	
+	    switch(mediaType) {
+	    	case "SONGS":
+	    		playtimeLabel.setEffect(shadow);
+	    		yearLabel.setEffect(shadow);
+	
+	    		creatorField.textProperty().addListener((observable, oldText, newText) ->
+	    			creatorLabel.setText("Artist: " + newText)
+	    		);
+	
+	    		playtimeField.textProperty().addListener((observable, oldText, newText) ->
+	    			playtimeLabel.setText("Playtime: " + newText)
+	    		);
+	
+	    		yearField.textProperty().addListener((observable, oldText, newText) ->
+	    			yearLabel.setText("Year: " + newText)
+	    		);
+	    		break;
+	
+	    	case "GAMES":
+	    		avgPlaytimeLabel.setEffect(shadow);
+	    		yearLabel.setEffect(shadow);
+	
+	    		creatorField.textProperty().addListener((observable, oldText, newText) ->
+	    			creatorLabel.setText("Developer: " + newText)
+	    		);
+	
+	    		avgPlaytimeField.textProperty().addListener((observable, oldText, newText) ->
+	    			avgPlaytimeLabel.setText("Average Playtime: " + newText)
+	    		);
+	
+	    		yearField.textProperty().addListener((observable, oldText, newText) ->
+	    			yearLabel.setText("Year: " + newText)
+	    		);
+	    		break;
+	
+	    	case "SHOWS":
+	    		airingLabel.setEffect(shadow);
+	    		yearFirstAiredLabel.setEffect(shadow);
+	    		yearLastAiredLabel.setEffect(shadow);
+	    		numOfEpisodesLabel.setEffect(shadow);
+	    		numOfSeasonsLabel.setEffect(shadow);
+	
+	    		creatorField.textProperty().addListener((observable, oldText, newText) ->
+	    			creatorLabel.setText("Director/s: " + newText)
+	    		);
+	
+	    		airingField.textProperty().addListener((observable, oldText, newText) ->
+	    			airingLabel.setText("Airing: " + newText)
+	    		);
+	
+	    		yearFirstAiredField.textProperty().addListener((observable, oldText, newText) ->
+	    			yearFirstAiredLabel.setText("Year First Aired: " + newText)
+	    		);
+	
+	    		yearLastAiredField.textProperty().addListener((observable, oldText, newText) ->
+	    			yearLastAiredLabel.setText("Year Last Aired: " + newText)
+	    		);
+	
+	    		numOfEpisodesField.textProperty().addListener((observable, oldText, newText) ->
+	    			numOfEpisodesLabel.setText("Episodes: " + newText)
+	    		);
+	
+	    		numOfSeasonsField.textProperty().addListener((observable, oldText, newText) ->
+	    			numOfSeasonsLabel.setText("Seasons: " + newText)
+	    		);
+	    		break;
+	    }
     }
     
     @FXML

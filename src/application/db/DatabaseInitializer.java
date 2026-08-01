@@ -58,6 +58,7 @@ public class DatabaseInitializer {
 				num_of_episodes INTEGER,
 				avg_mins_per_ep INTEGER,
 				image_path TEXT,
+				api_id INTEGER DEFAULT 0,
 				airing BOOLEAN
 			)""");
 			
@@ -80,6 +81,7 @@ public class DatabaseInitializer {
 				show_id INTEGER NOT NULL,
 				title TEXT,
 				display_order INTEGER NOT NULL DEFAULT 0,
+				image_path TEXT,
 				FOREIGN KEY (show_id) REFERENCES shows(id)
 			)""");
 			
@@ -90,6 +92,7 @@ public class DatabaseInitializer {
 				season_id INTEGER NOT NULL,
 				episode_number INTEGER NOT NULL,
 				title TEXT,
+				image_path TEXT,
 				display_order INTEGER NOT NULL DEFAULT 0,
 				FOREIGN KEY (season_id) REFERENCES seasons(id)
 			)""");
@@ -304,6 +307,7 @@ public class DatabaseInitializer {
 				user_id INTEGER NOT NULL,
 				episode_id INTEGER NOT NULL,
 				status TEXT,
+				review TEXT,
 				user_rating REAL,
 
 				UNIQUE (user_id, episode_id),

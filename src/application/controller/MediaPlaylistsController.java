@@ -19,7 +19,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 
-public class MediaPlaylistsController extends BaseMediaPageController implements PlaylistTableOwner {
+public class MediaPlaylistsController extends BaseMediaPageController implements PlaylistTableOwner<MediaPlaylist> {
 
 	@FXML
 	private Button addButton;

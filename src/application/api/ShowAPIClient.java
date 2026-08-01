@@ -15,272 +15,234 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import application.model.Show;
 import application.model.Status;
+import application.model.Episode;
 
-/**
- * Client for interacting with the TMDB API.
- *
- * <p>This class authenticates using a TMDB access token and provides
- * methods for searching shows and converting the results into Show
- * objects.</p>
- */
 public class ShowAPIClient {
 
-    private static final String BASE_URL = "https://api.themoviedb.org/3";
+	private static final String BASE_URL = "https://api.themoviedb.org/3";
+	private static final String IMAGE_URL = "https://image.tmdb.org/t/p/w500";
 
-    private final String accessToken;
-    private final HttpClient client;
-    private final ObjectMapper mapper;
+	private final String accessToken;
+	private final HttpClient client;
+	private final ObjectMapper mapper;
 
-    /**
-     * Creates a ShowAPIClient using the provided TMDB access token.
-     *
-     * @param accessToken the TMDB API read access token
-     */
-    public ShowAPIClient(String accessToken) {
-        this.accessToken = accessToken;
-        this.client = HttpClient.newHttpClient();
-        this.mapper = new ObjectMapper();
-    }
+	public ShowAPIClient(String accessToken) {
+		this.accessToken = accessToken;
+		this.client = HttpClient.newHttpClient();
+		this.mapper = new ObjectMapper();
+	}
 
-    /**
-     * Searches TMDB for shows matching the specified query.
-     *
-     * <p>The returned shows are converted into Show objects with
-     * default user-specific values such as status, rating, and
-     * review.</p>
-     *
-     * @param query the search term entered by the user
-     * @return a list of matching shows
-     * @throws IOException if an I/O error occurs
-     * @throws InterruptedException if the request is interrupted
-     */
-    public List<Show> searchShows(String query) throws IOException, InterruptedException {
-    	
-    	// Encode the search query for use in the request URL.
-        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+	public List<Show> searchShows(String query) throws IOException, InterruptedException {
+		String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
 
-        String url = BASE_URL + "/search/tv?query=" + encodedQuery
-                + "&include_adult=false"
-                + "&language=en-US"
-                + "&page=1";
-        
-        // Build the authenticated GET request.
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("Authorization", "Bearer " + accessToken)
-                .header("accept", "application/json")
-                .GET()
-                .build();
-        
-        // Send the search request.
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+		String url = BASE_URL + "/search/tv?query=" + encodedQuery
+				   + "&include_adult=false"
+				   + "&language=en-US"
+				   + "&page=1";
 
-        if (response.statusCode() != 200) {
-            throw new IOException("TMDB request failed with status code "
-                    + response.statusCode() + ": " + response.body());
-        }
+		JsonNode root = sendRequest(url);
+		List<Show> shows = new ArrayList<>();
 
-        List<Show> shows = new ArrayList<>();
+		JsonNode results = root.get("results");
 
-        JsonNode root = mapper.readTree(response.body());
+		if(results == null || !results.isArray())
+			return shows;
 
-        if (!root.has("results")) {
-            System.out.println("TMDB did not return any shows.");
-            return shows;
-        }
+		int resultCount = Math.min(results.size(), 10);
 
-        JsonNode results = root.get("results");
+		for(int i = 0; i < resultCount; i++) {
+			JsonNode item = results.get(i);
+			int apiId = getIntValue(item, "id");
+			JsonNode showDetails = getShowDetails(apiId);
 
-        int resultCount = Math.min(results.size(), 10);
+			String title = getTextValue(item, "name");
+			String creator = getCreator(showDetails);
+			int yearStart = getReleaseYear(showDetails, "first_air_date");
+			int yearEnd = getReleaseYear(showDetails, "last_air_date");
+			String genre = getGenre(showDetails);
+			int numOfSeasons = getIntValue(showDetails, "number_of_seasons");
+			boolean airing = getBooleanValue(showDetails, "in_production");
+			String imagePath = buildImagePath(getTextValue(item, "poster_path"));
 
-        for (int i = 0; i < resultCount; i++) {
-            JsonNode item = results.get(i);
+			List<String> seasonImagePaths = getSeasonImagePaths(showDetails);
 
-            int showId = item.get("id").asInt();
+			Show show = new Show(
+				title,
+				creator,
+				yearStart,
+				yearEnd,
+				Status.PLANNED,
+				0.0,
+				"",
+				genre,
+				numOfSeasons,
+				airing,
+				imagePath
+			);
 
-            JsonNode showDetails = getShowDetails(showId);
+			show.setApiId(apiId);
+			show.setSeasonImagePaths(seasonImagePaths);
+			shows.add(show);
+		}
 
-            String title = getTextValue(item, "name");
-            String creator = getCreator(showDetails);
-            int yearStart = getReleaseYear(showDetails, "first_air_date");
-            int yearEnd = getReleaseYear(showDetails, "last_air_date");
-            String genre = getGenre(showDetails);
-            int numOfSeasons = getIntValue(showDetails, "number_of_seasons");
-            boolean airing = getBooleanValue(showDetails, "in_production");
-            
-        	String imagePath = "";
+		return shows;
+	}
 
-        	String posterPath = getTextValue(item, "poster_path");
+	private JsonNode getShowDetails(int showId) throws IOException, InterruptedException {
+		String url = BASE_URL + "/tv/" + showId + "?language=en-US";
+		return sendRequest(url);
+	}
 
-        	if(!posterPath.isBlank())
-        		imagePath = "https://image.tmdb.org/t/p/w500" + posterPath;
+	private JsonNode getSeasonDetails(int showId, int seasonNumber) throws IOException, InterruptedException {
+		String url = BASE_URL + "/tv/" + showId + "/season/" + seasonNumber + "?language=en-US";
+		return sendRequest(url);
+	}
 
-            Status status = Status.PLANNED;
-            double userRating = 0.0;
-            String review = "";
+	private JsonNode sendRequest(String url) throws IOException, InterruptedException {
+		HttpRequest request = HttpRequest.newBuilder()
+				.uri(URI.create(url))
+				.header("Authorization", "Bearer " + accessToken)
+				.header("accept", "application/json")
+				.GET()
+				.build();
 
-            shows.add(new Show(title, creator, yearStart, yearEnd, status, userRating, review, genre, numOfSeasons, airing, imagePath));
-        }
+		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        return shows;
-    }
+		if(response.statusCode() != 200)
+			throw new IOException("TMDB request failed with status code " + response.statusCode() + ": " + response.body());
 
-    /**
-     * Retrieves the complete information for a specified show.
-     *
-     * @param showId the TMDB ID of the show
-     * @return the complete show information
-     * @throws IOException if an I/O error occurs
-     * @throws InterruptedException if the request is interrupted
-     */
-    private JsonNode getShowDetails(int showId) throws IOException, InterruptedException {
-    	
-    	String url = BASE_URL + "/tv/" + showId + "?language=en-US";
-    	
-    	// Build the authenticated GET request.
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("Authorization", "Bearer " + accessToken)
-                .header("accept", "application/json")
-                .GET()
-                .build();
-        
-        // Send the show details request.
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+		return mapper.readTree(response.body());
+	}
+	
+	public List<Episode> getEpisodes(int showApiId, int seasonNumber) throws IOException, InterruptedException {
+		JsonNode seasonDetails = getSeasonDetails(showApiId, seasonNumber);
+		List<Episode> episodes = new ArrayList<>();
+		JsonNode results = seasonDetails.get("episodes");
 
-        if (response.statusCode() != 200) {
-            throw new IOException("TMDB details request failed with status code "
-                    + response.statusCode() + ": " + response.body());
-        }
+		if(results != null && results.isArray()) {
+			for(JsonNode item : results) {
+				int episodeNumber = getIntValue(item, "episode_number");
+				String title = getTextValue(item, "name");
+				String imagePath = buildImagePath(getTextValue(item, "still_path"));
 
-        return mapper.readTree(response.body());
-    }
+				episodes.add(new Episode(episodeNumber, title, imagePath));
+			}
+		}
 
-    /**
-     * Retrieves the creator from a show's information.
-     *
-     * @param node the JSON object containing the show information
-     * @return the creator name, or an empty string if it is missing
-     */
-    private String getCreator(JsonNode node) {
-        JsonNode creators = node.get("created_by");
+		return episodes;
+	}
+	
+	private List<String> getSeasonImagePaths(JsonNode showDetails) {
+		List<String> seasonImagePaths = new ArrayList<>();
+		JsonNode seasons = showDetails.get("seasons");
 
-        if (creators == null || !creators.isArray() || creators.size() == 0) {
-            return "";
-        }
+		if(seasons != null && seasons.isArray()) {
+			for(JsonNode season : seasons) {
+				int seasonNumber = getIntValue(season, "season_number");
 
-        String creator = "";
+				if(seasonNumber > 0) {
+					while(seasonImagePaths.size() < seasonNumber)
+						seasonImagePaths.add("");
 
-        for (int i = 0; i < creators.size(); i++) {
-            JsonNode creatorNode = creators.get(i);
+					String posterPath = getTextValue(season, "poster_path");
+					seasonImagePaths.set(seasonNumber - 1, buildImagePath(posterPath));
+				}
+			}
+		}
 
-            if (i > 0) {
-                creator += ", ";
-            }
+		return seasonImagePaths;
+	}
 
-            creator += getTextValue(creatorNode, "name");
-        }
+	private String buildImagePath(String filePath) {
+		if(filePath == null || filePath.isBlank())
+			return "";
 
-        return creator;
-    }
+		return IMAGE_URL + filePath;
+	}
 
-    /**
-     * Retrieves the genres from a show's information.
-     *
-     * @param node the JSON object containing the show information
-     * @return the genres, or an empty string if they are missing
-     */
-    private String getGenre(JsonNode node) {
-        JsonNode genres = node.get("genres");
+	private String getCreator(JsonNode node) {
+		JsonNode creators = node.get("created_by");
 
-        if (genres == null || !genres.isArray() || genres.size() == 0) {
-            return "";
-        }
+		if(creators == null || !creators.isArray() || creators.isEmpty())
+			return "";
 
-        String genre = "";
+		String creator = "";
 
-        for (int i = 0; i < genres.size(); i++) {
-            JsonNode genreNode = genres.get(i);
+		for(int i = 0; i < creators.size(); i++) {
+			if(i > 0)
+				creator += ", ";
 
-            if (i > 0) {
-                genre += ", ";
-            }
+			creator += getTextValue(creators.get(i), "name");
+		}
 
-            genre += getTextValue(genreNode, "name");
-        }
+		return creator;
+	}
 
-        return genre;
-    }
+	private String getGenre(JsonNode node) {
+		JsonNode genres = node.get("genres");
 
-    /**
-     * Retrieves the year from a specified date field.
-     *
-     * @param node the JSON object containing the show information
-     * @param fieldName the date field to retrieve
-     * @return the year, or zero if it is missing
-     */
-    private int getReleaseYear(JsonNode node, String fieldName) {
-        String date = getTextValue(node, fieldName);
+		if(genres == null || !genres.isArray() || genres.isEmpty())
+			return "";
 
-        if (date.length() < 4) {
-            return 0;
-        }
+		String genre = "";
 
-        try {
-            return Integer.parseInt(date.substring(0, 4));
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
+		for(int i = 0; i < genres.size(); i++) {
+			if(i > 0)
+				genre += ", ";
 
-    /**
-     * Safely reads a text field from a JSON object.
-     *
-     * @param node the JSON object
-     * @param fieldName the field to retrieve
-     * @return the field value, or an empty string if it is missing
-     */
-    private String getTextValue(JsonNode node, String fieldName) {
-        JsonNode value = node.get(fieldName);
+			genre += getTextValue(genres.get(i), "name");
+		}
 
-        if (value == null || value.isNull()) {
-            return "";
-        }
+		return genre;
+	}
 
-        return value.asText();
-    }
+	private int getReleaseYear(JsonNode node, String fieldName) {
+		String date = getTextValue(node, fieldName);
 
-    /**
-     * Safely reads an integer field from a JSON object.
-     *
-     * @param node the JSON object
-     * @param fieldName the field to retrieve
-     * @return the field value, or zero if it is missing
-     */
-    private int getIntValue(JsonNode node, String fieldName) {
-        JsonNode value = node.get(fieldName);
+		if(date.length() < 4)
+			return 0;
 
-        if (value == null || value.isNull()) {
-            return 0;
-        }
+		try {
+			return Integer.parseInt(date.substring(0, 4));
+		}
+		catch(NumberFormatException e) {
+			return 0;
+		}
+	}
 
-        return value.asInt();
-    }
-    
-    /**
-     * Safely reads a boolean field from a JSON object.
-     *
-     * @param node the JSON object
-     * @param fieldName the field to retrieve
-     * @return the field value, or false if it is missing
-     */
-    private boolean getBooleanValue(JsonNode node, String fieldName) {
-        JsonNode value = node.get(fieldName);
+	private String getTextValue(JsonNode node, String fieldName) {
+		if(node == null)
+			return "";
 
-        if (value == null || value.isNull()) {
-            return false;
-        }
+		JsonNode value = node.get(fieldName);
 
-        return value.asBoolean();
-    }
+		if(value == null || value.isNull())
+			return "";
+
+		return value.asText();
+	}
+
+	private int getIntValue(JsonNode node, String fieldName) {
+		if(node == null)
+			return 0;
+
+		JsonNode value = node.get(fieldName);
+
+		if(value == null || value.isNull())
+			return 0;
+
+		return value.asInt();
+	}
+
+	private boolean getBooleanValue(JsonNode node, String fieldName) {
+		if(node == null)
+			return false;
+
+		JsonNode value = node.get(fieldName);
+
+		if(value == null || value.isNull())
+			return false;
+
+		return value.asBoolean();
+	}
 }

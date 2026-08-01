@@ -31,7 +31,7 @@ import application.model.UserSession;
 import javafx.scene.layout.StackPane;
 
 public class SearchController extends BaseMediaPageController implements MediaTableOwner {
-
+	
 	@FXML
 	private ImageView searchIcon;
 	
@@ -256,8 +256,8 @@ public class SearchController extends BaseMediaPageController implements MediaTa
 
 			MediaPlaylistsItemsController controller = loader.getController();
 			controller.setConnection(conn);
-			controller.setupView(mediaType);
 			controller.setPlaylist(playlist);
+			controller.setupView(mediaType);
 
 			Stage stage = (Stage)rootPane.getScene().getWindow();
 			stage.getScene().setRoot(root);

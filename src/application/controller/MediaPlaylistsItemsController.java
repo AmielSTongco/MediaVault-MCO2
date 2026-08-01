@@ -3,6 +3,7 @@ package application.controller;
 import java.util.List;
 
 import application.model.Media;
+import application.model.Show;
 import application.model.MediaPlaylist;
 import application.dao.impl.MediaPlaylistDAOImpl;
 import application.model.Type;
@@ -251,8 +252,30 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 	}
 
 	private void openMedia(Media media) {
-		if(media != null)
-			switchScene("/resources/application/fxml/MediaScene.fxml");
+		if(media != null) {
+			if(media instanceof Show)
+				openSeasons((Show)media);
+			else
+				switchScene("/resources/application/fxml/MediaScene.fxml");
+		}
+	}
+	
+	private void openSeasons(Show show) {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/SeasonsScene.fxml"));
+			Parent root = loader.load();
+
+			SeasonsController controller = loader.getController();
+			controller.setConnection(conn);
+			controller.setShow(show);
+			controller.setupView(Type.SHOW);
+
+			Stage stage = (Stage)rootPane.getScene().getWindow();
+			stage.getScene().setRoot(root);
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void openSearch() {
