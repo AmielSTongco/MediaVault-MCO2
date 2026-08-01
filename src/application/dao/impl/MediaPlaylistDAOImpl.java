@@ -47,43 +47,50 @@ public class MediaPlaylistDAOImpl {
 	 *       with {@code userId} and {@code name}; otherwise, no row is inserted
 	 */
 	public boolean createPlaylist(String name, String playlistPicturePath, Type mediaType) throws SQLException {
-
 		String normalizedName = name.trim().toLowerCase();
 
-	    if (normalizedName.isEmpty()) {
-	        return false;
-	    }
+		if(normalizedName.isEmpty())
+			return false;
 
-	    String tableName = mediaType.getTitle().toLowerCase() + "_playlists";
+		String tableName = mediaType.getTitle().toLowerCase() + "_playlists";
+		String reservedName = "all_" + mediaType.getTitle().toLowerCase();
 
-	    String reservedName = "all_" + mediaType.getTitle().toLowerCase();
+		if(normalizedName.equals(reservedName) || normalizedName.equals(reservedName.replace("_", " ")))
+			return false;
 
-	    if (normalizedName.equals(reservedName)
-	            || normalizedName.equals(reservedName.replace("_", " "))) {
-	        return false;
-	    }
+		String orderSql = "SELECT COALESCE(MAX(display_order), 0) + 1 "
+						+ "FROM " + tableName + " "
+						+ "WHERE user_id = ?";
 
-	    String sql = "INSERT INTO " + tableName
-	               + " (user_id, title, image_path) VALUES (?, ?, ?)";
+		int displayOrder = 1;
 
-	    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+		try(PreparedStatement stmt = conn.prepareStatement(orderSql)) {
+			stmt.setInt(1, userId);
 
-	        stmt.setInt(1, userId);
-	        stmt.setString(2, name.trim());
-	        stmt.setString(3, playlistPicturePath);
+			ResultSet rs = stmt.executeQuery();
 
-	        stmt.executeUpdate();
-	        return true;
+			if(rs.next())
+				displayOrder = rs.getInt(1);
+		}
 
-	    } catch (SQLException e) {
+		String sql = "INSERT INTO " + tableName
+				   + " (user_id, title, image_path, display_order) VALUES (?, ?, ?, ?)";
 
-	        if (e.getMessage() != null
-	                && e.getMessage().contains("UNIQUE constraint failed")) {
-	            return false;
-	        }
+		try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, userId);
+			stmt.setString(2, name.trim());
+			stmt.setString(3, playlistPicturePath);
+			stmt.setInt(4, displayOrder);
 
-	        throw e;
-	    }
+			stmt.executeUpdate();
+			return true;
+		}
+		catch(SQLException e) {
+			if(e.getMessage() != null && e.getMessage().contains("UNIQUE constraint failed"))
+				return false;
+
+			throw e;
+		}
 	}
 	
 	/**
@@ -107,17 +114,38 @@ public class MediaPlaylistDAOImpl {
 	 *                       executing the statement
 	 */
 	public void addMediaToPlaylist(int playlistId, int mediaId, Status status, double rating, String review, String mediaType) throws SQLException {
+		
+		String media = mediaType.toLowerCase();
 
-        String sql = "INSERT OR IGNORE INTO " + mediaType.toLowerCase() + "s_playlist_items (playlist_id, " + mediaType.toLowerCase() + "_id) VALUES (?, ?)";
+		if(media.endsWith("s"))
+			media = media.substring(0, media.length() - 1);
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)){
-            stmt.setInt(1, playlistId);
-            stmt.setInt(2, mediaId);
-            stmt.executeUpdate();
+		String tableName = media + "s_playlist_items";
+		String idColumn = media + "_id";
 
-        } catch (SQLException e) {
-                System.out.println(e.getMessage());
-        }
+		String orderSql = "SELECT COALESCE(MAX(display_order), -1) + 1 "
+			+ "FROM " + tableName + " WHERE playlist_id = ?";
+
+		int displayOrder = 0;
+
+		try(PreparedStatement stmt = conn.prepareStatement(orderSql)) {
+			stmt.setInt(1, playlistId);
+
+			ResultSet rs = stmt.executeQuery();
+
+			if(rs.next())
+				displayOrder = rs.getInt(1);
+		}
+
+		String sql = "INSERT OR IGNORE INTO " + tableName
+			+ " (playlist_id, " + idColumn + ", display_order) VALUES (?, ?, ?)";
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, playlistId);
+			stmt.setInt(2, mediaId);
+			stmt.setInt(3, displayOrder);
+			stmt.executeUpdate();
+		}
     }
 	
 	/**
@@ -215,7 +243,8 @@ public class MediaPlaylistDAOImpl {
 	            + "ON mpi.song_id = m.id "
 	            + "JOIN songs_reviews mr "
 	            + "ON m.id = mr.song_id AND mr.user_id = mp.user_id "
-	            + "WHERE mp.user_id = ? AND mp.id = ?";
+	            + "WHERE mp.user_id = ? AND mp.id = ? "
+	            + "ORDER BY mpi.display_order ASC";
 			
 			try (PreparedStatement stmt = conn.prepareStatement(sql)){
 				stmt.setInt(1, userId);
@@ -280,7 +309,8 @@ public class MediaPlaylistDAOImpl {
 		            + "ON mpi.game_id = m.id "
 		            + "JOIN games_reviews mr "
 		            + "ON m.id = mr.game_id AND mr.user_id = mp.user_id "
-		            + "WHERE mp.user_id = ? AND mp.id = ?";
+		            + "WHERE mp.user_id = ? AND mp.id = ? "
+		            + "ORDER BY mpi.display_order ASC";
 			
 			try (PreparedStatement stmt = conn.prepareStatement(sql)){
 				stmt.setInt(1, userId);
@@ -341,7 +371,8 @@ public class MediaPlaylistDAOImpl {
 		            + "ON mpi.show_id = m.id "
 		            + "JOIN shows_reviews mr "
 		            + "ON m.id = mr.show_id AND mr.user_id = mp.user_id "
-		            + "WHERE mp.user_id = ? AND mp.id = ?";
+		            + "WHERE mp.user_id = ? AND mp.id = ? "
+		            + "ORDER BY mpi.display_order ASC";
 			
 			try (PreparedStatement stmt = conn.prepareStatement(sql)){
 				stmt.setInt(1, userId);
@@ -398,7 +429,7 @@ public class MediaPlaylistDAOImpl {
 	    List<MediaPlaylist> playlists = new ArrayList<>();
 	    String tableName = mediaType.getTitle().toLowerCase() + "_playlists";
 
-	    String sql = "SELECT id, title, image_path FROM " + tableName + " WHERE user_id = ?";
+	    String sql = "SELECT id, title, image_path FROM " + tableName + " WHERE user_id = ? ORDER BY display_order ASC";
 
 	    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 	        stmt.setInt(1, userId);
@@ -633,5 +664,73 @@ public class MediaPlaylistDAOImpl {
 			return rs.getString("image_path");
 
 		return null;
+	}
+	
+	private void reorderPlaylistItems(int playlistId, String mediaType) throws SQLException {
+		String media = mediaType.toLowerCase();
+
+		if(media.endsWith("s"))
+			media = media.substring(0, media.length() - 1);
+
+		String tableName = media + "s_playlist_items";
+		String idColumn = media + "_id";
+
+		String selectSql = "SELECT " + idColumn + " FROM " + tableName + " WHERE playlist_id = ? ORDER BY display_order";
+		List<Integer> mediaIds = new ArrayList<>();
+
+		try(PreparedStatement stmt = conn.prepareStatement(selectSql)) {
+			stmt.setInt(1, playlistId);
+
+			ResultSet rs = stmt.executeQuery();
+
+			while(rs.next())
+				mediaIds.add(rs.getInt(idColumn));
+		}
+
+		String updateSql = "UPDATE " + tableName + " SET display_order = ? WHERE playlist_id = ? AND " + idColumn + " = ?";
+
+		try(PreparedStatement stmt = conn.prepareStatement(updateSql)) {
+			for(int i=0; i < mediaIds.size(); i++) {
+				stmt.setInt(1, i + 1);
+				stmt.setInt(2, playlistId);
+				stmt.setInt(3, mediaIds.get(i));
+				stmt.addBatch();
+			}
+
+			stmt.executeBatch();
+		}
+	}
+	
+	private void reorderPlaylists(int userId, String mediaType) throws SQLException {
+		String media = mediaType.toLowerCase();
+
+		if(media.endsWith("s"))
+			media = media.substring(0, media.length() - 1);
+
+		String tableName = media + "s_playlists";
+		String selectSql = "SELECT id FROM " + tableName + " WHERE user_id = ? ORDER BY display_order";
+		List<Integer> playlistIds = new ArrayList<>();
+
+		try(PreparedStatement stmt = conn.prepareStatement(selectSql)) {
+			stmt.setInt(1, userId);
+
+			ResultSet rs = stmt.executeQuery();
+
+			while(rs.next())
+				playlistIds.add(rs.getInt("id"));
+		}
+
+		String updateSql = "UPDATE " + tableName + " SET display_order = ? WHERE id = ? AND user_id = ?";
+
+		try(PreparedStatement stmt = conn.prepareStatement(updateSql)) {
+			for(int i=0; i < playlistIds.size(); i++) {
+				stmt.setInt(1, i + 1);
+				stmt.setInt(2, playlistIds.get(i));
+				stmt.setInt(3, userId);
+				stmt.addBatch();
+			}
+
+			stmt.executeBatch();
+		}
 	}
 }
