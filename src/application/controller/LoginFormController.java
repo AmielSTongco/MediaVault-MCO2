@@ -45,39 +45,40 @@ public class LoginFormController {
 
     @FXML
     private void handleLogin() {
+    	boolean valid = true;
         String username = usernameField.getText().trim();
         String password = passwordField.getText();
 
         if (username.isEmpty() || password.isEmpty()) {
             showError("Please enter both your username and password.");
-            return;
+            valid = false;
         }
 
-        if (userDAO == null) {
+        if (userDAO == null && valid) {
             showError("Database connection is unavailable.");
-            return;
+            valid = false;
         }
 
         try {
             boolean validLogin = userDAO.login(username, password);
 
-            if (!validLogin) {
+            if (!validLogin && valid) {
                 showError("Incorrect username or password.");
                 passwordField.clear();
                 passwordField.requestFocus();
-                return;
+                valid = false;
             }
 
             int userId = userDAO.getUserID(username);
 
-            if (userId == -1) {
+            if (userId == -1 && valid) {
                 showError("Unable to retrieve the user account.");
-                return;
+                valid = false;
             }
 
             UserSession.setCurrentUser(userId, username);
 
-            if (loginSuccessAction != null) {
+            if (loginSuccessAction != null && valid) {
                 loginSuccessAction.run();
             }
         } catch (SQLException e) {

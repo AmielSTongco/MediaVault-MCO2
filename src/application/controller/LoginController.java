@@ -1,6 +1,7 @@
 package application.controller;
 
 import java.io.IOException;
+import application.dao.UserDAO;
 
 import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
@@ -69,6 +70,7 @@ public class LoginController {
     private ImageView mediaVaultTitle;
     
     private Connection conn;
+    private UserDAO userDAO;
     private final PauseTransition resizeDelay = new PauseTransition(Duration.millis(220));
     
     @FXML
@@ -99,6 +101,7 @@ public class LoginController {
     
     public void setConnection(Connection conn) {
     	this.conn = conn;
+    	this.userDAO = new UserDAO(conn);
     }
 
     @FXML
@@ -264,8 +267,8 @@ public class LoginController {
             overlay.getChildren().add(popup);
 
             LoginFormController controller = loader.getController();
-            
             controller.setConnection(conn);
+            
             controller.setCloseAction(() -> closePopup(overlay));
             controller.setLoginSuccessAction(this::openMenu);
             
@@ -288,7 +291,7 @@ public class LoginController {
             Parent popup = loader.load();
 
             rootBorderPane.setEffect(new GaussianBlur(12));
-            backgroundCanvas.setEffect(new GaussianBlur(12));
+            //backgroundCanvas.setEffect(new GaussianBlur(12));
 
             StackPane overlay = new StackPane();
             overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.35);");

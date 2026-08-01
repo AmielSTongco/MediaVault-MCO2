@@ -13,9 +13,13 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.canvas.Canvas?>
 
-<StackPane fx:id="rootPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MediaPlaylistsController">
-<BorderPane>
+<StackPane fx:id="rootStackPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MediaPlaylistsController">
+
+<Canvas fx:id="backgroundCanvas" mouseTransparent="true" />
+
+<BorderPane fx:id="rootPane">
 	<top>
 		<HBox maxHeight="130.0" minHeight="130.0" prefHeight="130.0" styleClass="nav-bar" BorderPane.alignment="CENTER">
          <children>
@@ -74,12 +78,11 @@
 			</TableView>
             
             <!-- Extendable Navigation Pane -->
-	      	<HBox fx:id="extendableNavigationPane" alignment="CENTER" minHeight="64.0" onMouseEntered="#showPane" onMouseExited="#hidePane" prefHeight="64.0" prefWidth="371.0" spacing="25.0">
-	      		<children>
-	      			<Button fx:id="addButton" mnemonicParsing="false" onAction="#addPlaylist" styleClass="navigation-button" text="Add Playlist" />
-	      			<Button fx:id="homeButton" mnemonicParsing="false" onAction="#goToHome" styleClass="navigation-button" text="Home" />
-	      		</children>
-	      	</HBox>
+			<HBox fx:id="extendableNavigationPane" alignment="CENTER" minHeight="150.0" prefHeight="150.0" prefWidth="371.0" spacing="25.0">
+				<Button fx:id="addButton" mnemonicParsing="false" styleClass="navigation-button" />
+			
+				<Button fx:id="homeButton" mnemonicParsing="false" styleClass="navigation-button" />
+			</HBox>
          </children>
          <BorderPane.margin>
             <Insets bottom="10.0" left="20.0" right="20.0" top="5.0" />
