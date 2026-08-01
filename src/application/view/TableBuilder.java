@@ -240,7 +240,7 @@ public abstract class TableBuilder {
 		configureColumn(completedColumn, 210);
 		configureColumn(inProgressColumn, 210);
 		configureColumn(plannedColumn, 210);
-		configureColumn(avgRatingColumn, 350);
+		configureColumn(avgRatingColumn, 320);
 
 		numberColumn.getStyleClass().add("number-column");
 
@@ -504,6 +504,9 @@ public abstract class TableBuilder {
 	private static Image loadMediaImage(String path) {
 		if(path == null || path.isBlank())
 			return null;
+
+		if(path.startsWith("http://") || path.startsWith("https://"))
+			return new Image(path, true);
 
 		URL resource = TableBuilder.class.getResource(path);
 

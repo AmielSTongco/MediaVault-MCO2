@@ -47,13 +47,15 @@ public class Media {
 	public int getYear() {return year;}
 	public double getUserRating() {return userRating;}
 	public String getReview() {return review;}
+	
 	public String getUserRatingString() { 	
 	    if(status == Status.COMPLETED) {
 	    	return String.valueOf(userRating);
 	    }
 	    	
-	    return "/-complete to rate-/";
+	    return "0.0";
 	}
+	
 	public String getReviewedStatus() {
 		if(status == Status.COMPLETED) {
 			if(review.equals(""))

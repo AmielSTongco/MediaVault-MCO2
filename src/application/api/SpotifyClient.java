@@ -136,8 +136,15 @@ public class SpotifyClient {
             Status status = Status.PLANNED;
             double userRating = 0.0;
             String review = "";
+            
+            String imagePath = "";
 
-            songs.add(new Song(title, status, userRating, album, artist, yearReleased, runtimeSeconds, review, ""));
+            JsonNode images = item.get("album").get("images");
+
+            if(images != null && images.isArray() && !images.isEmpty())
+            	imagePath = images.get(0).get("url").asText();
+
+            songs.add(new Song(title, status, userRating, album, artist, yearReleased, runtimeSeconds, review, imagePath));
         }
         
         return songs;

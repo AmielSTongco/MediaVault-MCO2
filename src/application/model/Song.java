@@ -25,7 +25,7 @@ public class Song extends Media{
     	int minutes = runtimeSeconds/60;
         int seconds = runtimeSeconds%60;
 
-        return String.format("%d:%02d", minutes, seconds);
+        return String.format("%dm %02ds", minutes, seconds);
     }
 
 	public void setSongId(int songId) {
@@ -34,7 +34,7 @@ public class Song extends Media{
 	}
 	
 	private void updateMediaInfo() {
-        setMediaInfo("from album \"" + fitToSpace(album, 18)  + "\" of duration " + getRuntimeString());
+        setMediaInfo(getRuntimeString() + ", from album \"" + fitToSpace(album, 20)  + "\"");
     }
 	
 	private void updateYearString(String yearString) {
