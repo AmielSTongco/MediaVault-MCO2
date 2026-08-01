@@ -273,11 +273,13 @@ public class SearchController extends BaseMediaPageController implements MediaTa
 			StackPane popup = loader.load();
 
 			AddMediaController controller = loader.getController();
+			controller.setConnection(conn);
+			controller.setPlaylist(playlist);
 			controller.setMediaType(mediaType);
 			controller.setAutomaticMode(true);
 			controller.setMedia(media);
 			controller.setCloseAction(() -> rootStackPane.getChildren().remove(popup));
-			//controller.setSaveAction(this::saveMedia);
+			controller.setSaveAction(savedMedia -> goBack(playlist));
 
 			rootStackPane.getChildren().add(popup);
 		}

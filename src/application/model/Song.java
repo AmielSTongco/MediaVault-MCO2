@@ -22,6 +22,10 @@ public class Song extends Media{
     public int getYearReleased() {return yearReleased;}
     public int getRuntimeSeconds() {return runtimeSeconds;}
     public String getRuntimeString() {
+    	
+    	if(runtimeSeconds == 0)
+    		return "/--/";
+    	
     	int minutes = runtimeSeconds/60;
         int seconds = runtimeSeconds%60;
 
@@ -30,7 +34,6 @@ public class Song extends Media{
 
 	public void setSongId(int songId) {
 		this.mediaId = songId;
-		
 	}
 	
 	private void updateMediaInfo() {
@@ -38,7 +41,10 @@ public class Song extends Media{
     }
 	
 	private void updateYearString(String yearString) {
-		setYearString(yearString);
+		if(yearString.equals("0"))
+			setYearString("/--/");
+		else
+			setYearString(yearString);
 	}
 	
 	private static String fitToSpace(String text, int width) {

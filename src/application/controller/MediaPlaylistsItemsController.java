@@ -7,6 +7,7 @@ import application.model.MediaPlaylist;
 import application.dao.impl.MediaPlaylistDAOImpl;
 import application.model.Type;
 import application.view.MediaTableOwner;
+import application.controller.MediaPlaylistsController;
 import application.view.TableBuilder;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -21,6 +22,7 @@ import application.model.UserSession;
 import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.layout.StackPane;
 
 public class MediaPlaylistsItemsController extends BaseMediaPageController implements MediaTableOwner {
 
@@ -87,7 +89,7 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 			addButton,
 			"/resources/application/images/icons/plus-svgrepo-com.png",
 			"Manually Add Media",
-			this::openSearch
+			this::manuallyAddMedia
 		);
 		
 		makeNavigationButton(
@@ -114,6 +116,26 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 			);
 
 		handleDoubleClick(mediaTable, this::openMedia);
+	}
+	
+	private void manuallyAddMedia() {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/AddMedia.fxml"));
+			StackPane popup = loader.load();
+
+			AddMediaController controller = loader.getController();
+			controller.setConnection(conn);
+			controller.setPlaylist(playlist);
+			controller.setMediaType(mediaType);
+			controller.setAutomaticMode(false);
+			controller.setCloseAction(() -> rootStackPane.getChildren().remove(popup));
+			controller.setSaveAction(savedMedia -> loadTableData());
+
+			rootStackPane.getChildren().add(popup);
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void deletePlaylist() {

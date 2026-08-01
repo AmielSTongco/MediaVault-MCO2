@@ -29,9 +29,21 @@ public class Show extends Media {
 		
 		updateMediaInfo();
 		if(airing)
-			updateYearString(String.valueOf(yearStart) + " - /--/");
+		{
+			if(yearStart != 0)
+				updateYearString(String.valueOf(yearStart) + " - /--/");
+			else
+				updateYearString("/--/" + " - /--/");
+		}
 		else
-			updateYearString(String.valueOf(yearStart) + " - " + String.valueOf(yearEnd));
+		{
+			if(yearStart!=0 && yearEnd != 0)
+				updateYearString(String.valueOf(yearStart) + " - " + String.valueOf(yearEnd));
+			else if(yearStart!=0 && yearEnd == 0)
+				updateYearString(String.valueOf(yearStart) + " - /--/");
+			else
+				updateYearString("/--/" + " - /--/");
+		}
 	}
 	
 	// getters and setters
@@ -49,9 +61,9 @@ public class Show extends Media {
 	
 	private void updateMediaInfo() {
 		if(airing)
-			setMediaInfo("still airing, in genre \"" + fitToSpace(this.genre, 18)  + "\" with " + this.numOfSeasons + " seasons");
+			setMediaInfo("airing, in genre \"" + fitToSpace(this.genre, 18)  + "\" with " + this.numOfSeasons + " seasons");
 		else
-			setMediaInfo("finished airing, in genre \"" + fitToSpace(this.genre, 18)  + "\" with " + this.numOfSeasons + " seasons");
+			setMediaInfo("not airing, in genre \"" + fitToSpace(this.genre, 18)  + "\" with " + this.numOfSeasons + " seasons");
     }
 	
 	private void updateYearString(String yearString) {

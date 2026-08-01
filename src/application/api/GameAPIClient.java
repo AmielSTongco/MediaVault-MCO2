@@ -10,7 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +25,7 @@ public class GameAPIClient {
 
 	private static final String TOKEN_URL = "https://id.twitch.tv/oauth2/token";
 	private static final String GAMES_URL = "https://api.igdb.com/v4/games";
+	private static final String TIME_TO_BEAT_URL = "https://api.igdb.com/v4/game_time_to_beats";
 	private static final String IMAGE_URL = "https://images.igdb.com/igdb/image/upload/t_cover_big/";
 
 	private final String clientId;
@@ -44,19 +48,12 @@ public class GameAPIClient {
 		String safeQuery = query.replace("\\", "\\\\").replace("\"", "\\\"");
 
 		String body = "search \"" + safeQuery + "\"; "
-					+ "fields name, first_release_date, cover.image_id, genres.name, "
-					+ "involved_companies.company.name, involved_companies.developer; "
-					+ "where version_parent = null; "
-					+ "limit 10;";
+				+ "fields id, name, first_release_date, cover.image_id, genres.name, "
+				+ "involved_companies.company.name, involved_companies.developer; "
+				+ "where version_parent = null; "
+				+ "limit 10;";
 
-		HttpRequest request = HttpRequest.newBuilder()
-				.uri(URI.create(GAMES_URL))
-				.header("Client-ID", clientId)
-				.header("Authorization", "Bearer " + token)
-				.header("Content-Type", "text/plain")
-				.POST(HttpRequest.BodyPublishers.ofString(body))
-				.build();
-
+		HttpRequest request = createIGDBRequest(GAMES_URL, token, body);
 		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
 		if(response.statusCode() != 200)
@@ -68,13 +65,16 @@ public class GameAPIClient {
 		if(!results.isArray())
 			return games;
 
+		Map<Integer, Integer> playtimes = getAveragePlaytimes(results, token);
+
 		for(JsonNode item : results) {
+			int gameId = getIntValue(item, "id");
 			String title = getTextValue(item, "name");
 			String creator = getDeveloper(item);
 			String genre = getGenre(item);
 			String imagePath = getImagePath(item);
 			int yearReleased = getReleaseYear(item);
-			int avgPlaytimeMins = 0;
+			int avgPlaytimeMins = playtimes.getOrDefault(gameId, 0);
 
 			Status status = Status.PLANNED;
 			double userRating = 0.0;
@@ -92,11 +92,60 @@ public class GameAPIClient {
 				imagePath
 			);
 
-			game.setMediaId(getIntValue(item, "id"));
+			game.setMediaId(gameId);
 			games.add(game);
 		}
 
 		return games;
+	}
+
+	private Map<Integer, Integer> getAveragePlaytimes(JsonNode gameResults, String token) throws IOException, InterruptedException {
+		Map<Integer, Integer> playtimes = new HashMap<>();
+		StringJoiner ids = new StringJoiner(",");
+
+		for(JsonNode item : gameResults) {
+			int gameId = getIntValue(item, "id");
+
+			if(gameId > 0)
+				ids.add(String.valueOf(gameId));
+		}
+
+		if(ids.length() > 0) {
+			String body = "fields game_id, normally; "
+					+ "where game_id = (" + ids + "); "
+					+ "limit 10;";
+
+			HttpRequest request = createIGDBRequest(TIME_TO_BEAT_URL, token, body);
+			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+			if(response.statusCode() != 200)
+				throw new IOException("IGDB time-to-beat request failed with status code " + response.statusCode() + ": " + response.body());
+
+			JsonNode results = mapper.readTree(response.body());
+
+			if(results.isArray()) {
+				for(JsonNode item : results) {
+					int gameId = getIntValue(item, "game_id");
+					int normallySeconds = getIntValue(item, "normally");
+					int normallyMinutes = normallySeconds / 60;
+
+					playtimes.put(gameId, normallyMinutes);
+				}
+			}
+		}
+
+		return playtimes;
+	}
+
+	private HttpRequest createIGDBRequest(String url, String token, String body) {
+		return HttpRequest.newBuilder()
+				.uri(URI.create(url))
+				.header("Client-ID", clientId)
+				.header("Authorization", "Bearer " + token)
+				.header("Accept", "application/json")
+				.header("Content-Type", "text/plain")
+				.POST(HttpRequest.BodyPublishers.ofString(body))
+				.build();
 	}
 
 	private String getAccessToken() throws IOException, InterruptedException {
@@ -104,9 +153,9 @@ public class GameAPIClient {
 
 		if(accessToken == null || currentTime >= tokenExpiration) {
 			String url = TOKEN_URL
-					   + "?client_id=" + URLEncoder.encode(clientId, StandardCharsets.UTF_8)
-					   + "&client_secret=" + URLEncoder.encode(clientSecret, StandardCharsets.UTF_8)
-					   + "&grant_type=client_credentials";
+					+ "?client_id=" + URLEncoder.encode(clientId, StandardCharsets.UTF_8)
+					+ "&client_secret=" + URLEncoder.encode(clientSecret, StandardCharsets.UTF_8)
+					+ "&grant_type=client_credentials";
 
 			HttpRequest request = HttpRequest.newBuilder()
 					.uri(URI.create(url))

@@ -19,7 +19,7 @@ public class Media {
 		this.mediaId = mediaId;
 		this.type = type;
 		this.title = title;
-		this.creator = creator;
+		setCreator(creator);
 		this.status = status;
 		this.userRating = userRating;
 		this.review = review;
@@ -30,8 +30,8 @@ public class Media {
 	// new
 	public Media(String title, String creator, int year, Status status, double userRating, String review, String imagePath) {
 		this.title = title;
-		this.creator = creator;
-		this.year = year;
+		setCreator(creator);
+		setYearString(String.valueOf(year));
 		this.status = status;
 		this.userRating = userRating;
 		this.review = review;
@@ -53,15 +53,15 @@ public class Media {
 	    	return String.valueOf(userRating);
 	    }
 	    	
-	    return "0.0";
+	    return "/--/";
 	}
 	
 	public String getReviewedStatus() {
 		if(status == Status.COMPLETED) {
 			if(review.equals(""))
-				return "no";
+				return "Unreviewed";
 			else
-				return "yes";
+				return "Reviewed";
 		}
 	    	
 	    return "/-complete to review-/";
@@ -81,7 +81,12 @@ public class Media {
 	public void setMediaType(Type type) {this.type = type;}
 	public void setTitle(String title) {this.title = title;}
 	public void setStatus(Status status) {this.status = status;}
-	public void setCreator(String creator) {this.creator = creator;}
+	public void setCreator(String creator) {
+		if(creator == null || creator.isBlank() || creator.equals(""))
+			this.creator = "/--/";
+		else
+			this.creator = creator;
+	}
 	public void setUserRating(double userRating) {this.userRating = userRating;}
 	public void setReview(String review) {this.review = review;}
 	
@@ -90,6 +95,9 @@ public class Media {
     }
 
     protected void setYearString(String yearString) {
-        this.yearString = yearString;
+    	if(yearString == null || yearString.equals("0"))
+    		this.yearString = "/--/";
+    	else
+    		this.yearString = yearString;
     }
 }

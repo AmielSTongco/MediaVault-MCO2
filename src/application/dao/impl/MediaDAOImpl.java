@@ -103,164 +103,178 @@ public class MediaDAOImpl{
 	 * @throws SQLException if a database error occurs
 	 */
 	public int addMedia(Media media) throws SQLException {
-		
-		// Stores the ID of the media after it is found or inserted.
-	    int mediaId = -1;
-	    
-	    // Database table names used depending on the media type.
-	    String table = "";
-	    String playlistTable = "";
-	    String junctionTable = "";
-	    String reviewTable = "";
-	    String playlistTitle = "";
-	    String junctionMediaIdColumn = "";
+		int mediaId = -1;
 
-	    // Set up strings
-	    if (media instanceof Song) {
-	        table = "songs";
-	        playlistTable = "songs_playlists";
-	        junctionTable = "songs_playlist_items";
-	        reviewTable = "songs_reviews";
-	        playlistTitle = "all_songs";
-	        junctionMediaIdColumn = "song_id";
-	    } else if (media instanceof Game) {
-	        table = "games";
-	        playlistTable = "games_playlists";
-	        junctionTable = "games_playlist_items";
-	        reviewTable = "games_reviews";
-	        playlistTitle = "all_games";
-	        junctionMediaIdColumn = "game_id";
-	    }
-	    else if (media instanceof Show) {
-	        table = "shows";
-	        playlistTable = "shows_playlists";
-	        junctionTable = "shows_playlist_items";
-	        reviewTable = "shows_reviews";
-	        playlistTitle = "all_shows";
-	        junctionMediaIdColumn = "show_id";
-	    }
+		String table = "";
+		String playlistTable = "";
+		String junctionTable = "";
+		String reviewTable = "";
+		String playlistTitle = "";
+		String junctionMediaIdColumn = "";
 
-	    // Check if media is already added
-	    String findMediaSql = "SELECT id FROM " + table + " WHERE title = ? AND creator = ?";
-	    try (PreparedStatement stmt = conn.prepareStatement(findMediaSql)) {
-	        stmt.setString(1, media.getTitle());
-	        stmt.setString(2, media.getCreator());
-
-	        try (ResultSet rs = stmt.executeQuery()) {
-	            if (rs.next()) mediaId = rs.getInt("id");
-	        }
-	    }
-	    
-	    // If media does not exists, do:
-	    if (mediaId <= 0) {
-	    	// Add new entry
-	    	String insertMedia = "INSERT INTO " + table + "(title, creator) VALUES (?, ?)";
-	    	try (PreparedStatement stmt = conn.prepareStatement(insertMedia, Statement.RETURN_GENERATED_KEYS)) {
-	    		stmt.setString(1, media.getTitle());
-	    		stmt.setString(2, media.getCreator());
-	    		stmt.executeUpdate();
-	    		try (ResultSet keys = stmt.getGeneratedKeys()) {
-	    	        if (keys.next())
-	    	            mediaId = keys.getInt(1);
-	    	    }
-	    		
-	    	}
-	    }
-	    
-	    // Insert media specific data 
-        switch (table) {
-            case "songs":
-                Song song = (Song) media;
-                String insertSong = "UPDATE songs "
-                				  + "SET album = ?, year = ?, runtime_seconds = ? "
-                				  + "WHERE id = ?";
-                try (PreparedStatement stmt = conn.prepareStatement(insertSong)) {
-                    stmt.setString(1, song.getAlbum());
-                    stmt.setInt(2, song.getYearReleased());
-                    stmt.setInt(3, song.getRuntimeSeconds());
-                    stmt.setInt(4, mediaId);
-                    stmt.executeUpdate();
-                }
-                break;
-
-            case "games":
-                Game game = (Game) media;
-                String insertGame = "UPDATE games "
-                				  + "SET avg_playtime_mins = ?, year = ?, genre = ? "
-                				  + "WHERE id = ?";
-                try (PreparedStatement stmt = conn.prepareStatement(insertGame)) {
-                    stmt.setInt(1, game.getAvgPlaytimeMins());
-                    stmt.setInt(2, game.getYearReleased());
-                    stmt.setString(3, game.getGenre());
-                    stmt.setInt(4, mediaId);
-                    stmt.executeUpdate();
-                }
-                break;
-            case "shows":
-            	Show show = (Show) media;
-                String insertShow = "UPDATE shows "
-                				  + "SET num_of_seasons = ?, year_start = ?, year_end = ?, airing = ?, genre = ? "
-                				  + "WHERE id = ?";
-                try (PreparedStatement stmt = conn.prepareStatement(insertShow)) {
-                    stmt.setInt(1, show.getNumOfSeasons());
-                    stmt.setInt(2, show.getYearStart());
-                    stmt.setInt(3, show.getYearEnd());
-                    stmt.setBoolean(4, show.isAiring());
-                    stmt.setString(5, show.getGenre());
-                    stmt.setInt(6, mediaId);
-                    stmt.executeUpdate();
-                }
-                break;
-        }
-
-	    // Generic fetch all_media table
-	    int playlistId = -1;
-	    String findPlaylistSql = "SELECT id FROM " + playlistTable + " WHERE user_id = ? AND title = ?";
-	    try (PreparedStatement stmt = conn.prepareStatement(findPlaylistSql)) {
-	        stmt.setInt(1, userId);
-	        stmt.setString(2, playlistTitle);
-	        try (ResultSet rs = stmt.executeQuery()) { if (rs.next()) playlistId = rs.getInt("id"); }
-	    }
-
-	    if (playlistId == -1) {
-	        String insertPlaylistSql = "INSERT INTO " + playlistTable + " (user_id, title) VALUES (?, ?)";
-	        
-	        try (PreparedStatement stmt = conn.prepareStatement(insertPlaylistSql, Statement.RETURN_GENERATED_KEYS)) {
-	            stmt.setInt(1, userId);
-	            stmt.setString(2, playlistTitle);
-	            
-	            stmt.executeUpdate();
-	            try (ResultSet keys = stmt.getGeneratedKeys()) { if (keys.next()) playlistId = keys.getInt(1); }
-	        }
-	    }
-	    
-	    // Add to playlist_items table
-	    String insertItemSql = "INSERT OR IGNORE INTO " + junctionTable + " (playlist_id, " + junctionMediaIdColumn + ") "
-	    					 + "VALUES (?, ?) ";
-	    
-		try (PreparedStatement stmt = conn.prepareStatement(insertItemSql)) {
-			stmt.setInt(1, playlistId);
-		    stmt.setInt(2, mediaId);
-		    stmt.executeUpdate();
+		if(media instanceof Song) {
+			table = "songs";
+			playlistTable = "songs_playlists";
+			junctionTable = "songs_playlist_items";
+			reviewTable = "songs_reviews";
+			playlistTitle = "all_songs";
+			junctionMediaIdColumn = "song_id";
 		}
-		
-		String insertReviewSql = "INSERT OR IGNORE INTO " + reviewTable + " (user_id, " + junctionMediaIdColumn + ", status, user_rating, review) "
-				 + "VALUES (?, ?, ?, ?, ?) ";
+		else if(media instanceof Game) {
+			table = "games";
+			playlistTable = "games_playlists";
+			junctionTable = "games_playlist_items";
+			reviewTable = "games_reviews";
+			playlistTitle = "all_games";
+			junctionMediaIdColumn = "game_id";
+		}
+		else if(media instanceof Show) {
+			table = "shows";
+			playlistTable = "shows_playlists";
+			junctionTable = "shows_playlist_items";
+			reviewTable = "shows_reviews";
+			playlistTitle = "all_shows";
+			junctionMediaIdColumn = "show_id";
+		}
 
-		try (PreparedStatement stmt = conn.prepareStatement(insertReviewSql)) {
+		String findMediaSql = "SELECT id FROM " + table + " WHERE title = ? AND creator = ?";
+
+		try(PreparedStatement stmt = conn.prepareStatement(findMediaSql)) {
+			stmt.setString(1, media.getTitle());
+			stmt.setString(2, media.getCreator());
+
+			try(ResultSet rs = stmt.executeQuery()) {
+				if(rs.next())
+					mediaId = rs.getInt("id");
+			}
+		}
+
+		if(mediaId <= 0) {
+			String insertMedia = "INSERT INTO " + table + " (title, creator, image_path) VALUES (?, ?, ?)";
+
+			try(PreparedStatement stmt = conn.prepareStatement(insertMedia, Statement.RETURN_GENERATED_KEYS)) {
+				stmt.setString(1, media.getTitle());
+				stmt.setString(2, media.getCreator());
+				stmt.setString(3, media.getImagePath());
+				stmt.executeUpdate();
+
+				try(ResultSet keys = stmt.getGeneratedKeys()) {
+					if(keys.next())
+						mediaId = keys.getInt(1);
+				}
+			}
+		}
+
+		switch(table) {
+			case "songs":
+				Song song = (Song)media;
+
+				String updateSong = "UPDATE songs "
+								  + "SET album = ?, year = ?, runtime_seconds = ?, image_path = ? "
+								  + "WHERE id = ?";
+
+				try(PreparedStatement stmt = conn.prepareStatement(updateSong)) {
+					stmt.setString(1, song.getAlbum());
+					stmt.setInt(2, song.getYearReleased());
+					stmt.setInt(3, song.getRuntimeSeconds());
+					stmt.setString(4, song.getImagePath());
+					stmt.setInt(5, mediaId);
+					stmt.executeUpdate();
+				}
+				break;
+
+			case "games":
+				Game game = (Game)media;
+
+				String updateGame = "UPDATE games "
+								  + "SET avg_playtime_mins = ?, year = ?, genre = ?, image_path = ? "
+								  + "WHERE id = ?";
+
+				try(PreparedStatement stmt = conn.prepareStatement(updateGame)) {
+					stmt.setInt(1, game.getAvgPlaytimeMins());
+					stmt.setInt(2, game.getYearReleased());
+					stmt.setString(3, game.getGenre());
+					stmt.setString(4, game.getImagePath());
+					stmt.setInt(5, mediaId);
+					stmt.executeUpdate();
+				}
+				break;
+
+			case "shows":
+				Show show = (Show)media;
+
+				String updateShow = "UPDATE shows "
+								  + "SET num_of_seasons = ?, year_start = ?, year_end = ?, airing = ?, genre = ?, image_path = ? "
+								  + "WHERE id = ?";
+
+				try(PreparedStatement stmt = conn.prepareStatement(updateShow)) {
+					stmt.setInt(1, show.getNumOfSeasons());
+					stmt.setInt(2, show.getYearStart());
+					stmt.setInt(3, show.getYearEnd());
+					stmt.setBoolean(4, show.isAiring());
+					stmt.setString(5, show.getGenre());
+					stmt.setString(6, show.getImagePath());
+					stmt.setInt(7, mediaId);
+					stmt.executeUpdate();
+				}
+				break;
+		}
+
+		int playlistId = -1;
+
+		String findPlaylistSql = "SELECT id FROM " + playlistTable + " WHERE user_id = ? AND title = ?";
+
+		try(PreparedStatement stmt = conn.prepareStatement(findPlaylistSql)) {
+			stmt.setInt(1, userId);
+			stmt.setString(2, playlistTitle);
+
+			try(ResultSet rs = stmt.executeQuery()) {
+				if(rs.next())
+					playlistId = rs.getInt("id");
+			}
+		}
+
+		if(playlistId == -1) {
+			String insertPlaylistSql = "INSERT INTO " + playlistTable + " (user_id, title) VALUES (?, ?)";
+
+			try(PreparedStatement stmt = conn.prepareStatement(insertPlaylistSql, Statement.RETURN_GENERATED_KEYS)) {
+				stmt.setInt(1, userId);
+				stmt.setString(2, playlistTitle);
+				stmt.executeUpdate();
+
+				try(ResultSet keys = stmt.getGeneratedKeys()) {
+					if(keys.next())
+						playlistId = keys.getInt(1);
+				}
+			}
+		}
+
+		String insertItemSql = "INSERT OR IGNORE INTO " + junctionTable
+							 + " (playlist_id, " + junctionMediaIdColumn + ") VALUES (?, ?)";
+
+		try(PreparedStatement stmt = conn.prepareStatement(insertItemSql)) {
+			stmt.setInt(1, playlistId);
+			stmt.setInt(2, mediaId);
+			stmt.executeUpdate();
+		}
+
+		String insertReviewSql = "INSERT OR IGNORE INTO " + reviewTable
+							   + " (user_id, " + junctionMediaIdColumn + ", status, user_rating, review) "
+							   + "VALUES (?, ?, ?, ?, ?)";
+
+		try(PreparedStatement stmt = conn.prepareStatement(insertReviewSql)) {
 			stmt.setInt(1, userId);
 			stmt.setInt(2, mediaId);
 			stmt.setString(3, media.getStatus().toDbString());
 			stmt.setDouble(4, media.getUserRating());
 			stmt.setString(5, media.getReview());
-			
 			stmt.executeUpdate();
-			
-		} catch(SQLException e) {
+		}
+		catch(SQLException e) {
 			e.printStackTrace();
 		}
 
-	    return mediaId;
+		return mediaId;
 	}
 	
 	

@@ -28,7 +28,7 @@ public class Game extends Media{
 	public String getGenre() {return genre;}
 	public int getAvgPlaytimeMins() {return avgPlaytimeMins;}
 	public int getYearReleased() {return yearReleased;}
-	public void setAvgPlaytimeMins(int avgPlaytimeMins) {this.avgPlaytimeMins = avgPlaytimeMins;}
+	public void setAvgPlaytimeMins(int avgPlaytimeMins) { this.avgPlaytimeMins = avgPlaytimeMins; }
 	
 	private void updateMediaInfo() {
         setMediaInfo("in genre \"" + fitToSpace(this.genre, 18)  + "\" of average playtime " + this.avgPlaytimeMins + " mins");
