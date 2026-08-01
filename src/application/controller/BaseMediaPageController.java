@@ -20,7 +20,6 @@ import javafx.fxml.FXMLLoader;
 //import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
@@ -82,7 +81,7 @@ public abstract class BaseMediaPageController {
 	private final List<NavigationButton> navigationButtons = new ArrayList<>();
 	private final PauseTransition resizeDelay = new PauseTransition(Duration.millis(220));
 
-	private static final int navigationYOffset = 20;
+	private static final int navigationYOffset = 10;
 	private static final double navigationButtonOffset = 10;
 
 	protected void initializeBase() {
@@ -107,17 +106,17 @@ public abstract class BaseMediaPageController {
 
 		mediaLabel.setText(mediaType.getTitle());
 
-		rootPane.getStyleClass().removeAll("theme-songs", "theme-games", "theme-shows");
-		rootPane.getStyleClass().add(mediaType.getStyleClass());
+		rootStackPane.getStyleClass().removeAll("theme-songs", "theme-games", "theme-shows");
+		rootStackPane.getStyleClass().add(mediaType.getStyleClass());
 
 		switch(mediaType) {
-			case Type.SONG:
+			case SONG:
 				mediaLogo.setImage(loadImage("/resources/application/images/icons/songs-icon.png"));
 				break;
-			case Type.GAME:
+			case GAME:
 				mediaLogo.setImage(loadImage("/resources/application/images/icons/games-icon.png"));
 				break;
-			case Type.SHOW:
+			case SHOW:
 				mediaLogo.setImage(loadImage("/resources/application/images/icons/shows-icon.png"));
 				break;
 		}
@@ -146,8 +145,6 @@ public abstract class BaseMediaPageController {
 		backgroundCanvas.setMouseTransparent(true);
 		backgroundCanvas.setCache(true);
 
-		resizeDelay.setOnFinished(event -> drawBackground());
-
 		rootStackPane.widthProperty().addListener((observable, oldValue, newValue) ->
 			resizeDelay.playFromStart()
 		);
@@ -155,33 +152,6 @@ public abstract class BaseMediaPageController {
 		rootStackPane.heightProperty().addListener((observable, oldValue, newValue) ->
 			resizeDelay.playFromStart()
 		);
-
-		drawBackground();
-	}
-
-	private void drawBackground() {
-		GraphicsContext gc = backgroundCanvas.getGraphicsContext2D();
-
-		double width = backgroundCanvas.getWidth();
-		double height = backgroundCanvas.getHeight();
-
-		gc.clearRect(0, 0, width, height);
-
-		if(width > 0 && height > 0) {
-			double spacing = 55;
-			double totalSize = width + height;
-
-			gc.setFill(Color.rgb(100, 105, 170, 0.15));
-
-			for(double y=spacing/2; y < height; y+=spacing) {
-				for(double x=spacing/2; x < width; x+=spacing) {
-					double positionRatio = (x + y)/totalSize;
-					double radius = 1.5 + positionRatio*4.5;
-
-					gc.fillOval(x - radius, y - radius, radius*2, radius*2);
-				}
-			}
-		}
 	}
 
 	private void setupMediaLabelEffect() {

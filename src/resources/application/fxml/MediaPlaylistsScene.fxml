@@ -51,43 +51,42 @@
 	
 	<!-- DYNAMIC CENTER CONTENT CARD -->
     <center>
-       <VBox prefHeight="200.0" prefWidth="100.0" spacing="15.0" styleClass="content-card" BorderPane.alignment="CENTER">
-         <children>
-            <HBox prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <ImageView fx:id="mediaLogo" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-                  
-                  <Region prefWidth="20.0" />
-                  
-                  <!-- Section Title -->
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-header-title" text="My Playlists" />
-               </children>
-            </HBox>
-            
-            <!-- Table Container -->
-            <TableView fx:id="mediaPlaylistTable" prefHeight="470.0" prefWidth="1360.0">
-				<columns>
-					<TableColumn fx:id="numberColumn" prefWidth="10.0" minWidth="50.0" maxWidth="50.0" resizable="false" sortable="false" text="#" />
-					<TableColumn fx:id="titleColumn" prefWidth="180.0" resizable="false" sortable="false" text="Title" />
-					<TableColumn fx:id="totalColumn" prefWidth="150.0" resizable="false" text="Total" />
-					<TableColumn fx:id="completedColumn" prefWidth="100.0" resizable="false" text="Completed" />
-					<TableColumn fx:id="inProgressColumn" prefWidth="130.0" resizable="false" sortable="false" text="In Progress" />
-					<TableColumn fx:id="plannedColumn" prefWidth="80.0" resizable="false" sortable="false" text="Planned" />
-					<TableColumn fx:id="avgRatingColumn" prefWidth="120.0" resizable="false" sortable="false" text="Average Rating" />
-				</columns>
-			</TableView>
-            
-            <!-- Extendable Navigation Pane -->
-			<HBox fx:id="extendableNavigationPane" alignment="CENTER" minHeight="150.0" prefHeight="150.0" prefWidth="371.0" spacing="25.0">
-				<Button fx:id="addButton" mnemonicParsing="false" styleClass="navigation-button" />
-			
-				<Button fx:id="homeButton" mnemonicParsing="false" styleClass="navigation-button" />
-			</HBox>
-         </children>
-         <BorderPane.margin>
-            <Insets bottom="10.0" left="20.0" right="20.0" top="5.0" />
-         </BorderPane.margin>
-      </VBox>
-    </center>
+		<VBox spacing="10.0" styleClass="content-card" BorderPane.alignment="CENTER">
+			<children>
+				<HBox alignment="CENTER_LEFT" minHeight="120.0" prefHeight="120.0" maxHeight="120.0" VBox.vgrow="NEVER">
+					<children>
+						<ImageView fx:id="mediaLogo" fitHeight="120.0" fitWidth="160.0" pickOnBounds="true" preserveRatio="true" />
+	
+						<Region prefWidth="20.0" />
+	
+						<Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-header-title" text="My Playlists" />
+					</children>
+				</HBox>
+	
+				<TableView fx:id="mediaPlaylistTable" minHeight="660.0" prefHeight="660.0" maxHeight="660.0" prefWidth="1360.0" VBox.vgrow="NEVER">
+					<columns>
+						<TableColumn fx:id="numberColumn" minWidth="50.0" prefWidth="50.0" maxWidth="50.0" resizable="false" sortable="false" text="#" />
+						<TableColumn fx:id="titleColumn" prefWidth="180.0" resizable="false" sortable="false" text="Title" />
+						<TableColumn fx:id="totalColumn" prefWidth="150.0" resizable="false" sortable="false" text="Total" />
+						<TableColumn fx:id="completedColumn" prefWidth="100.0" resizable="false" sortable="false" text="Completed" />
+						<TableColumn fx:id="inProgressColumn" prefWidth="130.0" resizable="false" sortable="false" text="In Progress" />
+						<TableColumn fx:id="plannedColumn" prefWidth="80.0" resizable="false" sortable="false" text="Planned" />
+						<TableColumn fx:id="avgRatingColumn" prefWidth="120.0" resizable="false" sortable="false" text="Average Rating" />
+					</columns>
+				</TableView>
+	
+				<HBox fx:id="extendableNavigationPane" alignment="CENTER" minHeight="120.0" prefHeight="120.0" maxHeight="120.0" prefWidth="371.0" spacing="25.0" VBox.vgrow="NEVER">
+					<children>
+						<Button fx:id="addButton" mnemonicParsing="false" styleClass="navigation-button" />
+						<Button fx:id="homeButton" mnemonicParsing="false" styleClass="navigation-button" />
+					</children>
+				</HBox>
+			</children>
+	
+			<BorderPane.margin>
+				<Insets bottom="5.0" left="20.0" right="20.0" top="5.0" />
+			</BorderPane.margin>
+		</VBox>
+	</center>
 </BorderPane>
 </StackPane>

@@ -23,6 +23,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 public abstract class TableBuilder {
 
@@ -44,10 +46,15 @@ public abstract class TableBuilder {
 		TableColumn<Media, String> infoColumn = owner.getInfoColumn();
 
 		mediaTable.setPrefWidth(1360);
-		mediaTable.setPrefHeight(550);
-		mediaTable.setMinHeight(550);
-		mediaTable.setMaxHeight(550);
+		mediaTable.setPrefHeight(616);
+		mediaTable.setMinHeight(616);
+		mediaTable.setMaxHeight(616);
 		mediaTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+		mediaTable.setFixedCellSize(55);
+		
+		mediaTable.setTranslateY(20);
+		
+		VBox.setVgrow(mediaTable, Priority.NEVER);
 
 		configureColumn(numberColumn, 70);
 		configureColumn(titleColumn, 310);
@@ -209,28 +216,33 @@ public abstract class TableBuilder {
 		TableColumn<MediaPlaylist, String> avgRatingColumn = owner.getAvgRatingColumn();
 
 		mediaPlaylistTable.setPrefWidth(1360);
-		mediaPlaylistTable.setPrefHeight(550);
-		mediaPlaylistTable.setMinHeight(550);
-		mediaPlaylistTable.setMaxHeight(550);
+		mediaPlaylistTable.setMinHeight(616);
+		mediaPlaylistTable.setPrefHeight(616);
+		mediaPlaylistTable.setMaxHeight(616);
 		mediaPlaylistTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
-
+		mediaPlaylistTable.setFixedCellSize(55);
+		
+		mediaPlaylistTable.setTranslateY(20);
+		
+		VBox.setVgrow(mediaPlaylistTable, Priority.NEVER);
+		
 		configureColumn(numberColumn, 70);
-		configureColumn(titleColumn, 310);
-		configureColumn(totalColumn, 230);
-		configureColumn(completedColumn, 130);
-		configureColumn(inProgressColumn, 220);
-		configureColumn(plannedColumn, 90);
-		configureColumn(avgRatingColumn, 220);
+		configureColumn(titleColumn, 350);
+		configureColumn(totalColumn, 210);
+		configureColumn(completedColumn, 210);
+		configureColumn(inProgressColumn, 210);
+		configureColumn(plannedColumn, 210);
+		configureColumn(avgRatingColumn, 350);
 
 		numberColumn.getStyleClass().add("number-column");
 
 		setupTextHeader(numberColumn, "#");
 		setupSearchHeader(titleColumn, "Title");
-		setupSearchHeader(totalColumn, "Total");
+		setupTextHeader(totalColumn, "Total");
 		setupTextHeader(completedColumn, "Completed");
 		setupTextHeader(inProgressColumn, "In Progress");
 		setupTextHeader(plannedColumn, "Planned");
-		setupTextHeader(avgRatingColumn, "Average Rating");
+		setupTextHeader(avgRatingColumn, "Average Rating across Completed Entries");
 
 		numberColumn.setCellValueFactory(cell ->
 			new ReadOnlyIntegerWrapper(mediaPlaylistTable.getItems().indexOf(cell.getValue()) + 1)
@@ -316,27 +328,27 @@ public abstract class TableBuilder {
 		totalColumn.setCellValueFactory(cell ->
 			new ReadOnlyStringWrapper(String.valueOf(cell.getValue().getTotalCount()))
 		);
-		totalColumn.setCellFactory(column -> createTextCell(30));
+		totalColumn.setCellFactory(column -> createTextCell(8));
 
 		completedColumn.setCellValueFactory(cell ->
 			new ReadOnlyStringWrapper(String.valueOf(cell.getValue().getCompletedCount()))
 		);
-		completedColumn.setCellFactory(column -> createTextCell(4));
+		completedColumn.setCellFactory(column -> createTextCell(8));
 
 		inProgressColumn.setCellValueFactory(cell ->
 			new ReadOnlyStringWrapper(String.valueOf(cell.getValue().getInProgressCount()))
 		);
-		inProgressColumn.setCellFactory(column -> createTextCell(30));
+		inProgressColumn.setCellFactory(column -> createTextCell(8));
 
 		plannedColumn.setCellValueFactory(cell ->
 			new ReadOnlyStringWrapper(String.valueOf(cell.getValue().getPlannedCount()))
 		);
-		plannedColumn.setCellFactory(column -> createTextCell(6));
+		plannedColumn.setCellFactory(column -> createTextCell(8));
 
 		avgRatingColumn.setCellValueFactory(cell ->
 			new ReadOnlyStringWrapper(String.valueOf(cell.getValue().getAvgRatingCount()))
 		);
-		avgRatingColumn.setCellFactory(column -> createTextCell(30));
+		avgRatingColumn.setCellFactory(column -> createTextCell(8));
 	}
 
 	private static void configureColumn(TableColumn<?, ?> column, double width) {
