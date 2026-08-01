@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+
+<StackPane prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: rgba(0,0,0,0.60);" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.AddMediaController">
+	<children>
+		<StackPane fx:id="popupContainer" maxHeight="720.0" maxWidth="1220.0" minHeight="720.0" minWidth="1220.0" prefHeight="720.0" prefWidth="1220.0" styleClass="add-media-popup">
+			<children>
+				<Pane fx:id="dotGridPane" mouseTransparent="true" />
+
+				<HBox alignment="TOP_LEFT" maxHeight="720.0" maxWidth="1220.0" minHeight="720.0" minWidth="1220.0" prefHeight="720.0" prefWidth="1220.0" spacing="45.0">
+					<padding>
+						<Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+					</padding>
+
+					<children>
+						<VBox minWidth="590.0" prefWidth="590.0" spacing="15.0">
+							<children>
+								<HBox alignment="TOP_LEFT" spacing="20.0">
+									<children>
+										<StackPane minHeight="235.0" minWidth="235.0" prefHeight="235.0" prefWidth="235.0" styleClass="add-media-image-pane">
+											<children>
+												<ImageView fx:id="mediaPicture" fitHeight="235.0" fitWidth="235.0" pickOnBounds="true" preserveRatio="true">
+													<clip>
+														<Rectangle arcHeight="55.0" arcWidth="55.0" height="235.0" width="235.0" />
+													</clip>
+												</ImageView>
+											</children>
+										</StackPane>
+
+										<VBox fx:id="manualTitleBox" alignment="CENTER" minHeight="235.0" prefHeight="235.0" spacing="10.0" HBox.hgrow="ALWAYS">
+											<children>
+												<TextField fx:id="titleField" prefHeight="60.0" promptText="Title" styleClass="add-media-input" />
+												<TextField fx:id="creatorField" prefHeight="50.0" promptText="by Artist" styleClass="add-media-input" />
+											</children>
+										</VBox>
+
+										<VBox fx:id="automaticTitleBox" alignment="CENTER_LEFT" managed="false" minHeight="235.0" prefHeight="235.0" spacing="5.0" styleClass="automatic-media-header" visible="false" HBox.hgrow="ALWAYS">
+											<padding>
+												<Insets left="15.0" right="15.0" />
+											</padding>
+											<children>
+												<Label fx:id="automaticTitleLabel" maxWidth="310.0" styleClass="automatic-media-title" text="Media Title" wrapText="true" />
+												<Label fx:id="automaticCreatorLabel" maxWidth="310.0" styleClass="automatic-media-creator" text="by Creator" wrapText="true" />
+											</children>
+										</VBox>
+									</children>
+								</HBox>
+
+								<Label fx:id="yearLabel" styleClass="add-media-detail-label" text="Year Released:" />
+
+								<TextField fx:id="yearField" maxWidth="280.0" prefHeight="55.0" promptText="#" styleClass="add-media-input" />
+
+								<HBox fx:id="yearEndBox" alignment="CENTER_LEFT" managed="false" spacing="15.0" visible="false">
+									<children>
+										<Label styleClass="add-media-detail-label" text="Year Ended:" />
+										<TextField fx:id="yearEndField" maxWidth="200.0" prefHeight="55.0" promptText="#" styleClass="add-media-input" />
+									</children>
+								</HBox>
+
+								<Label fx:id="detailOneLabel" styleClass="add-media-detail-label" text="Album:" />
+
+								<TextField fx:id="detailOneField" prefHeight="55.0" promptText="..." styleClass="add-media-input" />
+
+								<VBox fx:id="songRuntimeBox" spacing="8.0">
+									<children>
+										<Label styleClass="add-media-detail-label" text="Runtime:" />
+
+										<HBox alignment="CENTER_LEFT" spacing="15.0">
+											<children>
+												<TextField fx:id="runtimeMinutesField" maxWidth="140.0" prefHeight="55.0" promptText="#" styleClass="add-media-input" />
+												<Label styleClass="runtime-unit-label" text="minutes" />
+												<TextField fx:id="runtimeSecondsField" maxWidth="95.0" prefHeight="55.0" promptText="#" styleClass="add-media-input" />
+												<Label styleClass="runtime-unit-label" text="seconds" />
+											</children>
+										</HBox>
+									</children>
+								</VBox>
+
+								<VBox fx:id="gamePlaytimeBox" managed="false" spacing="8.0" visible="false">
+									<children>
+										<Label styleClass="add-media-detail-label" text="Average Playtime:" />
+
+										<HBox alignment="CENTER_LEFT" spacing="15.0">
+											<children>
+												<TextField fx:id="playtimeField" maxWidth="200.0" prefHeight="55.0" promptText="#" styleClass="add-media-input" />
+												<Label styleClass="runtime-unit-label" text="minutes" />
+											</children>
+										</HBox>
+									</children>
+								</VBox>
+
+								<VBox fx:id="showDetailsBox" managed="false" spacing="8.0" visible="false">
+									<children>
+										<Label styleClass="add-media-detail-label" text="Number of Seasons:" />
+										<TextField fx:id="seasonsField" maxWidth="280.0" prefHeight="55.0" promptText="#" styleClass="add-media-input" />
+										<CheckBox fx:id="airingCheckBox" styleClass="add-media-checkbox" text="Currently Airing" />
+									</children>
+								</VBox>
+							</children>
+						</VBox>
+
+						<VBox minWidth="520.0" prefWidth="520.0" spacing="14.0">
+							<children>
+								<Label styleClass="add-media-detail-label" text="Status:" />
+
+								<ComboBox fx:id="statusComboBox" maxWidth="1.7976931348623157E308" prefHeight="55.0" promptText="Select Status" styleClass="add-media-combo" />
+
+								<Label styleClass="add-media-detail-label" text="My Rating:" />
+
+								<TextField fx:id="ratingField" prefHeight="55.0" promptText="#" styleClass="add-media-input" />
+
+								<Label styleClass="add-media-detail-label" text="My Review:" />
+
+								<TextArea fx:id="reviewArea" prefHeight="260.0" promptText="..." styleClass="add-media-review" wrapText="true" />
+
+								<Label fx:id="statusLabel" styleClass="add-media-status-label" />
+
+								<HBox alignment="CENTER" spacing="100.0">
+									<children>
+										<Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSaveAndAdd" prefHeight="60.0" prefWidth="280.0" styleClass="add-media-save-button" text="SAVE AND ADD" />
+										<Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancel" prefHeight="60.0" prefWidth="280.0" styleClass="add-media-cancel-button" text="CANCEL" />
+									</children>
+								</HBox>
+							</children>
+						</VBox>
+					</children>
+				</HBox>
+			</children>
+		</StackPane>
+	</children>
+</StackPane>

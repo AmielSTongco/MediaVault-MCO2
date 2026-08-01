@@ -38,6 +38,7 @@ import java.sql.SQLException;
 import application.dao.UserDAO;
 import javafx.geometry.Rectangle2D;
 
+
 public class MenuController {
     
 	@FXML

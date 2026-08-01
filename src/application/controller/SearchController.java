@@ -28,6 +28,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import java.sql.Connection;
 import application.model.UserSession;
+import javafx.scene.layout.StackPane;
 
 public class SearchController extends BaseMediaPageController implements MediaTableOwner {
 
@@ -114,7 +115,7 @@ public class SearchController extends BaseMediaPageController implements MediaTa
 
 		TableBuilder.createMediaTable(this);
 
-		handleDoubleClick(mediaTable, this::openMedia);
+		handleDoubleClick(mediaTable, this::openAutomaticAdd);
 
 		searchButton.setOnAction(event -> searchMedia());
 		songName.setOnAction(event -> searchMedia());
@@ -260,6 +261,25 @@ public class SearchController extends BaseMediaPageController implements MediaTa
 
 			Stage stage = (Stage)rootPane.getScene().getWindow();
 			stage.getScene().setRoot(root);
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void openAutomaticAdd(Media media) {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/AddMedia.fxml"));
+			StackPane popup = loader.load();
+
+			AddMediaController controller = loader.getController();
+			controller.setMediaType(mediaType);
+			controller.setAutomaticMode(true);
+			controller.setMedia(media);
+			controller.setCloseAction(() -> rootStackPane.getChildren().remove(popup));
+			//controller.setSaveAction(this::saveMedia);
+
+			rootStackPane.getChildren().add(popup);
 		}
 		catch(IOException e) {
 			e.printStackTrace();
