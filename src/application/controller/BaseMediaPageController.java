@@ -36,6 +36,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.control.TableView;
+import java.util.function.Consumer;
+import javafx.scene.input.MouseButton;
 
 public abstract class BaseMediaPageController {
 
@@ -83,6 +86,10 @@ public abstract class BaseMediaPageController {
 
 	private static final int navigationYOffset = 10;
 	private static final double navigationButtonOffset = 10;
+	
+	private Object pendingItem;
+	private long pendingClickTime;
+
 
 	protected void initializeBase() {
 		setupImages();
@@ -361,6 +368,35 @@ public abstract class BaseMediaPageController {
 
 	protected Image loadImage(String path) {
 		return new Image(getClass().getResourceAsStream(path));
+	}
+	
+	protected <T> void handleDoubleClick(TableView<T> table, Consumer<T> action) {
+		final long clickLimit = 500;
+
+		table.setOnMouseClicked(event -> {
+			if(event.getButton() == MouseButton.PRIMARY) {
+				T clickedItem = table.getSelectionModel().getSelectedItem();
+
+				if(clickedItem != null) {
+					long currentTime = System.currentTimeMillis();
+
+					if(clickedItem != pendingItem) {
+						pendingItem = clickedItem;
+						pendingClickTime = currentTime;
+					}
+					else if(currentTime - pendingClickTime <= clickLimit) {
+						action.accept(clickedItem);
+						pendingItem = null;
+						pendingClickTime = 0;
+					}
+					else {
+						table.getSelectionModel().clearSelection();
+						pendingItem = null;
+						pendingClickTime = 0;
+					}
+				}
+			}
+		});
 	}
 
 	private static class NavigationButton {

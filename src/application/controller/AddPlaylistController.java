@@ -74,6 +74,21 @@ public class AddPlaylistController {
 
 			try {
 				if(valid) {
+					
+					if(playlistPicturePath == null || playlistPicturePath.isBlank()) {
+						switch(mediaType) {
+							case Type.SONG:
+								playlistPicturePath = "/resources/application/images/icons/default-song-playlist-icon.png";
+								break;
+							case Type.GAME:
+								playlistPicturePath = "/resources/application/images/icons/default-game-playlist-icon.png";
+								break;
+							case Type.SHOW:
+								playlistPicturePath = "/resources/application/images/icons/default-show-playlist-icon.png";
+								break;
+						}
+					}
+
 					boolean created = mediaPlaylistDAO.createPlaylist(playlistName, playlistPicturePath, mediaType);
 					
 					if (created) {
@@ -94,7 +109,7 @@ public class AddPlaylistController {
 	@FXML
 	private void handlePlaylistPicture() {
 		FileChooser chooser = new FileChooser();
-		chooser.setTitle("Select Profile Picture");
+		chooser.setTitle("Select Playlist Picture");
 		chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif"));
 
 		File selectedFile = chooser.showOpenDialog(playlistPicture.getScene().getWindow());
@@ -111,7 +126,7 @@ public class AddPlaylistController {
 	        rect.setEffect(new Reflection());
 	        playlistPicture.setClip(rect);
 
-			showStatus("Profile picture selected.", false);
+			showStatus("Playlist picture selected.", false);
 		}
 	}
 

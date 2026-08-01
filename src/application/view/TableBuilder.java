@@ -318,9 +318,28 @@ public abstract class TableBuilder {
 				}
 				else {
 					title.setText(playlist.getTitle());
-					cover.setImage(loadMediaImage(playlist.getImagePath()));
+
+					String path = playlist.getImagePath();
+
+					if(path != null && !path.isBlank()) {
+						File file = new File(path);
+
+						if(file.exists())
+							cover.setImage(new Image(file.toURI().toString()));
+						else {
+							java.net.URL resource = TableBuilder.class.getResource(path);
+
+							if(resource != null)
+								cover.setImage(new Image(resource.toExternalForm()));
+							else
+								cover.setImage(null);
+						}
+					}
+					else
+						cover.setImage(null);
+
 					setText(null);
-					setGraphic(wrapper);
+					setGraphic(content);
 				}
 			}
 		});

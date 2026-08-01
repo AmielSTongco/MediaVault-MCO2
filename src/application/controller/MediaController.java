@@ -91,11 +91,11 @@ public class MediaController {
     @FXML
     private Button homeButton;
 
-    	@FXML 
-    	private Label avgPlaytimeLabel;
-    	
-    	@FXML
-    	private TextField avgPlaytimeField;
+	@FXML 
+	private Label avgPlaytimeLabel;
+	
+	@FXML
+	private TextField avgPlaytimeField;
     
     @FXML
     private Label playtimeLabel;

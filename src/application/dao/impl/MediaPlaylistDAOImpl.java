@@ -179,6 +179,20 @@ public class MediaPlaylistDAOImpl {
 	    }
 	}
 	
+	public List<Media> getMediasInPlaylist(int playlistId, Type mediaType) throws SQLException {
+
+		if(mediaType == Type.SONG)
+			return new ArrayList<>(getSongsInPlaylist(playlistId));
+
+		if(mediaType == Type.GAME)
+			return new ArrayList<>(getGamesInPlaylist(playlistId));
+
+		if(mediaType == Type.SHOW)
+			return new ArrayList<>(getShowsInPlaylist(playlistId));
+
+		return new ArrayList<>();
+	}
+	
 	/**
 	 * Retrieves all songs in the given playlist for the current user.
 	 *
@@ -574,5 +588,45 @@ public class MediaPlaylistDAOImpl {
 
 	        stmt.executeUpdate();
 	    }
+	}
+	
+	public String getPlaylistImage(int playlistId, Type type) throws SQLException {
+		String imagePath = getCustomPlaylistImage(playlistId, type);
+
+		if(imagePath != null && !imagePath.isBlank())
+			return imagePath;
+
+		switch(type) {
+			case SONG:
+				return "/resources/application/images/icons/default-song-playlist-icon.png";
+
+			case GAME:
+				return "/resources/application/images/icons/default-game-playlist-icon.png";
+
+			case SHOW:
+				return "/resources/application/images/icons/default-show-playlist-icon.png";
+		}
+
+		return null;
+	}
+	
+	private String getCustomPlaylistImage(int playlistId, Type type) throws SQLException {
+		String table = switch(type) {
+			case SONG -> "songs_playlists";
+			case GAME -> "games_playlists";
+			case SHOW -> "shows_playlists";
+		};
+
+		String sql = "SELECT image_path FROM " + table + " WHERE playlist_id = ?";
+
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, playlistId);
+
+		ResultSet rs = ps.executeQuery();
+
+		if(rs.next())
+			return rs.getString("image_path");
+
+		return null;
 	}
 }

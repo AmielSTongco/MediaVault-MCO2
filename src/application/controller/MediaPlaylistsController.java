@@ -16,6 +16,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.StackPane;
+import javafx.scene.Parent;
+import javafx.stage.Stage;
 
 public class MediaPlaylistsController extends BaseMediaPageController implements PlaylistTableOwner {
 
@@ -72,6 +74,8 @@ public class MediaPlaylistsController extends BaseMediaPageController implements
 		initializeNavigationBar();
 
 		TableBuilder.createPlaylistTable(this);
+		
+		handleDoubleClick(mediaPlaylistTable, this::openPlaylist);
 	}
 
 	@Override
@@ -100,6 +104,24 @@ public class MediaPlaylistsController extends BaseMediaPageController implements
 			catch(SQLException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	private void openPlaylist(MediaPlaylist playlist) {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/MediaPlaylistsItemsScene.fxml"));
+			Parent root = loader.load();
+
+			MediaPlaylistsItemsController controller = loader.getController();
+			controller.setConnection(conn);
+			controller.setupView(mediaType);
+			controller.setPlaylist(playlist);
+
+			Stage stage = (Stage)rootPane.getScene().getWindow();
+			stage.getScene().setRoot(root);
+		}
+		catch(IOException e) {
+			e.printStackTrace();
 		}
 	}
 

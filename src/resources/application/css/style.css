@@ -331,11 +331,7 @@
 	/*-fx-table-accent: #675a8c;*/
 }
 
-.table-view {
-	-fx-table-cell-border-color: transparent;
-}
-
-.table-view .table-row-cell {
+.table-row-cell {
 	-fx-background-color: transparent;
 	-fx-background-insets: 0;
 	-fx-border-color: transparent;
@@ -344,32 +340,32 @@
 	-fx-padding: 0;
 }
 
-.table-view .table-row-cell {
+.table-row-cell {
 	-fx-background-insets: 0;
 	-fx-border-color: transparent;
 	-fx-border-width: 0;
 	-fx-padding: 0;
 }
 
-.table-view .table-row-cell:filled:even {
+.table-row-cell:filled:even {
 	-fx-background-color: -fx-table-row-odd;
 }
 
-.table-view .table-row-cell:filled:odd {
+.table-row-cell:filled:odd {
 	-fx-background-color: -fx-table-row-even;
 }
 
-.table-view .table-row-cell:empty {
-	-fx-background-color: -fx-table-empty;
+.table-row-cell:empty {
+	-fx-background-color: transparent;
 }
 
-.table-view .table-row-cell:selected,
-.table-view .table-row-cell:filled:selected:odd,
-.table-view .table-row-cell:filled:selected:even {
+.table-row-cell:selected,
+.table-row-cell:filled:selected:odd,
+.table-row-cell:filled:selected:even {
 	-fx-background-color: -fx-table-selected;
 }
 
-.table-view .table-row-cell .table-cell {
+.table-row-cell .table-cell {
 	-fx-background-color: transparent;
 	-fx-border-color: transparent;
 	-fx-border-width: 0;
@@ -378,7 +374,7 @@
 	-fx-text-fill: #B2B2B2;
 }
 
-.table-view .table-row-cell .number-column {
+.table-row-cell .number-column {
 	-fx-padding: 0;
 	-fx-alignment: CENTER;
 }
