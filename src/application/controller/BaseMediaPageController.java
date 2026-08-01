@@ -39,6 +39,8 @@ import javafx.util.Duration;
 import javafx.scene.control.TableView;
 import java.util.function.Consumer;
 import javafx.scene.input.MouseButton;
+import java.net.URL;
+import javafx.geometry.Rectangle2D;
 
 public abstract class BaseMediaPageController {
 
@@ -370,7 +372,28 @@ public abstract class BaseMediaPageController {
 	}
 
 	protected Image loadImage(String path) {
-		return new Image(getClass().getResourceAsStream(path));
+		if(path == null || path.isBlank())
+			return null;
+
+		try {
+			if(path.startsWith("http://") || path.startsWith("https://"))
+				return new Image(path, true);
+
+			File file = new File(path);
+
+			if(file.exists())
+				return new Image(file.toURI().toString());
+
+			URL resource = getClass().getResource(path);
+
+			if(resource != null)
+				return new Image(resource.toExternalForm());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 	
 	protected <T> void handleDoubleClick(TableView<T> table, Consumer<T> action) {
@@ -410,5 +433,31 @@ public abstract class BaseMediaPageController {
 			this.button = button;
 			this.text = text;
 		}
+	}
+	
+	protected void cropImage(ImageView imageView) {
+		Image image = imageView.getImage();
+
+		if(image == null || image.getWidth() <= 0 || image.getHeight() <= 0) {
+			imageView.setViewport(null);
+			return;
+		}
+
+		double size = 108;
+
+		imageView.setFitWidth(size);
+		imageView.setFitHeight(size);
+
+		double cropSize = Math.min(image.getWidth(), image.getHeight());
+		double cropX = (image.getWidth() - cropSize)/2;
+		double cropY = (image.getHeight() - cropSize)/2;
+
+		imageView.setViewport(new Rectangle2D(cropX, cropY, cropSize, cropSize));
+		imageView.setPreserveRatio(false);
+
+		Rectangle clip = new Rectangle(size, size);
+		clip.setArcWidth(24);
+		clip.setArcHeight(24);
+		imageView.setClip(clip);
 	}
 }

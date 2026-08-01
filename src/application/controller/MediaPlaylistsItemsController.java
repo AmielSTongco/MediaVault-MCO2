@@ -168,6 +168,21 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 	@Override
 	public void setupView(Type mediaType) {
 		super.setupView(mediaType);
+		
+		String imagePath = playlist.getImagePath();
+
+		if(imagePath == null || imagePath.isBlank()) {
+			if(mediaType == Type.SONG)
+				imagePath = "/resources/application/images/icons/default-song-playlist-icon.png";
+			else if(mediaType == Type.GAME)
+				imagePath = "/resources/application/images/icons/default-game-playlist-icon.png";
+			else if(mediaType == Type.SHOW)
+				imagePath = "/resources/application/images/icons/default-show-playlist-icon.png";
+		}
+		
+		mediaLogo.setImage(loadImage(imagePath));
+		cropImage(mediaLogo);
+		
 		loadTableData();
 	}
 	

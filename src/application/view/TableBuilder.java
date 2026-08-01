@@ -342,13 +342,16 @@ public abstract class TableBuilder {
 			protected void updateItem(MediaPlaylist playlist, boolean empty) {
 				super.updateItem(playlist, empty);
 
-				if(empty || playlist == null) {
+				
+				if(empty || playlist == null)
+				{
 					title.setText(null);
 					cover.setImage(null);
 					setText(null);
 					setGraphic(null);
 				}
-				else {
+				else
+				{
 					title.setText(playlist.getTitle());
 					
 					if(playlist.getTitle().equals("all_songs"))
@@ -374,21 +377,21 @@ public abstract class TableBuilder {
 						}
 					}
 
-					File file = new File(path);
+					Image image = loadMediaImage(playlist.getImagePath(), path);
 
-					if(file.exists())
-						cover.setImage(new Image(file.toURI().toString()));
-					else {
-						java.net.URL resource = TableBuilder.class.getResource(path);
+					if(image != null && image.isBackgroundLoading()) {
+						cover.setImage(image);
 
-						if(resource != null)
-							cover.setImage(new Image(resource.toExternalForm()));
-						else
-							cover.setImage(null);
+						image.progressProperty().addListener((observable, oldValue, progress) -> {
+							if(progress.doubleValue() >= 1)
+								setCenterCroppedImage(cover, image, 48);
+						});
 					}
-
+					else
+						setCenterCroppedImage(cover, image, 48);
+					
 					setText(null);
-					setGraphic(content);
+					setGraphic(wrapper);
 				}
 			}
 		});

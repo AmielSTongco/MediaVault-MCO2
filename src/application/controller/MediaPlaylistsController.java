@@ -119,8 +119,8 @@ public class MediaPlaylistsController extends BaseMediaPageController implements
 
 			MediaPlaylistsItemsController controller = loader.getController();
 			controller.setConnection(conn);
-			controller.setupView(mediaType);
 			controller.setPlaylist(playlist);
+			controller.setupView(mediaType);
 
 			Stage stage = (Stage)rootPane.getScene().getWindow();
 			stage.getScene().setRoot(root);

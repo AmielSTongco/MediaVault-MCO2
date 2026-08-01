@@ -506,25 +506,23 @@
 
 /*Add Media Design*/
 .add-media-popup {
-	-fx-background-color: #364591;
-	-fx-background-radius: 40px;
-	-fx-border-color: #0b112c;
-	-fx-border-radius: 30px;
+	-fx-background-radius: 30px;
+	-fx-border-radius: 25px;
 	-fx-border-width: 12px;
 }
 
 .add-media-image-pane {
-	-fx-background-color: #0b112c;
 	-fx-background-radius: 35px;
+	-fx-border-radius: 35px;
+	-fx-border-width: 2px;
+	-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 5, 0.12, 0, 2);
 }
 
 .automatic-media-header {
-	-fx-background-color: #2f3c7f;
 	-fx-background-radius: 10px;
-	-fx-border-color: #0b112c;
 	-fx-border-radius: 10px;
 	-fx-border-width: 2px;
-	-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.32), 8, 0.18, 0, 3);
+	-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 5, 0.12, 0, 2);
 }
 
 .automatic-media-title {
@@ -548,9 +546,7 @@
 }
 
 .add-media-input {
-	-fx-background-color: #2f3c7f;
 	-fx-background-radius: 10px;
-	-fx-border-color: #0b112c;
 	-fx-border-radius: 10px;
 	-fx-border-width: 2px;
 	-fx-font-family: "Public Sans";
@@ -558,49 +554,97 @@
 	-fx-text-fill: white;
 	-fx-prompt-text-fill: #aab1c8;
 	-fx-padding: 8px 15px;
-	-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.32), 8, 0.18, 0, 3);
+	-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.24), 5, 0.12, 0, 2);
 }
 
-.add-media-combo {
-	-fx-background-color: #2f3c7f;
-	-fx-background-radius: 10px;
-	-fx-border-color: #0b112c;
-	-fx-border-radius: 10px;
+.add-media-status-menu {
+	-fx-background-radius: 8px;
+	-fx-border-radius: 8px;
 	-fx-border-width: 2px;
 	-fx-font-family: "Public Sans";
 	-fx-font-size: 22px;
-	-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.32), 8, 0.18, 0, 3);
+	-fx-font-weight: bold;
+	-fx-text-fill: white;
+	-fx-cursor: hand;
+	-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.30), 7, 0.15, 0, 3);
 }
 
-.add-media-combo .list-cell {
+.add-media-status-menu .label {
+	-fx-text-fill: white;
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 22px;
+	-fx-font-weight: bold;
+}
+
+.add-media-status-menu .arrow-button {
 	-fx-background-color: transparent;
+}
+
+.add-media-status-menu .arrow {
+	-fx-background-color: white;
+}
+
+.add-media-status-menu-songs {
+	-fx-background-color: #162e3f;
+	-fx-border-color: #0e1e29;
+}
+
+.add-media-status-menu-games {
+	-fx-background-color: #162051;
+	-fx-border-color: #0e1e29;
+}
+
+.add-media-status-menu-shows {
+	-fx-background-color: #31274f;
+	-fx-border-color: #1b152c;
+}
+
+.context-menu {
+	-fx-min-width: 520px;
+	-fx-pref-width: 520px;
+	-fx-max-width: 520px;
+	-fx-background-radius: 8px;
+	-fx-border-radius: 8px;
+	-fx-border-width: 2px;
+	-fx-padding: 4px;
+}
+
+.context-menu .menu-item {
+	-fx-min-width: 510px;
+	-fx-pref-width: 510px;
+	-fx-max-width: 510px;
+	-fx-padding: 12px 16px;
+}
+
+.context-menu .menu-item .label {
+	-fx-max-width: Infinity;
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 20px;
+	-fx-font-weight: bold;
 	-fx-text-fill: white;
 }
 
-.add-media-combo .arrow-button {
-	-fx-background-color: transparent;
+.context-menu {
+	-fx-background-color: #162e3f;
 }
 
-.add-media-combo .arrow {
-	-fx-background-color: #aab1c8;
+.menu-item:focused {
+	-fx-background-color: #2e5068;
 }
 
 .add-media-review {
-	-fx-background-color: #2f3c7f;
 	-fx-background-radius: 10px;
-	-fx-border-color: #0b112c;
 	-fx-border-radius: 10px;
 	-fx-border-width: 2px;
 	-fx-font-family: "Public Sans";
 	-fx-font-size: 22px;
 	-fx-text-fill: white;
 	-fx-prompt-text-fill: #aab1c8;
-	-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.32), 8, 0.18, 0, 3);
+	-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.24), 5, 0.12, 0, 2);
 }
 
 .add-media-review .content {
 	-fx-background-color: transparent;
-	-fx-background-radius: 10px;
 }
 
 .add-media-review .scroll-pane {
@@ -609,6 +653,130 @@
 
 .add-media-review .viewport {
 	-fx-background-color: transparent;
+}
+
+.runtime-unit-label {
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 26px;
+	-fx-text-fill: white;
+}
+
+.add-media-checkbox {
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 22px;
+	-fx-text-fill: white;
+}
+
+.add-media-status-label {
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 16px;
+	-fx-text-fill: #ffb7b7;
+}
+
+.add-media-save-button,
+.add-media-cancel-button {
+	-fx-background-radius: 35px;
+	-fx-border-radius: 35px;
+	-fx-border-width: 2px;
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 20px;
+	-fx-font-weight: bold;
+	-fx-text-fill: white;
+	-fx-cursor: hand;
+	-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.30), 7, 0.15, 0, 3);
+}
+
+.add-media-cancel-button {
+	-fx-background-color: #8d3045;
+}
+
+
+/* ========================= SONGS ========================= */
+
+.add-media-popup-songs {
+	-fx-background-color: #1a3345;
+	-fx-border-color: #0e1e29;
+}
+
+.add-media-control-songs {
+	-fx-background-color: #162e3f;
+	-fx-border-color: #0e1e29;
+}
+
+.add-media-save-songs {
+	-fx-background-color: #162e3f;
+	-fx-border-color: #0e1e29;
+}
+
+.add-media-image-songs,
+.automatic-media-header-songs {
+	-fx-background-color: #162e3f;
+	-fx-border-color: #0e1e29;
+}
+
+
+/* ========================= GAMES ========================= */
+
+.add-media-popup-games {
+	-fx-background-color: #1a255e;
+	-fx-border-color: #0e1e29;
+}
+
+.add-media-control-games {
+	-fx-background-color: #162051;
+	-fx-border-color: #0e1e29;
+}
+
+.add-media-save-games {
+	-fx-background-color: #162051;
+	-fx-border-color: #0e1e29;
+}
+
+.add-media-image-games,
+.automatic-media-header-games {
+	-fx-background-color: #162051;
+	-fx-border-color: #0e1e29;
+}
+
+
+/* ========================= SHOWS ========================= */
+
+.add-media-popup-shows {
+	-fx-background-color: #362b57;
+	-fx-border-color: #1b152c;
+}
+
+.add-media-control-shows {
+	-fx-background-color: #31274f;
+	-fx-border-color: #1b152c;
+}
+
+.add-media-save-shows {
+	-fx-background-color: #31274f;
+	-fx-border-color: #1b152c;
+}
+
+.add-media-image-shows,
+.automatic-media-header-shows {
+	-fx-background-color: #31274f;
+	-fx-border-color: #1b152c;
+}
+
+/* ========================= SAVE BUTTON ========================= */
+
+.button.add-media-save-button.add-media-save-songs {
+	-fx-background-color: #162e3f;
+	-fx-border-color: #0e1e29;
+}
+
+.button.add-media-save-button.add-media-save-games {
+	-fx-background-color: #162051;
+	-fx-border-color: #0e1e29;
+}
+
+.button.add-media-save-button.add-media-save-shows {
+	-fx-background-color: #31274f;
+	-fx-border-color: #1b152c;
 }
 
 .runtime-unit-label {
