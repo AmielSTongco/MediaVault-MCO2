@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import application.model.Media;
+//import application.model.Song;
+import application.model.Game;
+import application.model.Show;
 import application.model.MediaPlaylist;
 //import application.model.Type;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
@@ -32,6 +35,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import java.util.function.Predicate;
+import javafx.geometry.Rectangle2D;
 
 public abstract class TableBuilder {
 
@@ -173,7 +177,27 @@ public abstract class TableBuilder {
 				else {
 					title.setText(media.getTitle());
 					
-					cover.setImage(loadMediaImage(media.getImagePath()));
+					String defaultPath = "/resources/application/images/icons/default-song-icon.png";
+
+					if(media instanceof Game)
+						defaultPath = "/resources/application/images/icons/default-game-icon.png";
+
+					if(media instanceof Show)
+						defaultPath = "/resources/application/images/icons/default-show-icon.png";
+
+					Image image = loadMediaImage(media.getImagePath(), defaultPath);
+
+					if(image != null && image.isBackgroundLoading()) {
+						cover.setImage(image);
+
+						image.progressProperty().addListener((observable, oldValue, progress) -> {
+							if(progress.doubleValue() >= 1)
+								setCenterCroppedImage(cover, image, 48);
+						});
+					}
+					else
+						setCenterCroppedImage(cover, image, 48);
+					
 					setText(null);
 					setGraphic(wrapper);
 				}
@@ -501,22 +525,29 @@ public abstract class TableBuilder {
 		};
 	}
 
-	private static Image loadMediaImage(String path) {
-		if(path == null || path.isBlank())
-			return null;
+	private static Image loadMediaImage(String path, String defaultPath) {
+		String finalPath = path;
 
-		if(path.startsWith("http://") || path.startsWith("https://"))
-			return new Image(path, true);
+		if(finalPath == null || finalPath.isBlank())
+			finalPath = defaultPath;
 
-		URL resource = TableBuilder.class.getResource(path);
+		if(finalPath.startsWith("http://") || finalPath.startsWith("https://"))
+			return new Image(finalPath, true);
+
+		URL resource = TableBuilder.class.getResource(finalPath);
 
 		if(resource != null)
 			return new Image(resource.toExternalForm());
 
-		File file = new File(path);
+		File file = new File(finalPath);
 
 		if(file.exists())
 			return new Image(file.toURI().toString());
+
+		URL defaultResource = TableBuilder.class.getResource(defaultPath);
+
+		if(defaultResource != null)
+			return new Image(defaultResource.toExternalForm());
 
 		return null;
 	}
@@ -593,6 +624,25 @@ public abstract class TableBuilder {
 
 			return row;
 		});
+	}
+	
+	private static void setCenterCroppedImage(ImageView imageView, Image image, double size) {
+		imageView.setImage(image);
+		imageView.setFitWidth(size);
+		imageView.setFitHeight(size);
+		imageView.setPreserveRatio(true);
+
+		if(image != null && image.getWidth() > 0 && image.getHeight() > 0) {
+			double imageWidth = image.getWidth();
+			double imageHeight = image.getHeight();
+			double cropSize = Math.min(imageWidth, imageHeight);
+			double cropX = (imageWidth - cropSize) / 2;
+			double cropY = (imageHeight - cropSize) / 2;
+
+			imageView.setViewport(new Rectangle2D(cropX, cropY, cropSize, cropSize));
+		}
+		else
+			imageView.setViewport(null);
 	}
 	
 	protected abstract void loadTableData();

@@ -35,7 +35,7 @@ public class AddPlaylistController {
 	
 	private MediaPlaylistDAOImpl mediaPlaylistDAO;
 	private Runnable closeAction;
-	private Runnable deleteSuccessAction;
+	//private Runnable deleteSuccessAction;
 	private String playlistPicturePath;
 	
 	private Type mediaType;

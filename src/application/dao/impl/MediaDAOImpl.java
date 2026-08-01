@@ -336,7 +336,7 @@ public class MediaDAOImpl{
 
 		// Retrieve game information together with the user's review.
 	    String sql =
-	            "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, m.genre, m.image_path "
+	            "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, m.genre, m.image_path, "
 	            + "m.avg_playtime_mins "
 	            + "FROM games_playlists mp "
 	            + "INNER JOIN games_playlist_items mpi ON mp.id = mpi.playlist_id "
@@ -390,7 +390,7 @@ public class MediaDAOImpl{
 	    
 	    // Retrieve each show together with its review information.
 	    String sql =
-	            "SELECT m.id, m.title, m.creator, m.year_start, m.year_end, m.genre, mr.status, mr.user_rating, mr.review, "
+	            "SELECT m.id, m.title, m.creator, m.year_start, m.year_end, m.genre, mr.status, mr.user_rating, mr.review, m.image_path, "
 	            + "m.num_of_seasons, m.num_of_episodes, m.avg_mins_per_ep, m.airing "
 	            + "FROM shows_playlists mp "
 	            + "INNER JOIN shows_playlist_items mpi ON mp.id = mpi.playlist_id "
@@ -420,7 +420,8 @@ public class MediaDAOImpl{
 	                        review,
 	                        rs.getString("genre"),
 	                        rs.getInt("num_of_seasons"),
-	                        rs.getBoolean("airing"));
+	                        rs.getBoolean("airing"),
+	                        rs.getString("image_path"));
 
 	                show.setMediaId(rs.getInt("id"));
 	                shows.add(show);
@@ -592,7 +593,8 @@ public class MediaDAOImpl{
 	                            review,
 	                            rs.getString("genre"),
 	                            rs.getInt("num_of_seasons"),
-	                            rs.getBoolean("airing")
+	                            rs.getBoolean("airing"),
+	                            rs.getString("image_path")
 	                    );
 
 	                    show.setMediaId(rs.getInt("id"));

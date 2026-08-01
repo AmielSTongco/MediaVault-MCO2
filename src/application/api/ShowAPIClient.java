@@ -107,12 +107,19 @@ public class ShowAPIClient {
             String genre = getGenre(showDetails);
             int numOfSeasons = getIntValue(showDetails, "number_of_seasons");
             boolean airing = getBooleanValue(showDetails, "in_production");
+            
+        	String imagePath = "";
+
+        	String posterPath = getTextValue(item, "poster_path");
+
+        	if(!posterPath.isBlank())
+        		imagePath = "https://image.tmdb.org/t/p/w500" + posterPath;
 
             Status status = Status.PLANNED;
             double userRating = 0.0;
             String review = "";
 
-            shows.add(new Show(title, creator, yearStart, yearEnd, status, userRating, review, genre, numOfSeasons, airing));
+            shows.add(new Show(title, creator, yearStart, yearEnd, status, userRating, review, genre, numOfSeasons, airing, imagePath));
         }
 
         return shows;

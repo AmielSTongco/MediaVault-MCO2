@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import application.api.SpotifyClient;
+import application.api.GameAPIClient;
+import application.api.ShowAPIClient;
 import application.model.Media;
 import application.model.MediaPlaylist;
 import application.dao.impl.MediaPlaylistDAOImpl;
@@ -86,6 +88,9 @@ public class SearchController extends BaseMediaPageController implements MediaTa
 		"266e17b3bb8e432d82b803598192fc5f",
 		"f38ada98c91f4bf9bf6ed4f4490d7b12"
 	);
+	
+	private final GameAPIClient gameAPIClient = new GameAPIClient("330016718fda40a0b8f9721d5e7e5361");
+	private final ShowAPIClient showAPIClient = new ShowAPIClient("eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNGZkMWUwNDlhMzUyOWU1MmM5YjM2ZTg3OGJjYmM1YiIsIm5iZiI6MTc4NTU4NTMxNS45MTkwMDAxLCJzdWIiOiI2YTZkZGVhMzc3ZDRkNjQ5OGQyNDY5NjYiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.vBb_6eSGprrZE9MIpEicSDqih4HRVbttWFN37KKca88");
 
 	@FXML
 	public void initialize() {
@@ -167,7 +172,25 @@ public class SearchController extends BaseMediaPageController implements MediaTa
 		}
 		else {
 			try {
-				List<Song> results = spotifyClient.searchTracks(query);
+				List<? extends Media> results;
+
+				switch(mediaType) {
+					case SONG:
+						results = spotifyClient.searchTracks(query);
+						break;
+
+					case GAME:
+						results = gameAPIClient.searchGames(query);
+						break;
+
+					case SHOW:
+						results = showAPIClient.searchShows(query);
+						break;
+
+					default:
+						results = new ArrayList<>();
+						break;
+				}
 
 				if(results == null)
 					results = new ArrayList<>();

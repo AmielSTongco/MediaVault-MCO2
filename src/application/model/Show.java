@@ -11,7 +11,7 @@ public class Show extends Media {
 	private boolean airing;
 	
 	// constructor
-	public Show(String title, String creator, int yearStart, int yearEnd, Status status, double userRating, String review, String genre, int numOfSeasons, boolean airing) {
+	public Show(String title, String creator, int yearStart, int yearEnd, Status status, double userRating, String review, String genre, int numOfSeasons, boolean airing, String imagePath) {
 		super(0,
 		      Type.SHOW,
 		      title,
@@ -19,7 +19,7 @@ public class Show extends Media {
 		      status,
 		      userRating,
 		      review,
-		      "", "");
+		      "", imagePath);
 		
 		this.yearStart = yearStart;
 		this.yearEnd = yearEnd;

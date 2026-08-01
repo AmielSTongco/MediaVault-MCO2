@@ -106,12 +106,17 @@ public class GameAPIClient {
             String creator = getCreator(gameDetails);
             int yearReleased = getIntValue(item, "year");
             int avgPlaytimeMins = 0;
+            
+        	String imagePath = getTextValue(item, "image");
+
+        	if(imagePath.isBlank())
+        		imagePath = getTextValue(gameDetails, "image");
 
             Status status = Status.PLANNED;
             double userRating = 0.0;
             String review = "";
 
-            games.add(new Game(title, creator, yearReleased, status, userRating, review, genre, avgPlaytimeMins, ""));
+            games.add(new Game(title, creator, yearReleased, status, userRating, review, genre, avgPlaytimeMins, imagePath));
         }
 
         return games;
