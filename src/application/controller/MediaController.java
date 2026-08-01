@@ -232,7 +232,7 @@ public class MediaController {
         reviewLabel.setEffect(shadow);
         editPictureButton.setEffect(shadow);
         
-        /*
+        
         // Declare listeners
         titleField.textProperty().addListener((_, _, newText) ->
 			titleLabel.setText(newText)
@@ -320,7 +320,6 @@ public class MediaController {
 	        	    );
         			break;
         }
-        */
     }
     
     @FXML

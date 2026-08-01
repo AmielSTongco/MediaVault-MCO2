@@ -180,9 +180,22 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 	public void setPlaylist(MediaPlaylist playlist) {
 		this.playlist = playlist;
 
-		if(pageLabel != null && playlist != null)
-			pageLabel.setText(playlist.getTitle());
-		
+		if(pageLabel != null && playlist != null) {
+			String title = playlist.getTitle();
+			if (title.equals("all_songs")) {
+				pageLabel.setText("All Songs");
+			}
+			else if (title.equals("all_games")) {
+				pageLabel.setText("All Games");
+			}
+			else if (title.equals("all_shows")) {
+				pageLabel.setText("All Shows");
+			}
+			else {
+				pageLabel.setText(playlist.getTitle());
+			}
+		}
+			
 		setupDeleteButton();
 		loadTableData();
 	}

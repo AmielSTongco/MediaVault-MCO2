@@ -193,11 +193,32 @@ public class UserDAO {
     }
 
     public void deleteUser(int userId) throws SQLException {
-    	String sql = "DELETE FROM users WHERE id = ?";
-
-    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
-    		ps.setInt(1, userId);
-    		ps.executeUpdate();
-    	}
+	    	String sql = "DELETE FROM songs_playlists WHERE user_id = ?";
+	    	
+	    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
+	    		ps.setInt(1, userId);
+	    		ps.executeUpdate();
+	    	}
+	    	
+	    	sql = "DELETE FROM games_playlists WHERE user_id = ?";
+	    	
+	    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
+	    		ps.setInt(1, userId);
+	    		ps.executeUpdate();
+	    	}
+	    	
+	    	sql = "DELETE FROM shows_playlists WHERE id = ?";
+	    	
+	    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
+	    		ps.setInt(1, userId);
+	    		ps.executeUpdate();
+	    	}
+	    	
+	    	sql = "DELETE FROM users WHERE id = ?";
+	
+	    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
+	    		ps.setInt(1, userId);
+	    		ps.executeUpdate();
+	    	}
     }
 }
