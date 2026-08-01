@@ -206,7 +206,7 @@ public class MediaPlaylistDAOImpl {
 		
 		List<Song> mediaItems = new ArrayList<Song>();
 		
-		String sql = "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, m.image_path "
+		String sql = "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, m.image_path, "
 	            + "m.album, m.runtime_seconds "
 	            + "FROM songs_playlists mp "
 	            + "JOIN songs_playlist_items mpi "
@@ -271,7 +271,7 @@ public class MediaPlaylistDAOImpl {
 		
 		List<Game> mediaItems = new ArrayList<Game>();
 		
-		String sql = "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, m.image_path "
+		String sql = "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, m.image_path, "
 		            + "m.genre, m.avg_playtime_mins "
 		            + "FROM games_playlists mp "
 		            + "JOIN games_playlist_items mpi "
@@ -435,7 +435,7 @@ public class MediaPlaylistDAOImpl {
 	 * Deletes the specified playlist and all of its items.
 	 *
 	 * @param playlistId the ID of the playlist to delete
-	 * @param mediaType  the type of media the playlist holds (e.g. "Song", "Song", "Song")
+	 * @param mediaType  the type of media the playlist holds (e.g. "Song", "Game", "Show")
 	 * @throws SQLException if a database access error occurs
 	 * @pre  {@code playlistId} refers to an existing playlist
 	 * @post all rows in the corresponding playlist-items table with this
@@ -443,6 +443,11 @@ public class MediaPlaylistDAOImpl {
 	 *       from the corresponding playlists table
 	 */
 	public void deletePlaylist(int playlistId, String mediaType) throws SQLException {
+		
+		mediaType = mediaType.toLowerCase();
+
+		if(mediaType.endsWith("s"))
+			mediaType = mediaType.substring(0, mediaType.length() - 1);
 		
 		String sql = "DELETE FROM " + mediaType + "s_playlist_items WHERE playlist_id = ?";
 			
@@ -617,7 +622,7 @@ public class MediaPlaylistDAOImpl {
 			case SHOW -> "shows_playlists";
 		};
 
-		String sql = "SELECT image_path FROM " + table + " WHERE playlist_id = ?";
+		String sql = "SELECT image_path FROM " + table + " WHERE id = ?";
 
 		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.setInt(1, playlistId);

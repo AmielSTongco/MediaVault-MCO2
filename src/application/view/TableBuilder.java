@@ -7,6 +7,7 @@ import java.util.List;
 
 import application.model.Media;
 import application.model.MediaPlaylist;
+//import application.model.Type;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -165,6 +166,7 @@ public abstract class TableBuilder {
 				}
 				else {
 					title.setText(media.getTitle());
+					
 					cover.setImage(loadMediaImage(media.getImagePath()));
 					setText(null);
 					setGraphic(wrapper);
@@ -318,25 +320,42 @@ public abstract class TableBuilder {
 				}
 				else {
 					title.setText(playlist.getTitle());
+					
+					if(playlist.getTitle().equals("all_songs"))
+						title.setText("All Songs");
+					if(playlist.getTitle().equals("all_games"))
+						title.setText("All Games");
+					if(playlist.getTitle().equals("all_shows"))
+						title.setText("All Shows");
 
 					String path = playlist.getImagePath();
 
-					if(path != null && !path.isBlank()) {
-						File file = new File(path);
-
-						if(file.exists())
-							cover.setImage(new Image(file.toURI().toString()));
-						else {
-							java.net.URL resource = TableBuilder.class.getResource(path);
-
-							if(resource != null)
-								cover.setImage(new Image(resource.toExternalForm()));
-							else
-								cover.setImage(null);
+					if(path == null || path.isBlank()) {
+						switch(playlist.getTitle()) {
+							case "all_songs":
+								path = "/resources/application/images/icons/default-song-playlist-icon.png";
+								break;
+							case "all_games":
+								path = "/resources/application/images/icons/default-game-playlist-icon.png";
+								break;
+							case "all_shows":
+								path = "/resources/application/images/icons/default-show-playlist-icon.png";
+								break;
 						}
 					}
-					else
-						cover.setImage(null);
+
+					File file = new File(path);
+
+					if(file.exists())
+						cover.setImage(new Image(file.toURI().toString()));
+					else {
+						java.net.URL resource = TableBuilder.class.getResource(path);
+
+						if(resource != null)
+							cover.setImage(new Image(resource.toExternalForm()));
+						else
+							cover.setImage(null);
+					}
 
 					setText(null);
 					setGraphic(content);

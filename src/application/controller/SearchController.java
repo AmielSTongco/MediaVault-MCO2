@@ -6,6 +6,8 @@ import java.util.List;
 
 import application.api.SpotifyClient;
 import application.model.Media;
+import application.model.MediaPlaylist;
+import application.dao.impl.MediaPlaylistDAOImpl;
 import application.model.Song;
 import application.model.Type;
 import application.view.MediaTableOwner;
@@ -13,22 +15,31 @@ import application.view.TableBuilder;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
+import java.sql.Connection;
+import application.model.UserSession;
 
 public class SearchController extends BaseMediaPageController implements MediaTableOwner {
 
+	@FXML
+	private ImageView searchIcon;
+	
 	@FXML
 	private Button searchButton;
 
 	@FXML
 	private Button backButton;
-
+	
 	@FXML
-	private Button playlistsButton;
+	private Button homeButton;
 
 	@FXML
 	private TextField songName;
@@ -68,6 +79,8 @@ public class SearchController extends BaseMediaPageController implements MediaTa
 	private final ObservableList<Media> masterData = FXCollections.observableArrayList();
 
 	private int currentPage;
+	private MediaPlaylist playlist;
+	private MediaPlaylistDAOImpl mediaPlaylistDAO;
 
 	private final SpotifyClient spotifyClient = new SpotifyClient(
 		"266e17b3bb8e432d82b803598192fc5f",
@@ -82,14 +95,14 @@ public class SearchController extends BaseMediaPageController implements MediaTa
 			backButton,
 			"/resources/application/images/icons/back-reply-svgrepo-com.png",
 			"Back",
-			this::goBack
+			() -> goBack(playlist)
 		);
-
+		
 		makeNavigationButton(
-			playlistsButton,
-			"/resources/application/images/icons/stack-overflow-svgrepo-com.png",
-			"Playlists",
-			this::openPlaylists
+			homeButton,
+			"/resources/application/images/icons/home-icon-svgrepo-com.png",
+			"Home",
+			() -> switchScene("/resources/application/fxml/Menu.fxml")
 		);
 
 		initializeNavigationBar();
@@ -103,10 +116,18 @@ public class SearchController extends BaseMediaPageController implements MediaTa
 
 		updateTablePage();
 	}
+	
+	@Override
+	public void setConnection(Connection conn) {
+		mediaPlaylistDAO = new MediaPlaylistDAOImpl(conn, UserSession.getCurrentUserId());
+		super.setConnection(conn);
+	}
 
 	@Override
 	public void setupView(Type mediaType) {
 		super.setupView(mediaType);
+		
+		searchIcon.setImage(loadImage("/resources/application/images/icons/nav-search-icon.png"));
 		
 		songName.getStyleClass().removeAll("song-search-bar", "game-search-bar", "show-search-bar");
 		searchButton.getStyleClass().removeAll("song-search-button", "game-search-button", "show-search-button");
@@ -125,6 +146,10 @@ public class SearchController extends BaseMediaPageController implements MediaTa
 				searchButton.getStyleClass().add("show-search-button");
 				break;
 		}
+	}
+	
+	public void setPlaylist(MediaPlaylist playlist) {
+		this.playlist = playlist;
 	}
 
 	@Override
@@ -200,12 +225,26 @@ public class SearchController extends BaseMediaPageController implements MediaTa
 			switchScene("/resources/application/fxml/MediaScene.fxml");
 	}
 
-	private void goBack() {
-		switchScene("/resources/application/fxml/MediaScene.fxml");
+	private void goBack(MediaPlaylist playlist) {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/MediaPlaylistsItemsScene.fxml"));
+			Parent root = loader.load();
+
+			MediaPlaylistsItemsController controller = loader.getController();
+			controller.setConnection(conn);
+			controller.setupView(mediaType);
+			controller.setPlaylist(playlist);
+
+			Stage stage = (Stage)rootPane.getScene().getWindow();
+			stage.getScene().setRoot(root);
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void openPlaylists() {
-		switchScene("/resources/application/fxml/MediaPlaylistsScene.fxml");
+		switchScene("/resources/application/fxml/MediaPlaylistsItemsScene.fxml");
 	}
 
 	@Override

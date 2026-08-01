@@ -74,8 +74,10 @@
 
 					<HBox fx:id="extendableNavigationPane" alignment="CENTER" maxHeight="120.0" minHeight="120.0" prefHeight="120.0" prefWidth="371.0" spacing="25.0" VBox.vgrow="NEVER">
 						<children>
+							<Button fx:id="backButton" mnemonicParsing="false" styleClass="navigation-button" />
 							<Button fx:id="addButton" mnemonicParsing="false" styleClass="navigation-button" />
 							<Button fx:id="searchButton" mnemonicParsing="false" styleClass="navigation-button" />
+							<Button fx:id="deletePlaylistButton" mnemonicParsing="false" styleClass="navigation-button" />
 							<Button fx:id="homeButton" mnemonicParsing="false" styleClass="navigation-button" />
 						</children>
 					</HBox>

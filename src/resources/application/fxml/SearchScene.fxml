@@ -15,6 +15,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.image.ImageView?>
 
 <StackPane fx:id="rootStackPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.SearchController">
 
@@ -32,7 +33,7 @@
 					</HBox>
 
 					<Region HBox.hgrow="ALWAYS" />
-
+					
 					<Label fx:id="mediaLabel" alignment="CENTER" styleClass="font-open-sauce, active-pill" text="SONGS" textFill="WHITE" />
 
 					<Region HBox.hgrow="ALWAYS" />
@@ -53,6 +54,8 @@
 				<children>
 					<HBox alignment="CENTER_LEFT" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" VBox.vgrow="NEVER">
 						<children>
+							<ImageView fx:id="searchIcon" fitHeight="50.0" pickOnBounds="true" preserveRatio="true" />
+							<Region prefWidth="15.0" />
 							<Text styleClass="small-section-header-title" text="Search Media" />
 						</children>
 					</HBox>
@@ -80,7 +83,7 @@
 					<HBox fx:id="extendableNavigationPane" alignment="CENTER" maxHeight="120.0" minHeight="120.0" prefHeight="120.0" prefWidth="371.0" spacing="25.0" VBox.vgrow="NEVER">
 						<children>
 							<Button fx:id="backButton" mnemonicParsing="false" styleClass="navigation-button" />
-							<Button fx:id="playlistsButton" mnemonicParsing="false" styleClass="navigation-button" />
+							<Button fx:id="homeButton" mnemonicParsing="false" styleClass="navigation-button" />
 						</children>
 					</HBox>
 				</children>
