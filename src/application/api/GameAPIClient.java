@@ -7,6 +7,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,221 +18,191 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import application.model.Game;
 import application.model.Status;
 
-/**
- * Client for interacting with the GameBrain API.
- *
- * <p>This class authenticates using a GameBrain API key and provides
- * methods for searching games and converting the results into Game
- * objects.</p>
- */
 public class GameAPIClient {
 
-    private static final String BASE_URL = "https://api.gamebrain.co/v1/games";
+	private static final String TOKEN_URL = "https://id.twitch.tv/oauth2/token";
+	private static final String GAMES_URL = "https://api.igdb.com/v4/games";
+	private static final String IMAGE_URL = "https://images.igdb.com/igdb/image/upload/t_cover_big/";
 
-    private final String apiKey;
-    private final HttpClient client;
-    private final ObjectMapper mapper;
+	private final String clientId;
+	private final String clientSecret;
+	private final HttpClient client;
+	private final ObjectMapper mapper;
 
-    /**
-     * Creates a GameAPIClient using the provided API key.
-     *
-     * @param apiKey the GameBrain API key
-     */
-    public GameAPIClient(String apiKey) {
-        this.apiKey = apiKey;
-        this.client = HttpClient.newHttpClient();
-        this.mapper = new ObjectMapper();
-    }
+	private String accessToken;
+	private long tokenExpiration;
 
-    /**
-     * Searches GameBrain for games matching the specified query.
-     *
-     * <p>The returned games are converted into Game objects with
-     * default user-specific values such as status, rating, and
-     * review.</p>
-     *
-     * @param query the search term entered by the user
-     * @return a list of matching games
-     * @throws IOException if an I/O error occurs
-     * @throws InterruptedException if the request is interrupted
-     */
-    public List<Game> searchGames(String query) throws IOException, InterruptedException {
-    	
-    	// Encode the search query for use in the request URL.
-        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+	public GameAPIClient(String clientId, String clientSecret) {
+		this.clientId = clientId;
+		this.clientSecret = clientSecret;
+		this.client = HttpClient.newHttpClient();
+		this.mapper = new ObjectMapper();
+	}
 
-        String url = BASE_URL + "?query=" + encodedQuery
-                + "&limit=10"
-                + "&sort=computed_rating"
-                + "&sort-order=desc"
-                + "&generate-filter-options=false";
-        
-        // Build the authenticated GET request.
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("x-api-key", apiKey)
-                .GET()
-                .build();
-        
-        // Send the search request.
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+	public List<Game> searchGames(String query) throws IOException, InterruptedException {
+		String token = getAccessToken();
+		String safeQuery = query.replace("\\", "\\\\").replace("\"", "\\\"");
 
-        if (response.statusCode() != 200) {
-            throw new IOException("GameBrain request failed with status code "
-                    + response.statusCode() + ": " + response.body());
-        }
+		String body = "search \"" + safeQuery + "\"; "
+					+ "fields name, first_release_date, cover.image_id, genres.name, "
+					+ "involved_companies.company.name, involved_companies.developer; "
+					+ "where version_parent = null; "
+					+ "limit 10;";
 
-        List<Game> games = new ArrayList<>();
+		HttpRequest request = HttpRequest.newBuilder()
+				.uri(URI.create(GAMES_URL))
+				.header("Client-ID", clientId)
+				.header("Authorization", "Bearer " + token)
+				.header("Content-Type", "text/plain")
+				.POST(HttpRequest.BodyPublishers.ofString(body))
+				.build();
 
-        JsonNode root = mapper.readTree(response.body());
+		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        if (!root.has("results")) {
-            System.out.println("GameBrain did not return any games.");
-            return games;
-        }
+		if(response.statusCode() != 200)
+			throw new IOException("IGDB request failed with status code " + response.statusCode() + ": " + response.body());
 
-        JsonNode results = root.get("results");
+		List<Game> games = new ArrayList<>();
+		JsonNode results = mapper.readTree(response.body());
 
-        int resultCount = Math.min(results.size(), 10);
+		if(!results.isArray())
+			return games;
 
-        for (int i = 0; i < resultCount; i++) {
-            JsonNode item = results.get(i);
+		for(JsonNode item : results) {
+			String title = getTextValue(item, "name");
+			String creator = getDeveloper(item);
+			String genre = getGenre(item);
+			String imagePath = getImagePath(item);
+			int yearReleased = getReleaseYear(item);
+			int avgPlaytimeMins = 0;
 
-            int gameId = item.get("id").asInt();
+			Status status = Status.PLANNED;
+			double userRating = 0.0;
+			String review = "";
 
-            JsonNode gameDetails = getGameDetails(gameId);
+			Game game = new Game(
+				title,
+				creator,
+				yearReleased,
+				status,
+				userRating,
+				review,
+				genre,
+				avgPlaytimeMins,
+				imagePath
+			);
 
-            String title = getTextValue(item, "name");
-            String genre = getTextValue(item, "genre");
+			game.setMediaId(getIntValue(item, "id"));
+			games.add(game);
+		}
 
-            String creator = getCreator(gameDetails);
-            int yearReleased = getIntValue(item, "year");
-            int avgPlaytimeMins = 0;
-            
-        	String imagePath = getTextValue(item, "image");
+		return games;
+	}
 
-        	if(imagePath.isBlank())
-        		imagePath = getTextValue(gameDetails, "image");
+	private String getAccessToken() throws IOException, InterruptedException {
+		long currentTime = System.currentTimeMillis();
 
-            Status status = Status.PLANNED;
-            double userRating = 0.0;
-            String review = "";
+		if(accessToken == null || currentTime >= tokenExpiration) {
+			String url = TOKEN_URL
+					   + "?client_id=" + URLEncoder.encode(clientId, StandardCharsets.UTF_8)
+					   + "&client_secret=" + URLEncoder.encode(clientSecret, StandardCharsets.UTF_8)
+					   + "&grant_type=client_credentials";
 
-            games.add(new Game(title, creator, yearReleased, status, userRating, review, genre, avgPlaytimeMins, imagePath));
-        }
+			HttpRequest request = HttpRequest.newBuilder()
+					.uri(URI.create(url))
+					.POST(HttpRequest.BodyPublishers.noBody())
+					.build();
 
-        return games;
-    }
+			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-    /**
-     * Retrieves the complete information for a specified game.
-     *
-     * @param gameId the GameBrain ID of the game
-     * @return the complete game information
-     * @throws IOException if an I/O error occurs
-     * @throws InterruptedException if the request is interrupted
-     */
-    private JsonNode getGameDetails(int gameId) throws IOException, InterruptedException {
-    	
-    	String url = BASE_URL + "/" + gameId;
-    	
-    	// Build the authenticated GET request.
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("x-api-key", apiKey)
-                .GET()
-                .build();
-        
-        // Send the game details request.
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+			if(response.statusCode() != 200)
+				throw new IOException("Twitch authentication failed with status code " + response.statusCode() + ": " + response.body());
 
-        if (response.statusCode() != 200) {
-            throw new IOException("GameBrain details request failed with status code "
-                    + response.statusCode() + ": " + response.body());
-        }
+			JsonNode root = mapper.readTree(response.body());
 
-        return mapper.readTree(response.body());
-    }
+			accessToken = getTextValue(root, "access_token");
 
-    /**
-     * Retrieves the developer or creator from a game's information.
-     *
-     * @param node the JSON object containing the game information
-     * @return the developer name, or an empty string if it is missing
-     */
-    private String getCreator(JsonNode node) {
-        JsonNode developer = node.get("developer");
+			long expiresIn = root.has("expires_in")
+					? root.get("expires_in").asLong()
+					: 3600;
 
-        if (developer != null && !developer.isNull()) {
-            if (developer.isTextual()) {
-                return developer.asText();
-            }
+			tokenExpiration = currentTime + Math.max(0, expiresIn - 60) * 1000;
+		}
 
-            if (developer.isObject() && developer.has("name")) {
-                return developer.get("name").asText();
-            }
-        }
+		return accessToken;
+	}
 
-        JsonNode developers = node.get("developers");
+	private String getDeveloper(JsonNode item) {
+		JsonNode companies = item.get("involved_companies");
 
-        if (developers != null && developers.isArray() && developers.size() > 0) {
-            JsonNode firstDeveloper = developers.get(0);
+		if(companies != null && companies.isArray()) {
+			for(JsonNode involvedCompany : companies) {
+				boolean developer = involvedCompany.has("developer") && involvedCompany.get("developer").asBoolean();
 
-            if (firstDeveloper.isTextual()) {
-                return firstDeveloper.asText();
-            }
+				if(developer) {
+					JsonNode company = involvedCompany.get("company");
 
-            if (firstDeveloper.isObject() && firstDeveloper.has("name")) {
-                return firstDeveloper.get("name").asText();
-            }
-        }
+					if(company != null && company.has("name"))
+						return company.get("name").asText();
+				}
+			}
+		}
 
-        JsonNode creator = node.get("creator");
+		return "";
+	}
 
-        if (creator != null && !creator.isNull()) {
-            if (creator.isTextual()) {
-                return creator.asText();
-            }
+	private String getGenre(JsonNode item) {
+		JsonNode genres = item.get("genres");
 
-            if (creator.isObject() && creator.has("name")) {
-                return creator.get("name").asText();
-            }
-        }
+		if(genres != null && genres.isArray() && !genres.isEmpty()) {
+			JsonNode firstGenre = genres.get(0);
 
-        return "";
-    }
+			if(firstGenre.has("name"))
+				return firstGenre.get("name").asText();
+		}
 
-    /**
-     * Safely reads a text field from a JSON object.
-     *
-     * @param node the JSON object
-     * @param fieldName the field to retrieve
-     * @return the field value, or an empty string if it is missing
-     */
-    private String getTextValue(JsonNode node, String fieldName) {
-        JsonNode value = node.get(fieldName);
+		return "";
+	}
 
-        if (value == null || value.isNull()) {
-            return "";
-        }
+	private String getImagePath(JsonNode item) {
+		JsonNode cover = item.get("cover");
 
-        return value.asText();
-    }
+		if(cover != null && cover.has("image_id")) {
+			String imageId = cover.get("image_id").asText();
 
-    /**
-     * Safely reads an integer field from a JSON object.
-     *
-     * @param node the JSON object
-     * @param fieldName the field to retrieve
-     * @return the field value, or zero if it is missing
-     */
-    private int getIntValue(JsonNode node, String fieldName) {
-        JsonNode value = node.get(fieldName);
+			if(!imageId.isBlank())
+				return IMAGE_URL + imageId + ".jpg";
+		}
 
-        if (value == null || value.isNull()) {
-            return 0;
-        }
+		return "";
+	}
 
-        return value.asInt();
-    }
+	private int getReleaseYear(JsonNode item) {
+		JsonNode releaseDate = item.get("first_release_date");
+
+		if(releaseDate == null || releaseDate.isNull())
+			return 0;
+
+		return Instant.ofEpochSecond(releaseDate.asLong())
+				.atZone(ZoneId.systemDefault())
+				.getYear();
+	}
+
+	private String getTextValue(JsonNode node, String fieldName) {
+		JsonNode value = node.get(fieldName);
+
+		if(value == null || value.isNull())
+			return "";
+
+		return value.asText();
+	}
+
+	private int getIntValue(JsonNode node, String fieldName) {
+		JsonNode value = node.get(fieldName);
+
+		if(value == null || value.isNull())
+			return 0;
+
+		return value.asInt();
+	}
 }

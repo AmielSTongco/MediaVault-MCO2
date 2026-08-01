@@ -89,7 +89,7 @@ public class SearchController extends BaseMediaPageController implements MediaTa
 		"f38ada98c91f4bf9bf6ed4f4490d7b12"
 	);
 	
-	private final GameAPIClient gameAPIClient = new GameAPIClient("330016718fda40a0b8f9721d5e7e5361");
+	private final GameAPIClient gameAPIClient = new GameAPIClient("gxsv5i3dj34nlo79kwnhpi2w4bbvup", "4varf8c4a02pp8cofeeqm7ohau7qih");
 	private final ShowAPIClient showAPIClient = new ShowAPIClient("eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNGZkMWUwNDlhMzUyOWU1MmM5YjM2ZTg3OGJjYmM1YiIsIm5iZiI6MTc4NTU4NTMxNS45MTkwMDAxLCJzdWIiOiI2YTZkZGVhMzc3ZDRkNjQ5OGQyNDY5NjYiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.vBb_6eSGprrZE9MIpEicSDqih4HRVbttWFN37KKca88");
 
 	@FXML
