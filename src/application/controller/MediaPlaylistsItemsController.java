@@ -14,10 +14,17 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.text.Text;
 
+import java.io.IOException;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+
 public class MediaPlaylistsItemsController extends BaseMediaPageController implements MediaTableOwner {
 
 	@FXML
 	private Button addButton;
+	
+	@FXML
+	private Button searchButton;
 
 	@FXML
 	private Button homeButton;
@@ -62,8 +69,15 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 		makeNavigationButton(
 			addButton,
 			"/resources/application/images/icons/plus-svgrepo-com.png",
-			"Add Media",
-			this::addMedia
+			"Manually Add Media",
+			this::openSearch
+		);
+		
+		makeNavigationButton(
+			searchButton,
+			"/resources/application/images/icons/home-icon-svgrepo-com.png",
+			"Search Media",
+			this::openSearch
 		);
 
 		makeNavigationButton(
@@ -113,8 +127,20 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 			switchScene("/resources/application/fxml/MediaScene.fxml");
 	}
 
-	private void addMedia() {
-		
+	private void openSearch() {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/SearchScene.fxml"));
+			Parent root = loader.load();
+
+			SearchController controller = loader.getController();
+			controller.setConnection(conn);
+			controller.setupView(mediaType);
+
+			rootPane.getScene().setRoot(root);
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

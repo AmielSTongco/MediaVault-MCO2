@@ -115,17 +115,21 @@ public abstract class BaseMediaPageController {
 
 		rootStackPane.getStyleClass().removeAll("theme-songs", "theme-games", "theme-shows");
 		rootStackPane.getStyleClass().add(mediaType.getStyleClass());
-
-		switch(mediaType) {
-			case SONG:
-				mediaLogo.setImage(loadImage("/resources/application/images/icons/songs-icon.png"));
-				break;
-			case GAME:
-				mediaLogo.setImage(loadImage("/resources/application/images/icons/games-icon.png"));
-				break;
-			case SHOW:
-				mediaLogo.setImage(loadImage("/resources/application/images/icons/shows-icon.png"));
-				break;
+		
+		if(mediaLogo != null)
+		{
+			mediaLogo.setPreserveRatio(true);
+			switch(mediaType) {
+				case SONG:
+					mediaLogo.setImage(loadImage("/resources/application/images/icons/songs-icon.png"));
+					break;
+				case GAME:
+					mediaLogo.setImage(loadImage("/resources/application/images/icons/games-icon.png"));
+					break;
+				case SHOW:
+					mediaLogo.setImage(loadImage("/resources/application/images/icons/shows-icon.png"));
+					break;
+			}
 		}
 	}
 
@@ -137,7 +141,6 @@ public abstract class BaseMediaPageController {
 
 		mediaVaultLogo.setPreserveRatio(true);
 		mediaVaultTitle.setPreserveRatio(true);
-		mediaLogo.setPreserveRatio(true);
 		profileAvatar.setPreserveRatio(true);
 		settingsIcon.setPreserveRatio(true);
 	}

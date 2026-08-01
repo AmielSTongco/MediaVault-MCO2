@@ -6,6 +6,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -14,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<StackPane fx:id="rootStackPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MediaPlaylistsItemsController">
+<StackPane fx:id="rootStackPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.SearchController">
 
 	<Canvas fx:id="backgroundCanvas" mouseTransparent="true" />
 
@@ -47,19 +49,22 @@
 		</top>
 
 		<center>
-			<VBox spacing="10.0" styleClass="content-card" BorderPane.alignment="CENTER">
+			<VBox spacing="15.0" styleClass="content-card" BorderPane.alignment="CENTER">
 				<children>
-					<HBox alignment="CENTER_LEFT" maxHeight="120.0" minHeight="120.0" prefHeight="120.0" VBox.vgrow="NEVER">
+					<HBox alignment="CENTER_LEFT" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" VBox.vgrow="NEVER">
 						<children>
-							<ImageView fx:id="mediaLogo" fitHeight="120.0" fitWidth="160.0" pickOnBounds="true" preserveRatio="true" />
-
-							<Region prefWidth="20.0" />
-
-							<Text fx:id="pageLabel" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-header-title" text="Playlist" />
+							<Text styleClass="small-section-header-title" text="Search Media" />
 						</children>
 					</HBox>
 
-					<TableView fx:id="mediaTable" maxHeight="660.0" minHeight="660.0" prefHeight="660.0" prefWidth="1360.0" VBox.vgrow="NEVER">
+					<HBox alignment="CENTER" spacing="15.0" VBox.vgrow="NEVER">
+						<children>
+							<TextField fx:id="songName" promptText="Enter media title" styleClass="font-open-sauce, search-bar" HBox.hgrow="ALWAYS" />
+							<Button fx:id="searchButton" mnemonicParsing="false" styleClass="font-open-sauce, search-button" text="Search" />
+						</children>
+					</HBox>
+
+					<TableView fx:id="mediaTable" maxHeight="610.0" minHeight="610.0" prefHeight="610.0" prefWidth="1360.0" VBox.vgrow="NEVER">
 						<columns>
 							<TableColumn fx:id="numberColumn" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="#" />
 							<TableColumn fx:id="titleColumn" prefWidth="310.0" resizable="false" sortable="false" text="Title" />
@@ -74,9 +79,8 @@
 
 					<HBox fx:id="extendableNavigationPane" alignment="CENTER" maxHeight="120.0" minHeight="120.0" prefHeight="120.0" prefWidth="371.0" spacing="25.0" VBox.vgrow="NEVER">
 						<children>
-							<Button fx:id="addButton" mnemonicParsing="false" styleClass="navigation-button" />
-							<Button fx:id="searchButton" mnemonicParsing="false" styleClass="navigation-button" />
-							<Button fx:id="homeButton" mnemonicParsing="false" styleClass="navigation-button" />
+							<Button fx:id="backButton" mnemonicParsing="false" styleClass="navigation-button" />
+							<Button fx:id="playlistsButton" mnemonicParsing="false" styleClass="navigation-button" />
 						</children>
 					</HBox>
 				</children>

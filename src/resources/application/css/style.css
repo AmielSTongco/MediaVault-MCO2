@@ -72,7 +72,7 @@
 
 /* Highlight style for active pill button */
 .active-pill {
-    -fx-background-color: #366b91;
+    -fx-background-color: -fx-theme-accent;
     -fx-background-radius: 90px;
     -fx-padding: 6px 28px;
     -fx-font-size: 46px;
@@ -91,6 +91,13 @@
     -fx-fill: #ffffff;
 }
 
+.small-section-header-title {
+    -fx-font-family: "Open Sauce Sans ExtraBold";
+    -fx-font-size: 50px;
+    -fx-font-weight: bold;
+    -fx-fill: white;
+}
+
 /* Album frame cell styling within the TableView */
 .album-frame {
     -fx-background-color: #a8d5ba;
@@ -103,23 +110,55 @@
 
 /* ----- SEARCH BAR ----- */
 .search-bar {
-    -fx-background-color: #06112d;
-    -fx-background-radius: 30px;
-    -fx-text-fill: white;
-    -fx-prompt-text-fill: #5b6ea3;
-    -fx-font-size: 18px;
-    -fx-padding: 12px 20px 12px 50px;
+	-fx-background-color: -fx-search-bar;
+	-fx-background-radius: 30px;
+	-fx-text-fill: white;
+	-fx-prompt-text-fill: #B2B2B2;
+	-fx-font-size: 18px;
+	-fx-padding: 12px 20px 12px 50px;
 }
 
 .search-button {
-    -fx-background-color: #5670cf;
-    -fx-background-radius: 30px;
-    -fx-text-fill: white;
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-    -fx-min-width: 140px;
-    -fx-padding: 10px 20px;
-    -fx-cursor: hand;
+	-fx-background-color: -fx-search-button;
+	-fx-background-radius: 30px;
+	-fx-text-fill: white;
+	-fx-font-size: 20px;
+	-fx-font-weight: bold;
+	-fx-min-width: 140px;
+	-fx-padding: 10px 20px;
+	-fx-cursor: hand;
+}
+
+.theme-songs .search-bar {
+	-fx-background-color: #162e3f;
+}
+
+.theme-songs .search-button {
+	-fx-background-color: #1a3345;
+}
+
+.theme-games .search-bar {
+	-fx-background-color: #162051;
+}
+
+.theme-games .search-button {
+	-fx-background-color: #1a255e;
+}
+
+.theme-shows .search-bar {
+	-fx-background-color: #31274f;
+}
+
+.theme-shows .search-button {
+	-fx-background-color: #362b57;
+}
+
+.search-button:hover {
+	-fx-background-color: derive(-fx-search-button, 10%);
+}
+
+.search-button:pressed {
+	-fx-background-color: derive(-fx-search-button, -10%);
 }
 
 /* Bottom Toolbar Buttons */
@@ -314,21 +353,21 @@
 	-fx-table-row-odd: #162e3f;
 	-fx-table-row-even: #1a3345;
 	-fx-table-selected: #0e1e29;
-	/*-fx-table-accent: #366b91;*/
+	-fx-theme-accent: #366b91;
 }
 
 .root.theme-games {
 	-fx-table-row-odd: #162051;
 	-fx-table-row-even: #1a255e;
 	-fx-table-selected: #0b112c;
-	/*-fx-table-accent: #364591;*/
+	-fx-theme-accent: #364591;
 }
 
 .root.theme-shows {
 	-fx-table-row-odd: #31274f;
 	-fx-table-row-even: #362b57;
 	-fx-table-selected: #1b152c;
-	/*-fx-table-accent: #675a8c;*/
+	-fx-theme-accent: #675a8c;
 }
 
 .table-row-cell {
