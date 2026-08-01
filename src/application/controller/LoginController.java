@@ -69,7 +69,7 @@ public class LoginController {
     @FXML
     private ImageView mediaVaultTitle;
     
-    private Connection conn;
+    private static Connection conn;
     private UserDAO userDAO;
     private final PauseTransition resizeDelay = new PauseTransition(Duration.millis(220));
     
