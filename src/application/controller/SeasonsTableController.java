@@ -111,13 +111,6 @@ public class SeasonsTableController extends BaseMediaPageController implements P
 			() -> switchScene("/resources/application/fxml/Menu.fxml")
 		);
 		
-		makeNavigationButton(
-			addButton,
-			"/resources/application/images/icons/plus-svgrepo-com.png",
-			"Add Season Manually",
-			this::addSeasonManually
-		);
-		
 		initializeNavigationBar();
 		
 		TableBuilder.createPlaylistTable(this);
@@ -188,26 +181,6 @@ public class SeasonsTableController extends BaseMediaPageController implements P
 						});
 					}
 				}
-			}
-		}
-	}
-
-	private void addSeasonManually() {
-		if(show != null) {
-			try {
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/AddSeason.fxml"));
-				Parent popup = loader.load();
-
-				AddSeasonController controller = loader.getController();
-				controller.setConnection(conn);
-				controller.setShow(show);
-				controller.setCloseAction(() -> rootStackPane.getChildren().remove(popup));
-				controller.setRefreshAction(this::loadTableData);
-
-				rootStackPane.getChildren().add(popup);
-			}
-			catch(IOException e) {
-				e.printStackTrace();
 			}
 		}
 	}

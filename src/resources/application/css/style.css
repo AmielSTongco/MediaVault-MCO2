@@ -979,26 +979,8 @@
 	-fx-padding: 0 12 0 12;
 }
 
-.media-details-card .combo-box-popup .list-view {
-	-fx-background-color: -media-control;
-	-fx-border-color: rgba(0, 0, 0, 0.65);
-}
-
 .media-details-card .combo-box.media-edit-field .arrow {
 	-fx-background-color: white;
-}
-
-.media-details-card .combo-box-popup .list-cell {
-	-fx-background-color: -media-control;
-	-fx-text-fill: #B2B2B2;
-
-	-fx-font-family: "Public Sans";
-	-fx-font-size: 20px;
-	-fx-font-weight: normal;
-}
-
-.media-details-card .combo-box-popup .list-cell:hover {
-	-fx-background-color: derive(-media-control, 15%);
 }
 
 .media-edit-prefix {
@@ -1095,6 +1077,31 @@
 
 .edit-picture-button:hover {
 	-fx-opacity: 0.88;
+}
+
+.context-menu {
+	-fx-background-color: #3a3a3a;
+	-fx-border-color: #222222;
+	-fx-background-insets: 0;
+	-fx-padding: 0;
+}
+
+.context-menu .menu-item {
+	-fx-background-color: #3a3a3a;
+}
+
+.context-menu .menu-item .label {
+	-fx-text-fill: white;
+}
+
+.context-menu .menu-item:focused,
+.context-menu .menu-item:hover {
+	-fx-background-color: #555555;
+}
+
+.context-menu .menu-item:focused .label,
+.context-menu .menu-item:hover .label {
+	-fx-text-fill: white;
 }
 
 .error-label {

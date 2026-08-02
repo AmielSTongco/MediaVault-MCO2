@@ -192,8 +192,22 @@ public class AddMediaController {
 		statusMenuButton.setOnShowing(event -> {
 			ContextMenu menu = statusMenuButton.getContextMenu();
 
-			if(menu != null)
+			if(menu != null) {
 				menu.setPrefWidth(statusMenuButton.getWidth());
+
+				menu.getStyleClass().removeAll(
+					"add-media-status-menu-songs",
+					"add-media-status-menu-games",
+					"add-media-status-menu-shows"
+				);
+
+				if(mediaType == Type.SONG)
+					menu.getStyleClass().add("add-media-status-menu-songs");
+				else if(mediaType == Type.GAME)
+					menu.getStyleClass().add("add-media-status-menu-games");
+				else if(mediaType == Type.SHOW)
+					menu.getStyleClass().add("add-media-status-menu-shows");
+			}
 		});
 	}
 	
@@ -819,6 +833,8 @@ public class AddMediaController {
 				titleTheme = "automatic-media-header-games";
 				saveTheme = "add-media-save-games";
 				statusMenuTheme = "add-media-status-menu-games";
+				
+				popupContainer.setStyle("-fx-border-color: #0b112c;");
 				break;
 
 			case SHOW:
@@ -836,6 +852,18 @@ public class AddMediaController {
 		automaticTitleBox.getStyleClass().add(titleTheme);
 		saveButton.getStyleClass().add(saveTheme);
 		statusMenuButton.getStyleClass().add(statusMenuTheme);
+		
+		ContextMenu menu = statusMenuButton.getContextMenu();
+
+		if(menu != null) {
+			menu.getStyleClass().removeAll(
+				"add-media-status-menu-songs",
+				"add-media-status-menu-games",
+				"add-media-status-menu-shows"
+			);
+
+			menu.getStyleClass().add(statusMenuTheme);
+		}
 
 		addControlTheme(titleField, controlTheme);
 		addControlTheme(creatorField, controlTheme);
