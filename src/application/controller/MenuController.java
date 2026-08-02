@@ -139,159 +139,216 @@ public class MenuController {
     private Connection conn;
     
 
-	@FXML
-	public void initialize() {
-		
-		String username = UserSession.getCurrentUsername();
-		
-		mediaVaultLogo.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png")));
-		mediaVaultTitle.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png")));
-		settingsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png")));
+    /**
+     * Initializes menu images, user information, media tiles, and dot grids.
+     */
+    @FXML
+    public void initialize() {
+    	String username = UserSession.getCurrentUsername();
 
-		songsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/songs-icon.png")));
-		gamesIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/games-icon.png")));
-		showsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/shows-icon.png")));
-		
-		userName.setText(username);
-		
-		menuContainer.setAlignment(Pos.CENTER);
+    	// Loads menu images
+    	mediaVaultLogo.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png")));
+    	mediaVaultTitle.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png")));
+    	settingsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png")));
+    	songsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/songs-icon.png")));
+    	gamesIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/games-icon.png")));
+    	showsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/shows-icon.png")));
 
-		bindTile(songsContainer, songsBackground, songsDotsPane);
-		bindTile(gamesContainer, gamesBackground, gamesDotsPane);
-		bindTile(showsContainer, showsBackground, showsDotsPane);
+    	userName.setText(username);
+    	menuContainer.setAlignment(Pos.CENTER);
 
-		createDotGrid(songsDotsPane, songsDots, Color.web("#132F44", 0.06));
-		createDotGrid(gamesDotsPane, gamesDots, Color.web("#131B44", 0.06));
-		createDotGrid(showsDotsPane, showsDots, Color.web("#000C4C", 0.06));
+    	// Binds media tiles
+    	bindTile(songsContainer, songsBackground, songsDotsPane);
+    	bindTile(gamesContainer, gamesBackground, gamesDotsPane);
+    	bindTile(showsContainer, showsBackground, showsDotsPane);
 
-		addDotResizeListeners(songsDotsPane, songsDots);
-		addDotResizeListeners(gamesDotsPane, gamesDots);
-		addDotResizeListeners(showsDotsPane, showsDots);
+    	// Creates background dot grids
+    	createDotGrid(songsDotsPane, songsDots, Color.web("#132F44", 0.06));
+    	createDotGrid(gamesDotsPane, gamesDots, Color.web("#131B44", 0.06));
+    	createDotGrid(showsDotsPane, showsDots, Color.web("#000C4C", 0.06));
 
-		clipTile(songsContainer);
-		clipTile(gamesContainer);
-		clipTile(showsContainer);
-	}
-	
-	public void setConnection(Connection conn) {
-		this.conn = conn;
-		loadProfilePicture();
-	}
-	
-	private void bindTile(StackPane container, Rectangle background, Pane dotsPane) {
-		background.widthProperty().bind(container.widthProperty());
-		background.heightProperty().bind(container.heightProperty());
+    	// Updates dots when tile size changes
+    	addDotResizeListeners(songsDotsPane, songsDots);
+    	addDotResizeListeners(gamesDotsPane, gamesDots);
+    	addDotResizeListeners(showsDotsPane, showsDots);
 
-		dotsPane.prefWidthProperty().bind(container.widthProperty());
-		dotsPane.prefHeightProperty().bind(container.heightProperty());
-		dotsPane.maxWidthProperty().bind(container.widthProperty());
-		dotsPane.maxHeightProperty().bind(container.heightProperty());
-	}
+    	clipTile(songsContainer);
+    	clipTile(gamesContainer);
+    	clipTile(showsContainer);
+    }
 
-	private void addDotResizeListeners(Pane pane, ArrayList<Circle> dots) {
-		pane.widthProperty().addListener((observable, oldValue, newValue) -> updateDotGrid(pane, dots));
-		pane.heightProperty().addListener((observable, oldValue, newValue) -> updateDotGrid(pane, dots));
-	}
+    /**
+     * Sets database connection and loads user profile picture.
+     *
+     * @param conn active database connection
+     */
+    public void setConnection(Connection conn) {
+    	this.conn = conn;
+    	loadProfilePicture();
+    }
 
-	private void clipTile(StackPane container) {
-		Rectangle clip = new Rectangle();
-		clip.widthProperty().bind(container.widthProperty());
-		clip.heightProperty().bind(container.heightProperty());
-		clip.setArcWidth(20.0);
-		clip.setArcHeight(20.0);
-		container.setClip(clip);
-	}
-    
-	@FXML
-	private void handleSettingsClick(MouseEvent event) {
-		event.consume();
+    /**
+     * Binds tile background and dot pane sizes to its container.
+     *
+     * @param container media tile container
+     * @param background tile background
+     * @param dotsPane tile dot pane
+     */
+    private void bindTile(StackPane container, Rectangle background, Pane dotsPane) {
+    	background.widthProperty().bind(container.widthProperty());
+    	background.heightProperty().bind(container.heightProperty());
 
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/Settings.fxml"));
-			Parent popup = loader.load();
+    	dotsPane.prefWidthProperty().bind(container.widthProperty());
+    	dotsPane.prefHeightProperty().bind(container.heightProperty());
+    	dotsPane.maxWidthProperty().bind(container.widthProperty());
+    	dotsPane.maxHeightProperty().bind(container.heightProperty());
+    }
 
-			StackPane overlay = new StackPane();
-			overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.35);");
-			overlay.setPickOnBounds(true);
-			overlay.getChildren().add(popup);
+    /**
+     * Updates a dot grid whenever its pane size changes.
+     *
+     * @param pane dot grid pane
+     * @param dots dots belonging to the pane
+     */
+    private void addDotResizeListeners(Pane pane, ArrayList<Circle> dots) {
+    	pane.widthProperty().addListener((observable, oldValue, newValue) -> updateDotGrid(pane, dots));
+    	pane.heightProperty().addListener((observable, oldValue, newValue) -> updateDotGrid(pane, dots));
+    }
 
-			SettingsController controller = loader.getController();
-			controller.setConnection(conn);
-			controller.setCloseAction(() -> closeSettingsPopup(overlay));
-			controller.setProfileUpdatedAction(this::loadProfilePicture);
+    /**
+     * Clips a media tile using rounded corners.
+     *
+     * @param container media tile container
+     */
+    private void clipTile(StackPane container) {
+    	Rectangle clip = new Rectangle();
+    	clip.widthProperty().bind(container.widthProperty());
+    	clip.heightProperty().bind(container.heightProperty());
+    	clip.setArcWidth(20.0);
+    	clip.setArcHeight(20.0);
+    	container.setClip(clip);
+    }
 
-			popup.setOnMouseClicked(e -> e.consume());
-			overlay.setOnMouseClicked(e -> {
-				e.consume();
-				closeSettingsPopup(overlay);
-			});
+    /**
+     * Opens settings popup.
+     *
+     * @param event mouse click event
+     */
+    @FXML
+    private void handleSettingsClick(MouseEvent event) {
+    	event.consume();
 
-			Parent currentRoot = rootBorderPane.getScene().getRoot();
+    	try {
+    		FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/Settings.fxml"));
+    		Parent popup = loader.load();
 
-			if(currentRoot instanceof StackPane) {
-				StackPane root = (StackPane)currentRoot;
-				rootBorderPane.setEffect(new GaussianBlur(6));
-				root.getChildren().add(overlay);
-				StackPane.setAlignment(popup, Pos.CENTER);
-			}
-			else {
-				Platform.runLater(() -> {
-					StackPane newRoot = new StackPane();
-					rootBorderPane.setEffect(new GaussianBlur(6));
-					newRoot.getChildren().addAll(rootBorderPane, overlay);
-					rootBorderPane.getScene().setRoot(newRoot);
-					StackPane.setAlignment(popup, Pos.CENTER);
-				});
-			}
-		}
-		catch(IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void loadProfilePicture() {
-		try {
-			UserDAO userDAO = new UserDAO(conn);
-			String path = userDAO.getProfilePicture(UserSession.getCurrentUserId());
+    		// Creates popup overlay
+    		StackPane overlay = new StackPane();
+    		overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.35);");
+    		overlay.setPickOnBounds(true);
+    		overlay.getChildren().add(popup);
 
-			if(path != null && !path.isBlank()) {
-				File file = new File(path);
+    		SettingsController controller = loader.getController();
+    		controller.setConnection(conn);
+    		controller.setCloseAction(() -> closeSettingsPopup(overlay));
+    		controller.setProfileUpdatedAction(this::loadProfilePicture);
 
-				if(file.exists()) {
-					Image image = new Image(file.toURI().toString());
-					setCircularProfileImage(profileAvatar, image);
-				}
-				else
-					loadDefaultProfilePicture();
-			}
-			else
-				loadDefaultProfilePicture();
-		}
-		catch(SQLException e) {
-			loadDefaultProfilePicture();
-			e.printStackTrace();
-		}
-	}
+    		popup.setOnMouseClicked(e -> e.consume());
 
-	private void loadDefaultProfilePicture() {
-		Image image = new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png"));
-		setCircularProfileImage(profileAvatar, image);
-	}
-	
-	private void closeSettingsPopup(StackPane overlay) {
-		Platform.runLater(() -> {
-			if(overlay.getParent() instanceof StackPane) {
-				StackPane root = (StackPane)overlay.getParent();
-				root.getChildren().remove(overlay);
-			}
+    		overlay.setOnMouseClicked(e -> {
+    			e.consume();
+    			closeSettingsPopup(overlay);
+    		});
 
-			rootBorderPane.setEffect(null);
-		});
-	}
-	
+    		Parent currentRoot = rootBorderPane.getScene().getRoot();
+
+    		// Adds popup to existing stack root
+    		if(currentRoot instanceof StackPane)
+    		{
+    			StackPane root = (StackPane)currentRoot;
+    			rootBorderPane.setEffect(new GaussianBlur(6));
+    			root.getChildren().add(overlay);
+    			StackPane.setAlignment(popup, Pos.CENTER);
+    		}
+    		else
+    		{
+    			// Replaces current root with stack layout
+    			Platform.runLater(() -> {
+    				StackPane newRoot = new StackPane();
+    				rootBorderPane.setEffect(new GaussianBlur(6));
+    				newRoot.getChildren().addAll(rootBorderPane, overlay);
+    				rootBorderPane.getScene().setRoot(newRoot);
+    				StackPane.setAlignment(popup, Pos.CENTER);
+    			});
+    		}
+    	}
+    	catch(IOException e) {
+    		e.printStackTrace();
+    	}
+    }
+
+    /**
+     * Loads current user's saved profile picture.
+     */
+    private void loadProfilePicture() {
+    	try {
+    		UserDAO userDAO = new UserDAO(conn);
+    		String path = userDAO.getProfilePicture(UserSession.getCurrentUserId());
+
+    		if(path != null && !path.isBlank())
+    		{
+    			File file = new File(path);
+
+    			if(file.exists())
+    			{
+    				Image image = new Image(file.toURI().toString());
+    				setCircularProfileImage(profileAvatar, image);
+    			}
+    			else
+    				loadDefaultProfilePicture();
+    		}
+    		else
+    			loadDefaultProfilePicture();
+    	}
+    	catch(SQLException e) {
+    		loadDefaultProfilePicture();
+    		e.printStackTrace();
+    	}
+    }
+
+    /**
+     * Loads default profile picture.
+     */
+    private void loadDefaultProfilePicture() {
+    	Image image = new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png"));
+    	setCircularProfileImage(profileAvatar, image);
+    }
+
+    /**
+     * Closes settings popup and removes background blur.
+     *
+     * @param overlay settings popup overlay
+     */
+    private void closeSettingsPopup(StackPane overlay) {
+    	Platform.runLater(() -> {
+    		if(overlay.getParent() instanceof StackPane)
+    		{
+    			StackPane root = (StackPane)overlay.getParent();
+    			root.getChildren().remove(overlay);
+    		}
+
+    		rootBorderPane.setEffect(null);
+    	});
+    }
+
+    /**
+     * Applies hover animation and effects to a media tile.
+     *
+     * @param event mouse enter event
+     */
     @FXML
     private void handleMouseEntered(MouseEvent event) {
-    	StackPane container = (StackPane) event.getSource();
+    	StackPane container = (StackPane)event.getSource();
 
     	ScaleTransition scale = new ScaleTransition(Duration.millis(120), container);
     	scale.setToX(0.992);
@@ -299,154 +356,210 @@ public class MenuController {
     	scale.play();
 
     	container.setOpacity(0.99);
-    	
     	container.setEffect(hoverShadow);
 
-		if(container == songsContainer)
-		{
-			expandDots(songsDotsPane);
-			highlightIcon(songsIcon);
-		}
-		else if(container == gamesContainer)
-		{
-			expandDots(gamesDotsPane);
-			highlightIcon(gamesIcon);
-		}
-		else if(container == showsContainer)
-		{
-			expandDots(showsDotsPane);
-			highlightIcon(showsIcon);
-		}
+    	// Expands matching dot grid and icon
+    	if(container == songsContainer)
+    	{
+    		expandDots(songsDotsPane);
+    		highlightIcon(songsIcon);
+    	}
+    	else if(container == gamesContainer)
+    	{
+    		expandDots(gamesDotsPane);
+    		highlightIcon(gamesIcon);
+    	}
+    	else if(container == showsContainer)
+    	{
+    		expandDots(showsDotsPane);
+    		highlightIcon(showsIcon);
+    	}
     }
     
-	@FXML
-	private void handleMouseExited(MouseEvent event) {
-		StackPane container = (StackPane)event.getSource();
+    /**
+     * Restores media tile after hover.
+     *
+     * @param event mouse exit event
+     */
+    @FXML
+    private void handleMouseExited(MouseEvent event) {
+    	StackPane container = (StackPane)event.getSource();
 
-		ScaleTransition scale = new ScaleTransition(Duration.millis(120), container);
-		scale.setToX(1.0);
-		scale.setToY(1.0);
-		scale.play();
+    	ScaleTransition scale = new ScaleTransition(Duration.millis(120), container);
+    	scale.setToX(1.0);
+    	scale.setToY(1.0);
+    	scale.play();
 
-		container.setOpacity(1.0);
-		container.setEffect(null);
+    	container.setOpacity(1.0);
+    	container.setEffect(null);
 
-		if(container == songsContainer) {
-			shrinkDots(songsDotsPane);
-			removeIconHighlight(songsIcon);
-		}
-		else if(container == gamesContainer) {
-			shrinkDots(gamesDotsPane);
-			removeIconHighlight(gamesIcon);
-		}
-		else if(container == showsContainer) {
-			shrinkDots(showsDotsPane);
-			removeIconHighlight(showsIcon);
-		}
-	}
-	
-	@FXML
-	private void handleSettingsRotate(MouseEvent event) {
-		ImageView settings = (ImageView)event.getSource();
+    	// Restores matching dot grid and icon
+    	if(container == songsContainer)
+    	{
+    		shrinkDots(songsDotsPane);
+    		removeIconHighlight(songsIcon);
+    	}
+    	else if(container == gamesContainer)
+    	{
+    		shrinkDots(gamesDotsPane);
+    		removeIconHighlight(gamesIcon);
+    	}
+    	else if(container == showsContainer)
+    	{
+    		shrinkDots(showsDotsPane);
+    		removeIconHighlight(showsIcon);
+    	}
+    }
 
-		RotateTransition rotate = new RotateTransition(Duration.millis(250), settings);
-		rotate.setToAngle(45);
-		highlightIcon(settingsIcon);
-		rotate.play();
-	}
-	
-	@FXML
-	private void handleSettingUnrotate(MouseEvent event) {
-		ImageView settings = (ImageView)event.getSource();
+    /**
+     * Rotates settings icon while hovering.
+     *
+     * @param event mouse enter event
+     */
+    @FXML
+    private void handleSettingsRotate(MouseEvent event) {
+    	ImageView settings = (ImageView)event.getSource();
 
-		RotateTransition rotate = new RotateTransition(Duration.millis(250), settings);
-		rotate.setToAngle(0);
-		removeIconHighlight(settingsIcon);
-		rotate.play();
-	}
-    
-	@FXML
-	private void handleTileClick(MouseEvent event) {
-		Object source = event.getSource();
-		Type mediaType = null;
+    	RotateTransition rotate = new RotateTransition(Duration.millis(250), settings);
+    	rotate.setToAngle(45);
 
-		if(source == songsContainer)
-			mediaType = Type.SONG;
-		else if(source == gamesContainer)
-			mediaType = Type.GAME;
-		else if(source == showsContainer)
-			mediaType = Type.SHOW;
+    	highlightIcon(settingsIcon);
+    	rotate.play();
+    }
 
-		if(mediaType != null) {
-			try {
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/MediaPlaylistsScene.fxml"));
-				Parent root = loader.load();
+    /**
+     * Restores settings icon rotation.
+     *
+     * @param event mouse exit event
+     */
+    @FXML
+    private void handleSettingUnrotate(MouseEvent event) {
+    	ImageView settings = (ImageView)event.getSource();
 
-				MediaPlaylistsController controller = loader.getController();
-				controller.setConnection(conn);
-				controller.setupView(mediaType);
+    	RotateTransition rotate = new RotateTransition(Duration.millis(250), settings);
+    	rotate.setToAngle(0);
 
-				Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-				stage.getScene().setRoot(root);
-			}
-			catch(IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-    
-	private void createDotGrid(Pane pane, ArrayList<Circle> dots, Color color) {
-		int columns = 15;
-		int rows = 18;
+    	removeIconHighlight(settingsIcon);
+    	rotate.play();
+    }
 
-		for(int row = 0; row < rows; row++) {
-			for(int column = 0; column < columns; column++) {
-				Circle dot = new Circle();
-				dot.setFill(color);
-				dots.add(dot);
-				pane.getChildren().add(dot);
-			}
-		}
+    /**
+     * Opens selected media category.
+     *
+     * @param event mouse click event
+     */
+    @FXML
+    private void handleTileClick(MouseEvent event) {
+    	Object source = event.getSource();
+    	Type mediaType = null;
 
-		updateDotGrid(pane, dots);
-	}
+    	if(source == songsContainer)
+    		mediaType = Type.SONG;
+    	else if(source == gamesContainer)
+    		mediaType = Type.GAME;
+    	else if(source == showsContainer)
+    		mediaType = Type.SHOW;
 
-	private void updateDotGrid(Pane pane, ArrayList<Circle> dots) {
-		double width = pane.getWidth();
-		double height = pane.getHeight();
+    	if(mediaType != null)
+    	{
+    		try {
+    			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/MediaPlaylistsScene.fxml"));
+    			Parent root = loader.load();
 
-		if(width > 0 && height > 0) {
-			int visibleColumns = (int)Math.ceil(width / DOT_SPACING) + 4;
-			int visibleRows = (int)Math.ceil(height / DOT_SPACING) + 4;
-			double centerX = width / 2.0;
-			double centerY = height / 2.0;
-			double startX = centerX - ((visibleColumns - 1) * DOT_SPACING) / 2.0;
-			double startY = centerY - ((visibleRows - 1) * DOT_SPACING) / 2.0;
-			int dotIndex = 0;
+    			MediaPlaylistsController controller = loader.getController();
+    			controller.setConnection(conn);
+    			controller.setupView(mediaType);
 
-			for(int row = 0; row < visibleRows; row++) {
-				for(int column = 0; column < visibleColumns; column++) {
-					if(dotIndex < dots.size()) {
-						Circle dot = dots.get(dotIndex);
-						double x = startX + column * DOT_SPACING;
-						double y = startY + row * DOT_SPACING;
-						double distance = Math.hypot(x - centerX, y - centerY);
-						double radius = Math.max(2.0, 10.0 - distance / 55.0);
+    			Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+    			stage.getScene().setRoot(root);
+    		}
+    		catch(IOException e) {
+    			e.printStackTrace();
+    		}
+    	}
+    }
 
-						dot.setCenterX(x);
-						dot.setCenterY(y);
-						dot.setRadius(radius);
-						dot.setVisible(true);
-						dotIndex++;
-					}
-				}
-			}
+    /**
+     * Creates background dot grid.
+     *
+     * @param pane target pane
+     * @param dots dot collection
+     * @param color dot color
+     */
+    private void createDotGrid(Pane pane, ArrayList<Circle> dots, Color color) {
+    	int columns = 15;
+    	int rows = 18;
 
-			for(int i = dotIndex; i < dots.size(); i++)
-				dots.get(i).setVisible(false);
-		}
-	}
-    
+    	// Creates initial dot grid
+    	for(int row=0; row<rows; row++)
+    	{
+    		for(int column=0; column<columns; column++)
+    		{
+    			Circle dot = new Circle();
+    			dot.setFill(color);
+
+    			dots.add(dot);
+    			pane.getChildren().add(dot);
+    		}
+    	}
+
+    	updateDotGrid(pane, dots);
+    }
+
+    /**
+     * Updates dot grid layout.
+     *
+     * @param pane target pane
+     * @param dots dot collection
+     */
+    private void updateDotGrid(Pane pane, ArrayList<Circle> dots) {
+    	double width = pane.getWidth();
+    	double height = pane.getHeight();
+
+    	if(width > 0 && height > 0)
+    	{
+    		int visibleColumns = (int)Math.ceil(width/DOT_SPACING) + 4;
+    		int visibleRows = (int)Math.ceil(height/DOT_SPACING) + 4;
+    		double centerX = width/2.0;
+    		double centerY = height/2.0;
+    		double startX = centerX - ((visibleColumns - 1)*DOT_SPACING)/2.0;
+    		double startY = centerY - ((visibleRows - 1)*DOT_SPACING)/2.0;
+    		int dotIndex = 0;
+
+    		// Updates visible dots
+    		for(int row=0; row<visibleRows; row++)
+    		{
+    			for(int column = 0; column < visibleColumns; column++)
+    			{
+    				if(dotIndex < dots.size())
+    				{
+    					Circle dot = dots.get(dotIndex);
+    					double x = startX + column*DOT_SPACING;
+    					double y = startY + row*DOT_SPACING;
+    					double distance = Math.hypot(x - centerX, y - centerY);
+    					double radius = Math.max(2.0, 10.0 - distance/55.0);
+
+    					dot.setCenterX(x);
+    					dot.setCenterY(y);
+    					dot.setRadius(radius);
+    					dot.setVisible(true);
+
+    					dotIndex++;
+    				}
+    			}
+    		}
+
+    		// Hides unused dots
+    		for(int i = dotIndex; i < dots.size(); i++)
+    			dots.get(i).setVisible(false);
+    	}
+    }
+
+    /**
+     * Expands background dots.
+     *
+     * @param dotsPane target dot pane
+     */
     private void expandDots(Pane dotsPane) {
     	ScaleTransition scale = new ScaleTransition(Duration.millis(125), dotsPane);
     	scale.setToX(1.25);
@@ -454,45 +567,68 @@ public class MenuController {
     	scale.play();
     }
 
+    /**
+     * Restores background dots to their original size.
+     *
+     * @param dotsPane target dot pane
+     */
     private void shrinkDots(Pane dotsPane) {
     	ScaleTransition scale = new ScaleTransition(Duration.millis(125), dotsPane);
     	scale.setToX(1.0);
     	scale.setToY(1.0);
     	scale.play();
     }
-    
-	private void highlightIcon(ImageView icon) {
-		icon.setEffect(iconHighlight);
 
-		ScaleTransition scale = new ScaleTransition(Duration.millis(120), icon);
-		scale.play();
-	}
+    /**
+     * Applies highlight effect to an icon.
+     *
+     * @param icon target icon
+     */
+    private void highlightIcon(ImageView icon) {
+    	icon.setEffect(iconHighlight);
 
-	private void removeIconHighlight(ImageView icon) {
-		icon.setEffect(null);
+    	ScaleTransition scale = new ScaleTransition(Duration.millis(120), icon);
+    	scale.play();
+    }
 
-		ScaleTransition scale = new ScaleTransition(Duration.millis(120), icon);
-		scale.play();
-	}
-	
-	private void setCircularProfileImage(ImageView imageView, Image image) {
-		imageView.setFitWidth(65);
-		imageView.setFitHeight(65);
-		imageView.setPreserveRatio(false);
-		imageView.setSmooth(true);
+    /**
+     * Removes highlight effect from an icon.
+     *
+     * @param icon target icon
+     */
+    private void removeIconHighlight(ImageView icon) {
+    	icon.setEffect(null);
 
-		double imageWidth = image.getWidth();
-		double imageHeight = image.getHeight();
-		double cropSize = Math.min(imageWidth, imageHeight);
+    	ScaleTransition scale = new ScaleTransition(Duration.millis(120), icon);
+    	scale.play();
+    }
 
-		double cropX = (imageWidth - cropSize) / 2.0;
-		double cropY = (imageHeight - cropSize) / 2.0;
+    /**
+     * Crops and clips a profile image into a circular avatar.
+     *
+     * @param imageView target image view
+     * @param image profile image
+     */
+    private void setCircularProfileImage(ImageView imageView, Image image) {
+    	imageView.setFitWidth(65);
+    	imageView.setFitHeight(65);
+    	imageView.setPreserveRatio(false);
+    	imageView.setSmooth(true);
 
-		imageView.setViewport(new Rectangle2D(cropX, cropY, cropSize, cropSize));
-		imageView.setImage(image);
+    	double imageWidth = image.getWidth();
+    	double imageHeight = image.getHeight();
+    	double cropSize = Math.min(imageWidth, imageHeight);
 
-		Circle clip = new Circle(32.5, 32.5, 32.5);
-		imageView.setClip(clip);
-	}
+    	double cropX = (imageWidth - cropSize)/2.0;
+    	double cropY = (imageHeight - cropSize)/2.0;
+
+    	// Crops image into a square
+    	imageView.setViewport(new Rectangle2D(cropX, cropY, cropSize, cropSize));
+    	imageView.setImage(image);
+
+    	// Applies circular clip
+    	Circle clip = new Circle(32.5, 32.5, 32.5);
+    	imageView.setClip(clip);
+    }
  
 }

@@ -11,106 +11,137 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 public class SignupFormController {
+	
+	/*
+	 * Controls the signup form and creates new user accounts
+	 */
 
-    @FXML
-    private TextField usernameField;
+	@FXML
+	private TextField usernameField;
 
-    @FXML
-    private PasswordField passwordField;
+	@FXML
+	private PasswordField passwordField;
 
-    @FXML
-    private PasswordField confirmPasswordField;
+	@FXML
+	private PasswordField confirmPasswordField;
 
-    @FXML
-    private Label errorLabel;
-    
-    private UserDAO userDAO;
-    private Runnable closeAction;
-    private Runnable signupSuccessAction;
+	@FXML
+	private Label errorLabel;
 
-    @FXML
-    public void initialize() {
-        errorLabel.setVisible(false);
-        errorLabel.setManaged(false);
-    }
+	private UserDAO userDAO;
+	private Runnable closeAction;
+	private Runnable signupSuccessAction;
 
-    public void setConnection(Connection conn) {
-        this.userDAO = new UserDAO(conn);
-    }
+	/**
+	 * Initializes error message visibility.
+	 */
+	@FXML
+	public void initialize() {
+		errorLabel.setVisible(false);
+		errorLabel.setManaged(false);
+	}
 
-    public void setCloseAction(Runnable closeAction) {
-        this.closeAction = closeAction;
-    }
+	/**
+	 * Sets database connection and initializes user data access.
+	 *
+	 * @param conn active database connection
+	 */
+	public void setConnection(Connection conn) {
+		userDAO = new UserDAO(conn);
+	}
 
-    public void setSignupSuccessAction(Runnable signupSuccessAction) {
-        this.signupSuccessAction = signupSuccessAction;
-    }
+	/**
+	 * Sets action executed when signup form closes.
+	 *
+	 * @param closeAction callback to execute
+	 */
+	public void setCloseAction(Runnable closeAction) {
+		this.closeAction = closeAction;
+	}
 
-    @FXML
-    private void handleSignup() {
-        String username = usernameField.getText().trim();
-        String password = passwordField.getText();
-        String confirmPassword = confirmPasswordField.getText();
+	/**
+	 * Sets action executed after successful signup.
+	 *
+	 * @param signupSuccessAction callback to execute
+	 */
+	public void setSignupSuccessAction(Runnable signupSuccessAction) {
+		this.signupSuccessAction = signupSuccessAction;
+	}
 
-        if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            showError("Please complete all fields.");
-        }
+	/**
+	 * Validates signup fields and creates a new user account.
+	 */
+	@FXML
+	private void handleSignup() {
+		String username = usernameField.getText().trim();
+		String password = passwordField.getText();
+		String confirmPassword = confirmPasswordField.getText();
 
-        else if (!password.equals(confirmPassword)) {
-            showError("Passwords do not match.");
-            passwordField.clear();
-            confirmPasswordField.clear();
-            passwordField.requestFocus();
-        }
+		// Validates required fields
+		if(username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty())
+			showError("Please complete all fields.");
+		// Checks matching passwords
+		else if(!password.equals(confirmPassword))
+		{
+			showError("Passwords do not match.");
+			passwordField.clear();
+			confirmPasswordField.clear();
+			passwordField.requestFocus();
+		}
+		// Checks database connection
+		else if(userDAO == null)
+			showError("Database connection is unavailable.");
+		else
+		{
+			try {
+				// Prevents duplicate usernames
+				if(userDAO.usernameExists(username))
+				{
+					showError("That username is already taken.");
+					usernameField.requestFocus();
+				}
+				else
+				{
+					userDAO.addUser(username, password);
 
-        else if (userDAO == null) {
-            showError("Database connection is unavailable.");
-        }
+					int userId = userDAO.getUserID(username);
 
-        else {
-            try {
-                if (userDAO.usernameExists(username)) {
-                    showError("That username is already taken.");
-                    usernameField.requestFocus();
-                }
+					if(userId == -1)
+						showError("Unable to create the account.");
+					else
+					{
+						UserSession.setCurrentUser(userId, username);
 
-                else {
-                    userDAO.addUser(username, password);
+						if(signupSuccessAction != null)
+							signupSuccessAction.run();
+					}
+				}
+			}
+			catch(SQLException e) {
+				showError("Unable to create the account. Please try again.");
+				e.printStackTrace();
+			}
+		}
+	}
 
-                    int userId = userDAO.getUserID(username);
+	/**
+	 * Closes signup form.
+	 */
+	@FXML
+	private void handleClose() {
+		if(closeAction != null)
+			closeAction.run();
+	}
 
-                    if (userId == -1) {
-                        showError("Unable to create the account.");
-                    }
-
-                    else {
-                        UserSession.setCurrentUser(userId, username);
-
-                        if (signupSuccessAction != null) {
-                            signupSuccessAction.run();
-                        }
-                    }
-                }
-            }
-
-            catch (SQLException e) {
-                showError("Unable to create the account. Please try again.");
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @FXML
-    private void handleClose() {
-        if (closeAction != null) {
-            closeAction.run();
-        }
-    }
-
-    private void showError(String message) {
-        errorLabel.setText(message);
-        errorLabel.setManaged(true);
-        errorLabel.setVisible(true);
-        errorLabel.toFront();
-    }
+	/**
+	 * Displays signup error message.
+	 *
+	 * @param message error message
+	 */
+	private void showError(String message) {
+		errorLabel.setText(message);
+		errorLabel.setManaged(true);
+		errorLabel.setVisible(true);
+		errorLabel.toFront();
+	}
 }

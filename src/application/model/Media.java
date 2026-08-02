@@ -1,6 +1,6 @@
 package application.model;
 
-public class Media {
+public abstract class Media {
 	
 	protected int mediaId;
 	private Type type;

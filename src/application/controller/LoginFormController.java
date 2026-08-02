@@ -11,6 +11,11 @@ import javafx.scene.control.TextField;
 import application.model.UserSession;
 
 public class LoginFormController {
+	
+	/*
+	 * Controls the pop-up where a person who has
+	 * made an account before can log-in
+	 */
 
     @FXML
     private TextField usernameField;
@@ -25,78 +30,120 @@ public class LoginFormController {
     private Runnable closeAction;
     private Runnable loginSuccessAction;
 
-    @FXML
-    public void initialize() {
-        errorLabel.setVisible(false);
-        errorLabel.setManaged(false);
-    }
+    /**
+	 * Initializes error message visibility.
+	 */
+	@FXML
+	public void initialize() {
+		errorLabel.setVisible(false);
+		errorLabel.setManaged(false);
+	}
+	
+	/**
+	 * Sets database connection and initializes user data access.
+	 *
+	 * @param conn active database connection
+	 */
+	public void setConnection(Connection conn) {
+		this.userDAO = new UserDAO(conn);
+	}
+	
+	/**
+	 * Sets action executed when login form closes.
+	 *
+	 * @param closeAction callback to execute
+	 */
+	public void setCloseAction(Runnable closeAction) {
+		this.closeAction = closeAction;
+	}
+	
+	/**
+	 * Sets action executed after successful login.
+	 *
+	 * @param loginSuccessAction callback to execute
+	 */
+	public void setLoginSuccessAction(Runnable loginSuccessAction) {
+		this.loginSuccessAction = loginSuccessAction;
+	}
+	
+	/**
+	 * Validates login fields and verifies user credentials.
+	 */
+	@FXML
+	private void handleLogin() {
+		boolean valid = true;
+		String username = usernameField.getText().trim();
+		String password = passwordField.getText();
+		
+		// Validates required fields
+		if(username.isEmpty() || password.isEmpty())
+		{
+			showError("Please enter both your username and password.");
+			valid = false;
+		}
+		
+		// Checks database connection
+		if(userDAO == null && valid)
+		{
+			showError("Database connection is unavailable.");
+			valid = false;
+		}
 
-    public void setConnection(Connection conn) {
-        this.userDAO = new UserDAO(conn);
-    }
-
-    public void setCloseAction(Runnable closeAction) {
-        this.closeAction = closeAction;
-    }
-
-    public void setLoginSuccessAction(Runnable loginSuccessAction) {
-        this.loginSuccessAction = loginSuccessAction;
-    }
-
-    @FXML
-    private void handleLogin() {
-    	boolean valid = true;
-        String username = usernameField.getText().trim();
-        String password = passwordField.getText();
-
-        if (username.isEmpty() || password.isEmpty()) {
-            showError("Please enter both your username and password.");
-            valid = false;
-        }
-
-        if (userDAO == null && valid) {
-            showError("Database connection is unavailable.");
-            valid = false;
-        }
-
-        try {
-            boolean validLogin = userDAO.login(username, password);
-
-            if (!validLogin && valid) {
-                showError("Incorrect username or password.");
-                passwordField.clear();
-                passwordField.requestFocus();
-                valid = false;
-            }
-
-            int userId = userDAO.getUserID(username);
-
-            if (userId == -1 && valid) {
-                showError("Unable to retrieve the user account.");
-                valid = false;
-            }
-
-            UserSession.setCurrentUser(userId, username);
-
-            if (loginSuccessAction != null && valid) {
-                loginSuccessAction.run();
-            }
-        } catch (SQLException e) {
-            showError("Unable to log in. Please try again.");
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleClose() {
-        if (closeAction != null) {
-            closeAction.run();
-        }
-    }
-
-    private void showError(String message) {
-        errorLabel.setText(message);
-        errorLabel.setVisible(true);
-        errorLabel.setManaged(true);
-    }
+		if(valid)
+		{
+			try {
+				boolean validLogin = userDAO.login(username, password);
+				
+				// Checks entered credentials
+				if(!validLogin)
+				{
+					showError("Incorrect username or password.");
+					passwordField.clear();
+					passwordField.requestFocus();
+					valid = false;
+				}
+				
+				if(valid)
+				{
+					int userId = userDAO.getUserID(username);
+					
+					// Checks retrieved user account
+					if(userId == -1)
+					{
+						showError("Unable to retrieve the user account.");
+						valid = false;
+					}
+					else
+						UserSession.setCurrentUser(userId, username);
+				}
+				
+				if(loginSuccessAction != null && valid)
+					loginSuccessAction.run();
+			}
+			catch(SQLException e) {
+				showError("Unable to log in. Please try again.");
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Closes login form.
+	 */
+	@FXML
+	private void handleClose() {
+		if(closeAction != null)
+			closeAction.run();
+	}
+	
+	/**
+	 * Displays login error message.
+	 *
+	 * @param message error message
+	 */
+	private void showError(String message) {
+		errorLabel.setText(message);
+		errorLabel.setVisible(true);
+		errorLabel.setManaged(true);
+	}
 }

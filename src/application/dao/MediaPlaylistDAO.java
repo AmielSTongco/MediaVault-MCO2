@@ -1,0 +1,837 @@
+package application.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import application.model.Type;
+import application.model.Media;
+import application.model.MediaPlaylist;
+import application.model.Song;
+import application.model.Game;
+import application.model.Show;
+import application.model.Status;
+
+public class MediaPlaylistDAO {
+	
+	private Connection conn;
+	private int userId;
+	
+	/**
+	 * Creates a MediaPlaylistDAO using the given database connection and user ID.
+	 *
+	 * @param conn active database connection
+	 * @param userId current user ID
+	 */
+	public MediaPlaylistDAO(Connection conn, int userId) {
+		this.conn = conn;
+		this.userId = userId;
+	}
+
+	/**
+	 * Creates a new playlist for the current user.
+	 *
+	 * @param name playlist name
+	 * @param playlistPicturePath playlist image path
+	 * @param mediaType playlist media type
+	 * @return true if playlist was created, otherwise false
+	 * @throws SQLException if a database error occurs
+	 */
+	public boolean createPlaylist(String name, String playlistPicturePath, Type mediaType) throws SQLException {
+		String normalizedName = name.trim().toLowerCase();
+
+		if(normalizedName.isEmpty())
+			return false;
+
+		String tableName = mediaType.getTitle().toLowerCase() + "_playlists";
+		String reservedName = "all_" + mediaType.getTitle().toLowerCase();
+
+		// Prevents use of reserved playlist names
+		if(normalizedName.equals(reservedName) || normalizedName.equals(reservedName.replace("_", " ")))
+			return false;
+
+		String orderSql = "SELECT COALESCE(MAX(display_order), 0) + 1 FROM " + tableName + " WHERE user_id = ?";
+		int displayOrder = 1;
+
+		// Retrieves next available display order
+		try(PreparedStatement stmt = conn.prepareStatement(orderSql))
+		{
+			stmt.setInt(1, userId);
+
+			try(ResultSet rs = stmt.executeQuery())
+			{
+				if(rs.next())
+					displayOrder = rs.getInt(1);
+			}
+		}
+
+		String sql = "INSERT INTO " + tableName + " (user_id, title, image_path, display_order) VALUES (?, ?, ?, ?)";
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql))
+		{
+			stmt.setInt(1, userId);
+			stmt.setString(2, name.trim());
+			stmt.setString(3, playlistPicturePath);
+			stmt.setInt(4, displayOrder);
+			stmt.executeUpdate();
+
+			return true;
+		}
+		catch(SQLException e) {
+			// Returns false when playlist name already exists
+			if(e.getMessage() != null && e.getMessage().contains("UNIQUE constraint failed"))
+				return false;
+
+			throw e;
+		}
+	}
+
+	/**
+	 * Adds a media item to a selected playlist and its default playlist.
+	 *
+	 * @param playlistId selected playlist ID
+	 * @param mediaId media item ID
+	 * @param status media status
+	 * @param rating user rating
+	 * @param review user review
+	 * @param mediaType media type name
+	 * @throws SQLException if a database error occurs
+	 */
+	public void addMediaToPlaylist(int playlistId, int mediaId, Status status, double rating, String review, String mediaType) throws SQLException {
+		String media = mediaType.toLowerCase();
+
+		if(media.endsWith("s"))
+			media = media.substring(0, media.length() - 1);
+
+		String tableName = media + "s_playlist_items";
+		String playlistTable = media + "s_playlists";
+		String idColumn = media + "_id";
+		String defaultPlaylistTitle = "all_" + media + "s";
+
+		// Adds media to selected playlist
+		addMediaToSpecificPlaylist(playlistId, mediaId, tableName, idColumn);
+
+		String defaultPlaylistSql = "SELECT id FROM " + playlistTable + " WHERE user_id = ? AND title = ?";
+		int defaultPlaylistId = -1;
+
+		// Retrieves matching default playlist
+		try(PreparedStatement stmt = conn.prepareStatement(defaultPlaylistSql))
+		{
+			stmt.setInt(1, userId);
+			stmt.setString(2, defaultPlaylistTitle);
+
+			try(ResultSet rs = stmt.executeQuery())
+			{
+				if(rs.next())
+					defaultPlaylistId = rs.getInt("id");
+			}
+		}
+
+		// Also adds media to default playlist
+		if(defaultPlaylistId > 0 && defaultPlaylistId != playlistId)
+			addMediaToSpecificPlaylist(defaultPlaylistId, mediaId, tableName, idColumn);
+	}
+
+	/**
+	 * Adds a media item to one specific playlist.
+	 *
+	 * @param playlistId playlist ID
+	 * @param mediaId media item ID
+	 * @param tableName playlist items table
+	 * @param idColumn media ID column
+	 * @throws SQLException if a database error occurs
+	 */
+	private void addMediaToSpecificPlaylist(int playlistId, int mediaId, String tableName, String idColumn) throws SQLException {
+		String orderSql = "SELECT COALESCE(MAX(display_order), 0) + 1 FROM " + tableName + " WHERE playlist_id = ?";
+		int displayOrder = 1;
+
+		// Retrieves next available display order
+		try(PreparedStatement stmt = conn.prepareStatement(orderSql))
+		{
+			stmt.setInt(1, playlistId);
+
+			try(ResultSet rs = stmt.executeQuery())
+			{
+				if(rs.next())
+					displayOrder = rs.getInt(1);
+			}
+		}
+
+		String sql = "INSERT OR IGNORE INTO " + tableName + " (playlist_id, " + idColumn + ", display_order) VALUES (?, ?, ?)";
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql))
+		{
+			stmt.setInt(1, playlistId);
+			stmt.setInt(2, mediaId);
+			stmt.setInt(3, displayOrder);
+			stmt.executeUpdate();
+		}
+	}
+
+	/**
+	 * Removes a media item from a selected playlist.
+	 *
+	 * @param playlistId playlist ID
+	 * @param mediaId media item ID
+	 * @param type media type
+	 * @throws SQLException if a database error occurs
+	 */
+	public void removeMediaFromPlaylist(int playlistId, int mediaId, Type type) throws SQLException {
+		String tableName;
+		String mediaIdColumn;
+		String mediaName;
+
+		// Selects matching playlist items table
+		switch(type)
+		{
+			case SONG:
+				tableName = "songs_playlist_items";
+				mediaIdColumn = "song_id";
+				mediaName = "Song";
+				break;
+
+			case GAME:
+				tableName = "games_playlist_items";
+				mediaIdColumn = "game_id";
+				mediaName = "Game";
+				break;
+
+			case SHOW:
+				tableName = "shows_playlist_items";
+				mediaIdColumn = "show_id";
+				mediaName = "Show";
+				break;
+
+			default:
+				throw new IllegalArgumentException("Unsupported media type: " + type);
+		}
+
+		String sql = "DELETE FROM " + tableName + " WHERE playlist_id = ? AND " + mediaIdColumn + " = ?";
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql))
+		{
+			stmt.setInt(1, playlistId);
+			stmt.setInt(2, mediaId);
+
+			int rowsDeleted = stmt.executeUpdate();
+
+			if(rowsDeleted > 0)
+				System.out.println(" - " + mediaName + " removed from playlist.");
+			else
+				System.out.println(" - " + mediaName + " was not found in this playlist.");
+		}
+
+		// Restores continuous display order
+		reorderPlaylistItems(playlistId, type.name());
+	}
+	
+	/**
+	 * Retrieves media items from a playlist based on its media type.
+	 *
+	 * @param playlistId playlist ID
+	 * @param mediaType playlist media type
+	 * @return list of media items in the playlist
+	 * @throws SQLException if a database error occurs
+	 */
+	public List<Media> getMediasInPlaylist(int playlistId, Type mediaType) throws SQLException {
+		if(mediaType == Type.SONG)
+			return new ArrayList<>(getSongsInPlaylist(playlistId));
+
+		if(mediaType == Type.GAME)
+			return new ArrayList<>(getGamesInPlaylist(playlistId));
+
+		if(mediaType == Type.SHOW)
+			return new ArrayList<>(getShowsInPlaylist(playlistId));
+
+		return new ArrayList<>();
+	}
+
+	/**
+	 * Retrieves all songs in a selected playlist.
+	 *
+	 * @param playlistId playlist ID
+	 * @return list of songs in the playlist
+	 * @throws SQLException if a database error occurs
+	 */
+	public List<Song> getSongsInPlaylist(int playlistId) throws SQLException {
+		List<Song> mediaItems = new ArrayList<>();
+
+		String sql = "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, m.image_path, "
+				   + "m.album, m.runtime_seconds "
+				   + "FROM songs_playlists mp "
+				   + "JOIN songs_playlist_items mpi ON mp.id = mpi.playlist_id "
+				   + "JOIN songs m ON mpi.song_id = m.id "
+				   + "JOIN songs_reviews mr ON m.id = mr.song_id AND mr.user_id = mp.user_id "
+				   + "WHERE mp.user_id = ? AND mp.id = ? "
+				   + "ORDER BY mpi.display_order ASC";
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql))
+		{
+			stmt.setInt(1, userId);
+			stmt.setInt(2, playlistId);
+
+			try(ResultSet rs = stmt.executeQuery())
+			{
+				while(rs.next())
+				{
+					String statusString = rs.getString("status");
+					Status status = statusString == null ? Status.PLANNED : Status.fromDbString(statusString);
+
+					String review = rs.getString("review");
+
+					if(review == null)
+						review = "";
+
+					// Creates song using retrieved values
+					Song media = new Song(rs.getString("title"), status, rs.getDouble("user_rating"), rs.getString("album"), rs.getString("creator"), rs.getInt("year"), rs.getInt("runtime_seconds"), review, rs.getString("image_path"));
+
+					media.setMediaId(rs.getInt("id"));
+					mediaItems.add(media);
+				}
+			}
+		}
+
+		return mediaItems;
+	}
+
+	/**
+	 * Retrieves all games in a selected playlist.
+	 *
+	 * @param playlistId playlist ID
+	 * @return list of games in the playlist
+	 * @throws SQLException if a database error occurs
+	 */
+	public List<Game> getGamesInPlaylist(int playlistId) throws SQLException {
+		List<Game> mediaItems = new ArrayList<>();
+
+		String sql = "SELECT m.id, m.title, m.creator, m.year, mr.status, mr.user_rating, mr.review, m.image_path, "
+				   + "m.genre, m.avg_playtime_mins "
+				   + "FROM games_playlists mp "
+				   + "JOIN games_playlist_items mpi ON mp.id = mpi.playlist_id "
+				   + "JOIN games m ON mpi.game_id = m.id "
+				   + "JOIN games_reviews mr ON m.id = mr.game_id AND mr.user_id = mp.user_id "
+				   + "WHERE mp.user_id = ? AND mp.id = ? "
+				   + "ORDER BY mpi.display_order ASC";
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql))
+		{
+			stmt.setInt(1, userId);
+			stmt.setInt(2, playlistId);
+
+			try(ResultSet rs = stmt.executeQuery())
+			{
+				while(rs.next())
+				{
+					String statusString = rs.getString("status");
+					Status status = statusString == null ? Status.PLANNED : Status.fromDbString(statusString);
+
+					String review = rs.getString("review");
+
+					if(review == null)
+						review = "";
+
+					// Creates game using retrieved values
+					Game media = new Game(rs.getString("title"), rs.getString("creator"), rs.getInt("year"), status, rs.getDouble("user_rating"), review, rs.getString("genre"), rs.getInt("avg_playtime_mins"), rs.getString("image_path"));
+
+					media.setMediaId(rs.getInt("id"));
+					mediaItems.add(media);
+				}
+			}
+		}
+
+		return mediaItems;
+	}
+
+	/**
+	 * Retrieves all shows in a selected playlist.
+	 *
+	 * @param playlistId playlist ID
+	 * @return list of shows in the playlist
+	 * @throws SQLException if a database error occurs
+	 */
+	public List<Show> getShowsInPlaylist(int playlistId) throws SQLException {
+		List<Show> mediaItems = new ArrayList<>();
+
+		String sql = "SELECT m.id, m.title, m.creator, m.year_start, m.year_end, mr.status, mr.user_rating, mr.review, m.image_path, "
+				   + "m.genre, m.num_of_seasons, m.num_of_episodes, m.avg_mins_per_ep, m.airing, m.api_id "
+				   + "FROM shows_playlists mp "
+				   + "JOIN shows_playlist_items mpi ON mp.id = mpi.playlist_id "
+				   + "JOIN shows m ON mpi.show_id = m.id "
+				   + "JOIN shows_reviews mr ON m.id = mr.show_id AND mr.user_id = mp.user_id "
+				   + "WHERE mp.user_id = ? AND mp.id = ? "
+				   + "ORDER BY mpi.display_order ASC";
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql))
+		{
+			stmt.setInt(1, userId);
+			stmt.setInt(2, playlistId);
+
+			try(ResultSet rs = stmt.executeQuery())
+			{
+				while(rs.next())
+				{
+					String statusString = rs.getString("status");
+					Status status = statusString == null ? Status.PLANNED : Status.fromDbString(statusString);
+
+					String review = rs.getString("review");
+
+					if(review == null)
+						review = "";
+
+					// Creates show using retrieved values
+					Show media = new Show(rs.getString("title"), rs.getString("creator"), rs.getInt("year_start"), rs.getInt("year_end"), status, rs.getDouble("user_rating"), review, rs.getString("genre"), rs.getInt("num_of_seasons"), rs.getBoolean("airing"), rs.getString("image_path"));
+
+					media.setMediaId(rs.getInt("id"));
+					media.setApiId(rs.getInt("api_id"));
+					mediaItems.add(media);
+				}
+			}
+		}
+
+		return mediaItems;
+	}
+
+	/**
+	 * Retrieves playlists belonging to a user and media type.
+	 *
+	 * @param userId user ID
+	 * @param mediaType playlist media type
+	 * @return list of user playlists
+	 * @throws SQLException if a database error occurs
+	 */
+	public List<MediaPlaylist> getPlaylistsByUser(int userId, Type mediaType) throws SQLException {
+		List<MediaPlaylist> playlists = new ArrayList<>();
+		String tableName = mediaType.getTitle().toLowerCase() + "_playlists";
+		String defaultTitle = "all_" + mediaType.getTitle().toLowerCase();
+
+		String sql = "SELECT id, title, image_path FROM " + tableName + " WHERE user_id = ? "
+				   + "ORDER BY CASE WHEN title = ? THEN 0 ELSE 1 END, display_order ASC";
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql))
+		{
+			stmt.setInt(1, userId);
+			stmt.setString(2, defaultTitle);
+
+			try(ResultSet rs = stmt.executeQuery())
+			{
+				while(rs.next())
+				{
+					int playlistId = rs.getInt("id");
+
+					// Retrieves playlist statistics
+					int completedCount = countStatusedMedia(playlistId, Status.COMPLETED, mediaType);
+					int inProgressCount = countStatusedMedia(playlistId, Status.IN_PROGRESS, mediaType);
+					int plannedCount = countStatusedMedia(playlistId, Status.PLANNED, mediaType);
+					int totalCount = completedCount + inProgressCount + plannedCount;
+					double avgRatingCount = calculateAvgRating(playlistId, mediaType);
+
+					MediaPlaylist playlist = new MediaPlaylist(playlistId, rs.getString("title"), rs.getString("image_path"), totalCount, completedCount, inProgressCount, plannedCount, avgRatingCount);
+					playlists.add(playlist);
+				}
+			}
+		}
+
+		return playlists;
+	}
+	
+	/**
+	 * Deletes a playlist and all media associations belonging to it.
+	 *
+	 * @param playlistId playlist ID
+	 * @param mediaType playlist media type
+	 * @throws SQLException if a database error occurs
+	 */
+	public void deletePlaylist(int playlistId, String mediaType) throws SQLException {
+		String media = mediaType.toLowerCase();
+
+		if(media.endsWith("s"))
+			media = media.substring(0, media.length() - 1);
+
+		String itemsTable = media + "s_playlist_items";
+		String playlistsTable = media + "s_playlists";
+		boolean previousAutoCommit = conn.getAutoCommit();
+
+		conn.setAutoCommit(false);
+
+		try {
+			// Deletes playlist media associations
+			String sql = "DELETE FROM " + itemsTable + " WHERE playlist_id = ?";
+
+			try(PreparedStatement stmt = conn.prepareStatement(sql))
+			{
+				stmt.setInt(1, playlistId);
+				stmt.executeUpdate();
+			}
+
+			// Deletes playlist owned by current user
+			sql = "DELETE FROM " + playlistsTable + " WHERE id = ? AND user_id = ?";
+
+			try(PreparedStatement stmt = conn.prepareStatement(sql))
+			{
+				stmt.setInt(1, playlistId);
+				stmt.setInt(2, userId);
+				stmt.executeUpdate();
+			}
+
+			reorderPlaylists(userId, media);
+			conn.commit();
+		}
+		catch(SQLException e) {
+			conn.rollback();
+			throw e;
+		}
+		finally {
+			conn.setAutoCommit(previousAutoCommit);
+		}
+	}
+
+	/**
+	 * Counts media items with a selected status inside a playlist.
+	 *
+	 * @param playlistId playlist ID
+	 * @param status media status to count
+	 * @param mediaType playlist media type
+	 * @return number of matching media items
+	 * @throws SQLException if a database error occurs
+	 */
+	public int countStatusedMedia(int playlistId, Status status, Type mediaType) throws SQLException {
+		String media = mediaType.name().toLowerCase();
+
+		String sql = "SELECT COUNT(*) FROM " + media + "s_reviews mr "
+				   + "JOIN " + media + "s_playlist_items mpi ON mr." + media + "_id = mpi." + media + "_id "
+				   + "WHERE mpi.playlist_id = ? "
+				   + "AND mr.user_id = ? "
+				   + "AND LOWER(REPLACE(mr.status, '_', ' ')) = LOWER(?)";
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql))
+		{
+			stmt.setInt(1, playlistId);
+			stmt.setInt(2, userId);
+			stmt.setString(3, status.toDbString());
+
+			try(ResultSet rs = stmt.executeQuery())
+			{
+				if(rs.next())
+					return rs.getInt(1);
+			}
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Calculates average rating of completed media inside a playlist.
+	 *
+	 * @param playlistId playlist ID
+	 * @param mediaType playlist media type
+	 * @return average completed media rating
+	 * @throws SQLException if a database error occurs
+	 */
+	public double calculateAvgRating(int playlistId, Type mediaType) throws SQLException {
+		String media = mediaType.name().toLowerCase();
+
+		String sql = "SELECT AVG(mr.user_rating) "
+				   + "FROM " + media + "s_reviews mr "
+				   + "JOIN " + media + "s_playlist_items mpi ON mr." + media + "_id = mpi." + media + "_id "
+				   + "WHERE mpi.playlist_id = ? "
+				   + "AND mr.user_id = ? "
+				   + "AND LOWER(REPLACE(mr.status, '_', ' ')) = LOWER(?)";
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql))
+		{
+			stmt.setInt(1, playlistId);
+			stmt.setInt(2, userId);
+			stmt.setString(3, Status.COMPLETED.toDbString());
+
+			try(ResultSet rs = stmt.executeQuery())
+			{
+				if(rs.next())
+					return rs.getDouble(1);
+			}
+		}
+
+		return 0.0;
+	}
+
+	/**
+	 * Updates saved status, rating, and review of a media item.
+	 *
+	 * @param media media containing updated review information
+	 * @throws SQLException if a database error occurs
+	 */
+	public void updateAllPlaylists(Media media) throws SQLException {
+		String mediaType = null;
+
+		// Selects matching review table
+		if(media instanceof Song)
+			mediaType = "song";
+		else if(media instanceof Game)
+			mediaType = "game";
+		else if(media instanceof Show)
+			mediaType = "show";
+
+		if(mediaType != null)
+		{
+			String sql = "UPDATE " + mediaType + "s_reviews "
+					   + "SET status = ?, user_rating = ?, review = ? "
+					   + "WHERE user_id = ? AND " + mediaType + "_id = "
+					   + "(SELECT id FROM " + mediaType + "s WHERE title = ? AND creator = ?)";
+
+			try(PreparedStatement stmt = conn.prepareStatement(sql))
+			{
+				stmt.setString(1, media.getStatus().toDbString());
+				stmt.setDouble(2, media.getUserRating());
+				stmt.setString(3, media.getReview());
+				stmt.setInt(4, userId);
+				stmt.setString(5, media.getTitle());
+				stmt.setString(6, media.getCreator());
+				stmt.executeUpdate();
+			}
+		}
+	}
+
+	/**
+	 * Retrieves custom playlist image or matching default image.
+	 *
+	 * @param playlistId playlist ID
+	 * @param type playlist media type
+	 * @return custom or default playlist image path
+	 * @throws SQLException if a database error occurs
+	 */
+	public String getPlaylistImage(int playlistId, Type type) throws SQLException {
+		String imagePath = getCustomPlaylistImage(playlistId, type);
+
+		if(imagePath != null && !imagePath.isBlank())
+			return imagePath;
+
+		switch(type)
+		{
+			case SONG:
+				return "/resources/application/images/icons/default-song-playlist-icon.png";
+
+			case GAME:
+				return "/resources/application/images/icons/default-game-playlist-icon.png";
+
+			case SHOW:
+				return "/resources/application/images/icons/default-show-playlist-icon.png";
+		}
+
+		return null;
+	}
+
+	/**
+	 * Retrieves saved image path of a playlist.
+	 *
+	 * @param playlistId playlist ID
+	 * @param type playlist media type
+	 * @return saved image path, or null if none exists
+	 * @throws SQLException if a database error occurs
+	 */
+	private String getCustomPlaylistImage(int playlistId, Type type) throws SQLException {
+		/* Use of switch expression guided by Oracle Java documentation */
+		String table = switch(type)
+		{
+			case SONG -> "songs_playlists";
+			case GAME -> "games_playlists";
+			case SHOW -> "shows_playlists";
+		};
+
+		String sql = "SELECT image_path FROM " + table + " WHERE id = ?";
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql))
+		{
+			stmt.setInt(1, playlistId);
+
+			try(ResultSet rs = stmt.executeQuery())
+			{
+				if(rs.next())
+					return rs.getString("image_path");
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Restores sequential media order inside a playlist.
+	 *
+	 * @param playlistId playlist ID
+	 * @param mediaType playlist media type
+	 * @throws SQLException if a database error occurs
+	 */
+	private void reorderPlaylistItems(int playlistId, String mediaType) throws SQLException {
+		String media = mediaType.toLowerCase();
+
+		if(media.endsWith("s"))
+			media = media.substring(0, media.length() - 1);
+
+		String tableName = media + "s_playlist_items";
+		String idColumn = media + "_id";
+		String selectSql = "SELECT " + idColumn + " FROM " + tableName + " WHERE playlist_id = ? ORDER BY display_order";
+		List<Integer> mediaIds = new ArrayList<>();
+
+		// Retrieves media IDs in current order
+		try(PreparedStatement stmt = conn.prepareStatement(selectSql))
+		{
+			stmt.setInt(1, playlistId);
+
+			try(ResultSet rs = stmt.executeQuery())
+			{
+				while(rs.next())
+					mediaIds.add(rs.getInt(idColumn));
+			}
+		}
+
+		String updateSql = "UPDATE " + tableName + " SET display_order = ? WHERE playlist_id = ? AND " + idColumn + " = ?";
+
+		// Reassigns sequential display order
+		try(PreparedStatement stmt = conn.prepareStatement(updateSql))
+		{
+			for(int i=0; i<mediaIds.size(); i++)
+			{
+				stmt.setInt(1, i + 1);
+				stmt.setInt(2, playlistId);
+				stmt.setInt(3, mediaIds.get(i));
+				stmt.addBatch();
+			}
+
+			stmt.executeBatch();
+		}
+	}
+
+	/**
+	 * Restores sequential playlist order for a user.
+	 *
+	 * @param userId user ID
+	 * @param mediaType playlist media type
+	 * @throws SQLException if a database error occurs
+	 */
+	private void reorderPlaylists(int userId, String mediaType) throws SQLException {
+		String media = mediaType.toLowerCase();
+
+		if(media.endsWith("s"))
+			media = media.substring(0, media.length() - 1);
+
+		String tableName = media + "s_playlists";
+		String selectSql = "SELECT id FROM " + tableName + " WHERE user_id = ? ORDER BY display_order";
+		List<Integer> playlistIds = new ArrayList<>();
+
+		// Retrieves playlist IDs in current order
+		try(PreparedStatement stmt = conn.prepareStatement(selectSql))
+		{
+			stmt.setInt(1, userId);
+
+			try(ResultSet rs = stmt.executeQuery())
+			{
+				while(rs.next())
+					playlistIds.add(rs.getInt("id"));
+			}
+		}
+
+		String updateSql = "UPDATE " + tableName + " SET display_order = ? WHERE id = ? AND user_id = ?";
+
+		// Reassigns sequential display order
+		try(PreparedStatement stmt = conn.prepareStatement(updateSql))
+		{
+			for(int i=0; i<playlistIds.size(); i++)
+			{
+				stmt.setInt(1, i + 1);
+				stmt.setInt(2, playlistIds.get(i));
+				stmt.setInt(3, userId);
+				stmt.addBatch();
+			}
+
+			stmt.executeBatch();
+		}
+	}
+
+	/**
+	 * Updates display order of media inside a playlist.
+	 *
+	 * @param playlistId playlist ID
+	 * @param mediaItems reordered media items
+	 * @param mediaType playlist media type
+	 * @throws SQLException if a database error occurs
+	 */
+	public void updateMediaOrder(int playlistId, List<Media> mediaItems, Type mediaType) throws SQLException {
+		String media = mediaType.name().toLowerCase();
+		String tableName = media + "s_playlist_items";
+		String idColumn = media + "_id";
+		String sql = "UPDATE " + tableName + " SET display_order = ? WHERE playlist_id = ? AND " + idColumn + " = ?";
+		boolean previousAutoCommit = conn.getAutoCommit();
+
+		conn.setAutoCommit(false);
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql))
+		{
+			// Saves current media order
+			for(int i=0; i<mediaItems.size(); i++)
+			{
+				stmt.setInt(1, i + 1);
+				stmt.setInt(2, playlistId);
+				stmt.setInt(3, mediaItems.get(i).getMediaId());
+				stmt.addBatch();
+			}
+
+			stmt.executeBatch();
+			conn.commit();
+		}
+		catch(SQLException e) {
+			conn.rollback();
+			throw e;
+		}
+		finally {
+			conn.setAutoCommit(previousAutoCommit);
+		}
+	}
+
+	/**
+	 * Updates display order of user playlists.
+	 *
+	 * @param playlists reordered playlists
+	 * @param mediaType playlist media type
+	 * @throws SQLException if a database error occurs
+	 */
+	public void updatePlaylistOrder(List<MediaPlaylist> playlists, Type mediaType) throws SQLException {
+		String tableName = mediaType.getTitle().toLowerCase() + "_playlists";
+		String defaultTitle = "all_" + mediaType.getTitle().toLowerCase();
+		String sql = "UPDATE " + tableName + " SET display_order = ? WHERE id = ? AND user_id = ?";
+		boolean previousAutoCommit = conn.getAutoCommit();
+
+		conn.setAutoCommit(false);
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql))
+		{
+			int order = 1;
+
+			// Saves default playlist first and custom playlists after it
+			for(MediaPlaylist playlist : playlists)
+			{
+				if(playlist.getTitle().equals(defaultTitle))
+					stmt.setInt(1, 0);
+				else
+				{
+					stmt.setInt(1, order);
+					order++;
+				}
+
+				stmt.setInt(2, playlist.getPlaylistId());
+				stmt.setInt(3, userId);
+				stmt.addBatch();
+			}
+
+			stmt.executeBatch();
+			conn.commit();
+		}
+		catch(SQLException e) {
+			conn.rollback();
+			throw e;
+		}
+		finally {
+			conn.setAutoCommit(previousAutoCommit);
+		}
+	}
+}

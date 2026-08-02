@@ -6,8 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-import application.dao.impl.MediaDAOImpl;
-import application.dao.impl.MediaPlaylistDAOImpl;
+import application.dao.MediaDAO;
+import application.dao.MediaPlaylistDAO;
 import application.model.Game;
 import application.model.Media;
 import application.model.MediaPlaylist;
@@ -35,10 +35,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.ContextMenu;
-import application.dao.impl.SeasonDAOImpl;
+import application.dao.SeasonDAO;
 
 public class AddMediaController {
-
+	
+	/*
+	 * The class that controls the pop-up whenever you add a
+	 * manual or automatic medium
+	 */
+	
 	@FXML
 	private StackPane imagePane;
 	
@@ -136,29 +141,39 @@ public class AddMediaController {
 
 	@FXML
 	private TextField showGenreField;
-
+	
+	// Used for creation of the dots background in the pop-up
 	private static final double DOT_SPACING = 55.0;
 	private final ArrayList<Circle> dots = new ArrayList<>();
-
+	
+	// Used to determine if the media added was from search or just manual
 	private boolean automaticMode;
+	
 	private Type mediaType;
 	private Media media;
 	private String imagePath;
 	private Runnable closeAction;
 	private Consumer<Media> saveAction;
 	private MediaPlaylist playlist;
-	private MediaDAOImpl mediaDAO;
-	private SeasonDAOImpl seasonDAO;
-	private MediaPlaylistDAOImpl mediaPlaylistDAO;
+	private MediaDAO mediaDAO;
+	private SeasonDAO seasonDAO;
+	private MediaPlaylistDAO mediaPlaylistDAO;
 	private Connection conn;
-
+	
+	/**
+	 * Initializes popup fields, visual elements, listeners, and status menu styling.
+	 */
 	@FXML
 	public void initialize() {
+		
+		// Sets initial status
 		setSelectedStatus(null);
-
+		
+		// Hides status message
 		statusLabel.setVisible(false);
 		statusLabel.setManaged(false);
-
+		
+		// Sets initial field visibility
 		automaticTitleBox.setVisible(false);
 		automaticTitleBox.setManaged(false);
 
@@ -173,22 +188,22 @@ public class AddMediaController {
 
 		showFieldsBox.setVisible(false);
 		showFieldsBox.setManaged(false);
-
+		
+		// Clips corners of the pop-up
 		Rectangle clip = new Rectangle();
 		clip.widthProperty().bind(popupContainer.widthProperty());
 		clip.heightProperty().bind(popupContainer.heightProperty());
 		clip.setArcWidth(60);
 		clip.setArcHeight(60);
 		popupContainer.setClip(clip);
-
-		dotGridPane.widthProperty().addListener((observable, oldValue, newValue) ->
-			updateDotGrid(dotGridPane, dots)
-		);
-
-		dotGridPane.heightProperty().addListener((observable, oldValue, newValue) ->
-			updateDotGrid(dotGridPane, dots)
-		);
 		
+		/* Uses shorthand for anonymous listener class */
+		// Updates dot grid with pop-up size
+		dotGridPane.widthProperty().addListener((observable, oldValue, newValue) -> updateDotGrid(dotGridPane, dots));
+		dotGridPane.heightProperty().addListener((observable, oldValue, newValue) -> updateDotGrid(dotGridPane, dots));
+		
+		/* Inspiration for use of lambda is from (https://medium.com/@nagarjun_nagesh/lambdas-in-event-driven-programming-fd448541991e) */
+		// Applies status menu theme
 		statusMenuButton.setOnShowing(event -> {
 			ContextMenu menu = statusMenuButton.getContextMenu();
 
@@ -211,32 +226,54 @@ public class AddMediaController {
 		});
 	}
 	
+	/**
+	 * Sets database connection and initializes required data access objects.
+	 *
+	 * @param conn active database connection
+	 */
 	public void setConnection(Connection conn) {
+		
+		// Initialize connections and data access objects
 		this.conn = conn;
-		mediaDAO = new MediaDAOImpl(conn, UserSession.getCurrentUserId());
-		mediaPlaylistDAO = new MediaPlaylistDAOImpl(conn, UserSession.getCurrentUserId());
-		seasonDAO = new SeasonDAOImpl(conn, UserSession.getCurrentUserId());
+		mediaDAO = new MediaDAO(conn, UserSession.getCurrentUserId());
+		mediaPlaylistDAO = new MediaPlaylistDAO(conn, UserSession.getCurrentUserId());
+		seasonDAO = new SeasonDAO(conn, UserSession.getCurrentUserId());
 	}
-
+	
+	/**
+	 * Sets playlist where selected media will be added.
+	 *
+	 * @param playlist selected media playlist
+	 */
 	public void setPlaylist(MediaPlaylist playlist) {
+		
+		// Used to determine which playlist the media came from
 		this.playlist = playlist;
 	}
-
+	
+	/**
+	 * Sets whether media information came from API search or manual input.
+	 *
+	 * @param automaticMode true for API results, false for manual entries
+	 */
 	public void setAutomaticMode(boolean automaticMode) {
+		
+		// Stores current mode
 		this.automaticMode = automaticMode;
-
+		
+		// Switches title section
 		manualTitleBox.setVisible(!automaticMode);
 		manualTitleBox.setManaged(!automaticMode);
 
 		automaticTitleBox.setVisible(automaticMode);
 		automaticTitleBox.setManaged(automaticMode);
-
+		
+		// Locks automatic fields (stuff given by search)
 		setFieldEditable(yearField, !automaticMode);
 		setFieldEditable(detailOneField, !automaticMode);
 		setFieldEditable(runtimeMinutesField, !automaticMode);
 		setFieldEditable(runtimeSecondsField, !automaticMode);
 		setFieldEditable(playtimeField, !automaticMode);
-
 		setFieldEditable(showYearStartField, !automaticMode);
 		setFieldEditable(showYearEndField, !automaticMode);
 		setFieldEditable(showGenreField, !automaticMode);
@@ -245,19 +282,32 @@ public class AddMediaController {
 		airingCheckBox.setDisable(automaticMode);
 		airingCheckBox.setOpacity(1);
 	}
-
+	
+	/**
+	 * Sets current media type and configures corresponding popup layout.
+	 *
+	 * @param mediaType selected media type
+	 */
 	public void setMediaType(Type mediaType) {
 		this.mediaType = mediaType;
+		
+		// Sets media-specific layout (each media has its own color theme)
 		setupMediaFields();
 		applyTheme();
 		setupDotGrid();
 		loadDefaultImage();
 	}
-
+	
+	/**
+	 * Sets the media to be displayed and populates all corresponding fields.
+	 *
+	 * @param media selected media
+	 */
 	public void setMedia(Media media) {
 		this.media = media;
 		imagePath = media.getImagePath();
-
+		
+		// Loads common fields
 		automaticTitleLabel.setText(media.getTitle());
 		automaticCreatorLabel.setText("by " + media.getCreator());
 
@@ -276,20 +326,27 @@ public class AddMediaController {
 			reviewArea.setText(media.getReview());
 		else
 			reviewArea.clear();
-
-		if(media instanceof Song) {
+		
+		// Loads song fields
+		if(media instanceof Song)
+		{
 			Song song = (Song)media;
-
+			
+			// Album field
 			detailOneField.setText(song.getAlbum());
 
 			int runtimeSeconds = song.getRuntimeSeconds();
+			
+			// MM:SS format
 			runtimeMinutesField.setText(String.format("%02d", runtimeSeconds / 60));
 			runtimeSecondsField.setText(String.format("%02d", runtimeSeconds % 60));
 		}
-
+		
+		// Loads game fields
 		if(media instanceof Game) {
 			Game game = (Game)media;
-
+			
+			// Genre field
 			detailOneField.setText(game.getGenre());
 			
 			if(game.getAvgPlaytimeMins() > 0)
@@ -297,38 +354,57 @@ public class AddMediaController {
 			else
 				playtimeField.clear();
 		}
-
+		
+		// Loads show fields
 		if(media instanceof Show) {
 			Show show = (Show)media;
-
+			
+			// Year first aired
 			showYearStartField.setText(String.valueOf(show.getYearStart()));
-
+			
+			// Year last aired
 			if(show.getYearEnd() > 0)
 				showYearEndField.setText(String.valueOf(show.getYearEnd()));
 			else
 				showYearEndField.clear();
-
+			
+			//Genre Field
 			showGenreField.setText(show.getGenre());
+			
 			seasonsField.setText(String.valueOf(show.getNumOfSeasons()));
 			airingCheckBox.setSelected(show.isAiring());
 		}
 
 		loadMediaImage(imagePath);
 	}
-
+	
+	/**
+	 * Sets action executed when the popup closes.
+	 *
+	 * @param closeAction callback to execute
+	 */
 	public void setCloseAction(Runnable closeAction) {
 		this.closeAction = closeAction;
 	}
-
+	
+	/**
+	 * Sets action executed after media is successfully saved.
+	 *
+	 * @param saveAction callback to execute
+	 */
 	public void setSaveAction(Consumer<Media> saveAction) {
 		this.saveAction = saveAction;
 	}
-
+	
+	/**
+	 * Configures visible fields based on the selected media type.
+	 */
 	private void setupMediaFields() {
 		boolean song = mediaType == Type.SONG;
 		boolean game = mediaType == Type.GAME;
 		boolean show = mediaType == Type.SHOW;
-
+		
+		// Toggles media-specific sections
 		standardFieldsBox.setVisible(!show);
 		standardFieldsBox.setManaged(!show);
 
@@ -340,25 +416,35 @@ public class AddMediaController {
 
 		showFieldsBox.setVisible(show);
 		showFieldsBox.setManaged(show);
-
-		if(song) {
+		
+		// Sets up the text seen in each field of the pop-up
+		if(song)
+		{
 			yearLabel.setText("Year Released:");
 			detailOneLabel.setText("Album:");
 			titleField.setPromptText("Title");
 			creatorField.setPromptText("by Artist");
 		}
-		else if(game) {
+		else if(game)
+		{
 			yearLabel.setText("Year Released:");
 			detailOneLabel.setText("Genre:");
 			titleField.setPromptText("Title");
 			creatorField.setPromptText("by Developer");
 		}
-		else if(show) {
+		else if(show)
+		{
 			titleField.setPromptText("Title");
 			creatorField.setPromptText("by Creator");
 		}
 	}
-
+	
+	/**
+	 * Enables or disables editing for a text field.
+	 *
+	 * @param field target text field
+	 * @param editable true if editable, otherwise false
+	 */
 	private void setFieldEditable(TextField field, boolean editable) {
 		field.setEditable(editable);
 		field.setFocusTraversable(editable);
@@ -368,21 +454,30 @@ public class AddMediaController {
 		else if(!field.getStyleClass().contains("locked-media-field"))
 			field.getStyleClass().add("locked-media-field");
 	}
-
+	
+	/**
+	 * Validates input fields and saves the selected media.
+	 *
+	 * @param event button click event
+	 */
 	@FXML
 	private void handleSaveAndAdd(ActionEvent event) {
 		boolean valid = validateInputs();
-
-		if(mediaDAO == null || mediaPlaylistDAO == null) {
+		
+		// Safety checks
+		if(mediaDAO == null || mediaPlaylistDAO == null)
+		{
 			showStatus("Database connection is unavailable.", true);
 			valid = false;
 		}
-		else if(playlist == null) {
+		else if(playlist == null)
+		{
 			showStatus("No playlist was selected.", true);
 			valid = false;
 		}
 
-		if(valid) {
+		if(valid)
+		{
 			try {
 				Status status = selectedStatus;
 				double rating = 0;
@@ -395,7 +490,8 @@ public class AddMediaController {
 				if(!automaticMode)
 					media = createMediaFromFields();
 
-				if(media != null) {
+				if(media != null)
+				{	
 					if(media instanceof Show && status == Status.COMPLETED)
 						showStatus("A show cannot be completed until all of its episodes are completed.", true);
 					else {
@@ -429,11 +525,22 @@ public class AddMediaController {
 		}
 	}
 	
+	/**
+	 * Saves media and its user information to the selected playlist.
+	 *
+	 * @param newMedia media to save
+	 * @throws SQLException if a database error occurs
+	 */
 	private void saveMediaToPlaylist(Media newMedia) throws SQLException {
+		
+		/* Code logic adapted from MCO1 */
+		
 		int mediaId = mediaDAO.findMediaId(newMedia);
 		Media oldMedia = null;
-
-		if(mediaId != -1) {
+		
+		// Checks if media already exist
+		if(mediaId != -1)
+		{
 			if(newMedia instanceof Song)
 				oldMedia = mediaDAO.getSongOfUserById(mediaId);
 			else if(newMedia instanceof Game)
@@ -441,26 +548,23 @@ public class AddMediaController {
 			else if(newMedia instanceof Show)
 				oldMedia = mediaDAO.getShowOfUserById(mediaId);
 		}
-		else {
+		else
 			mediaId = mediaDAO.addMedia(newMedia);
-		}
 
 		newMedia.setMediaId(mediaId);
 
 		if(oldMedia == null)
 			mediaDAO.addMediaReview(newMedia);
-
+		
+		// Generates seasons for new shows
 		if(newMedia instanceof Show) {
 			Show show = (Show)newMedia;
-
-			seasonDAO.generateSeasons(
-				mediaId,
-				show.getNumOfSeasons(),
-				show.getSeasonImagePaths()
-			);
+			seasonDAO.generateSeasons(mediaId, show.getNumOfSeasons(), show.getSeasonImagePaths());
 		}
-
-		if(oldMedia != null) {
+		
+		// Updates existing playlist entries
+		if(oldMedia != null)
+		{
 			boolean statusChanged = oldMedia.getStatus() != newMedia.getStatus();
 			boolean ratingChanged = oldMedia.getUserRating() != newMedia.getUserRating();
 			boolean reviewChanged = !oldMedia.getReview().equals(newMedia.getReview());
@@ -468,17 +572,16 @@ public class AddMediaController {
 			if(statusChanged || ratingChanged || reviewChanged)
 				mediaPlaylistDAO.updateAllPlaylists(newMedia);
 		}
-
-		mediaPlaylistDAO.addMediaToPlaylist(
-			playlist.getPlaylistId(),
-			mediaId,
-			newMedia.getStatus(),
-			newMedia.getUserRating(),
-			newMedia.getReview(),
-			mediaType.getTitle()
-		);
+		
+		// Adds media to current playlist
+		mediaPlaylistDAO.addMediaToPlaylist(playlist.getPlaylistId(), mediaId, newMedia.getStatus(), newMedia.getUserRating(), newMedia.getReview(), mediaType.getTitle());
 	}
-
+	
+	/**
+	 * Creates a media object from the entered field values.
+	 *
+	 * @return created media object
+	 */
 	private Media createMediaFromFields() {
 		String title = titleField.getText().trim();
 		String creator = creatorField.getText().trim();
@@ -489,7 +592,8 @@ public class AddMediaController {
 		if(!ratingField.getText().trim().isEmpty())
 			rating = Double.parseDouble(ratingField.getText().trim());
 
-		if(mediaType == Type.SONG) {
+		if(mediaType == Type.SONG)
+		{
 			int year = Integer.parseInt(yearField.getText().trim());
 			String album = detailOneField.getText().trim();
 			int minutes = Integer.parseInt(runtimeMinutesField.getText().trim());
@@ -499,7 +603,8 @@ public class AddMediaController {
 			return new Song(title, status, rating, album, creator, year, runtimeSeconds, review, imagePath);
 		}
 
-		if(mediaType == Type.GAME) {
+		if(mediaType == Type.GAME)
+		{
 			int year = Integer.parseInt(yearField.getText().trim());
 			String genre = detailOneField.getText().trim();
 			int playtime = Integer.parseInt(playtimeField.getText().trim());
@@ -507,7 +612,8 @@ public class AddMediaController {
 			return new Game(title, creator, year, status, rating, review, genre, playtime, imagePath);
 		}
 
-		if(mediaType == Type.SHOW) {
+		if(mediaType == Type.SHOW)
+		{
 			int yearStart = Integer.parseInt(showYearStartField.getText().trim());
 			int yearEnd = 0;
 
@@ -531,24 +637,33 @@ public class AddMediaController {
 
 		return null;
 	}
-
+	
+	/**
+	 * Validates all entered media information.
+	 *
+	 * @return true if all inputs are valid, otherwise false
+	 */
 	private boolean validateInputs() {
 		boolean valid = true;
 
-		if(!automaticMode && titleField.getText().trim().isEmpty()) {
+		if(!automaticMode && titleField.getText().trim().isEmpty())
+		{
 			showStatus("Title cannot be empty.", true);
 			valid = false;
 		}
-		else if(!automaticMode && creatorField.getText().trim().isEmpty()) {
+		else if(!automaticMode && creatorField.getText().trim().isEmpty())
+		{
 			showStatus("Creator cannot be empty.", true);
 			valid = false;
 		}
-		else if(selectedStatus == null) {
+		else if(selectedStatus == null)
+		{
 			showStatus("Select a status.", true);
 			valid = false;
 		}
 
-		if(valid && mediaType == Type.SONG) {
+		if(valid && mediaType == Type.SONG)
+		{
 			try {
 				int minutes = Integer.parseInt(runtimeMinutesField.getText().trim());
 				int seconds = Integer.parseInt(runtimeSecondsField.getText().trim());
@@ -564,11 +679,13 @@ public class AddMediaController {
 			}
 		}
 
-		if(valid && mediaType == Type.GAME) {
+		if(valid && mediaType == Type.GAME)
+		{
 			try {
 				int playtime = Integer.parseInt(playtimeField.getText().trim());
 
-				if(playtime < 0) {
+				if(playtime < 0)
+				{
 					showStatus("Average playtime cannot be negative.", true);
 					valid = false;
 				}
@@ -579,20 +696,25 @@ public class AddMediaController {
 			}
 		}
 
-		if(valid && mediaType == Type.SHOW) {
-			if(showYearStartField.getText().trim().isEmpty()) {
+		if(valid && mediaType == Type.SHOW)
+		{
+			if(showYearStartField.getText().trim().isEmpty())
+			{
 				showStatus("Year started cannot be empty.", true);
 				valid = false;
 			}
-			else if(showGenreField.getText().trim().isEmpty()) {
+			else if(showGenreField.getText().trim().isEmpty())
+			{
 				showStatus("Genre cannot be empty.", true);
 				valid = false;
 			}
-			else if(seasonsField.getText().trim().isEmpty()) {
+			else if(seasonsField.getText().trim().isEmpty())
+			{
 				showStatus("Number of seasons cannot be empty.", true);
 				valid = false;
 			}
-			else {
+			else
+			{
 				try {
 					int yearStart = Integer.parseInt(showYearStartField.getText().trim());
 					int yearEnd = 0;
@@ -601,19 +723,23 @@ public class AddMediaController {
 					if(!showYearEndField.getText().trim().isEmpty())
 						yearEnd = Integer.parseInt(showYearEndField.getText().trim());
 
-					if(yearStart <= 0) {
+					if(yearStart <= 0)
+					{
 						showStatus("Year started must be greater than zero.", true);
 						valid = false;
 					}
-					else if(yearEnd > 0 && yearEnd < yearStart) {
+					else if(yearEnd > 0 && yearEnd < yearStart)
+					{
 						showStatus("Year ended cannot be earlier than year started.", true);
 						valid = false;
 					}
-					else if(seasons <= 0) {
+					else if(seasons <= 0)
+					{
 						showStatus("Number of seasons must be greater than zero.", true);
 						valid = false;
 					}
-					else if(!airingCheckBox.isSelected() && yearEnd == 0) {
+					else if(!airingCheckBox.isSelected() && yearEnd == 0)
+					{
 						showStatus("Enter the ending year for a show that is no longer airing.", true);
 						valid = false;
 					}
@@ -625,22 +751,27 @@ public class AddMediaController {
 			}
 		}
 		
-		if(valid && selectedStatus != Status.COMPLETED) {
-			if(!ratingField.getText().trim().isEmpty()) {
+		if(valid && selectedStatus != Status.COMPLETED)
+		{
+			if(!ratingField.getText().trim().isEmpty())
+			{
 				showStatus("You can only add a rating when the media is completed.", true);
 				valid = false;
 			}
-			else if(!reviewArea.getText().trim().isEmpty()) {
+			else if(!reviewArea.getText().trim().isEmpty())
+			{
 				showStatus("You can only add a review when the media is completed.", true);
 				valid = false;
 			}
 		}
 
-		if(valid && !ratingField.getText().trim().isEmpty()) {
+		if(valid && !ratingField.getText().trim().isEmpty())
+		{
 			try {
 				double rating = Double.parseDouble(ratingField.getText().trim());
 
-				if(rating < 1 || rating > 10) {
+				if(rating < 1 || rating > 10)
+				{
 					showStatus("Rating must be between 1 and 10.", true);
 					valid = false;
 				}
@@ -653,11 +784,19 @@ public class AddMediaController {
 
 		return valid;
 	}
-
+	
+	/**
+	 * Loads the default image for the current media type.
+	 */
 	private void loadDefaultImage() {
 		loadMediaImage(getDefaultImagePath());
 	}
-
+	
+	/**
+	 * Retrieves the default image path for the current media type.
+	 *
+	 * @return default image path
+	 */
 	private String getDefaultImagePath() {
 		if(mediaType == Type.SONG)
 			return "/resources/application/images/icons/default-song-playlist-icon.png";
@@ -670,18 +809,26 @@ public class AddMediaController {
 
 		return "";
 	}
-
+	
+	/**
+	 * Loads a media image from an online URL, local file, or application resource.
+	 *
+	 * @param path image path to load
+	 */
 	private void loadMediaImage(String path) {
 		String finalPath = path;
-
+		
+		// Uses default image when needed
 		if(finalPath == null || finalPath.isBlank())
 			finalPath = getDefaultImagePath();
 
 		Image image = null;
-
+		
+		// Loads online image
 		if(finalPath.startsWith("http://") || finalPath.startsWith("https://"))
 			image = new Image(finalPath, true);
-		else {
+		else
+		{
 			File file = new File(finalPath);
 
 			if(file.exists())
@@ -689,8 +836,10 @@ public class AddMediaController {
 			else if(getClass().getResource(finalPath) != null)
 				image = new Image(getClass().getResource(finalPath).toExternalForm());
 		}
-
-		if(image != null && image.isBackgroundLoading()) {
+		
+		// Waits for background image loading
+		if(image != null && image.isBackgroundLoading())
+		{
 			Image loadedImage = image;
 			mediaPicture.setImage(image);
 
@@ -702,14 +851,21 @@ public class AddMediaController {
 		else
 			setCenterCroppedImage(image);
 	}
-
+	
+	/**
+	 * Displays an image using a centered square crop.
+	 *
+	 * @param image image to display
+	 */
 	private void setCenterCroppedImage(Image image) {
 		mediaPicture.setImage(image);
 		mediaPicture.setFitWidth(235);
 		mediaPicture.setFitHeight(235);
 		mediaPicture.setPreserveRatio(true);
-
-		if(image != null && image.getWidth() > 0 && image.getHeight() > 0) {
+		
+		// Calculates centered square viewport
+		if(image != null && image.getWidth() > 0 && image.getHeight() > 0)
+		{
 			double cropSize = Math.min(image.getWidth(), image.getHeight());
 			double cropX = (image.getWidth() - cropSize) / 2;
 			double cropY = (image.getHeight() - cropSize) / 2;
@@ -719,13 +875,24 @@ public class AddMediaController {
 		else
 			mediaPicture.setViewport(null);
 	}
-
+	
+	/**
+	 * Closes the add media popup.
+	 *
+	 * @param event button click event
+	 */
 	@FXML
 	private void handleCancel(ActionEvent event) {
 		if(closeAction != null)
 			closeAction.run();
 	}
-
+	
+	/**
+	 * Displays a success or error message.
+	 *
+	 * @param message message to display
+	 * @param error true for error styling, otherwise false
+	 */
 	private void showStatus(String message, boolean error) {
 		statusLabel.setText(message);
 		statusLabel.setTextFill(error ? javafx.scene.paint.Color.web("#FF8F9B") : javafx.scene.paint.Color.web("#9BE7B0"));
@@ -733,12 +900,20 @@ public class AddMediaController {
 		statusLabel.setManaged(true);
 	}
 	
+	/**
+	 * Creates the background dot grid.
+	 *
+	 * @param pane pane containing the dots
+	 * @param dots list of dot nodes
+	 * @param color dot color
+	 */
 	private void createDotGrid(Pane pane, ArrayList<Circle> dots, Color color) {
 		int columns = 25;
 		int rows = 20;
 
 		pane.setMouseTransparent(true);
-
+		
+		// Creates grid of dots
 		for(int row = 0; row < rows; row++) {
 			for(int column = 0; column < columns; column++) {
 				Circle dot = new Circle();
@@ -750,7 +925,13 @@ public class AddMediaController {
 
 		updateDotGrid(pane, dots);
 	}
-
+	
+	/**
+	 * Updates the dot grid layout.
+	 *
+	 * @param pane pane containing the dots
+	 * @param dots list of dot nodes
+	 */
 	private void updateDotGrid(Pane pane, ArrayList<Circle> dots) {
 		double width = pane.getWidth();
 		double height = pane.getHeight();
@@ -763,7 +944,8 @@ public class AddMediaController {
 			double startX = centerX - ((visibleColumns - 1) * DOT_SPACING) / 2.0;
 			double startY = centerY - ((visibleRows - 1) * DOT_SPACING) / 2.0;
 			int dotIndex = 0;
-
+			
+			// Positions visible dots
 			for(int row = 0; row < visibleRows; row++) {
 				for(int column = 0; column < visibleColumns; column++) {
 					if(dotIndex < dots.size()) {
@@ -781,13 +963,19 @@ public class AddMediaController {
 					}
 				}
 			}
-
+			
+			// Hides unused dots
 			for(int i = dotIndex; i < dots.size(); i++)
 				dots.get(i).setVisible(false);
 		}
 	}
 	
+	/**
+	 * Applies the selected media theme to the popup.
+	 */
 	private void applyTheme() {
+		
+		// Removes previous theme
 		popupContainer.getStyleClass().removeAll("add-media-popup-songs", "add-media-popup-games", "add-media-popup-shows");
 		imagePane.getStyleClass().removeAll("add-media-image-songs", "add-media-image-games", "add-media-image-shows");
 		automaticTitleBox.getStyleClass().removeAll("automatic-media-header-songs", "automatic-media-header-games", "automatic-media-header-shows");
@@ -815,8 +1003,10 @@ public class AddMediaController {
 		String titleTheme = "";
 		String saveTheme = "";
 		String statusMenuTheme = "";
-
-		switch(mediaType) {
+		
+		// Selects media theme
+		switch(mediaType)
+		{
 			case SONG:
 				popupTheme = "add-media-popup-songs";
 				controlTheme = "add-media-control-songs";
@@ -855,13 +1045,9 @@ public class AddMediaController {
 		
 		ContextMenu menu = statusMenuButton.getContextMenu();
 
-		if(menu != null) {
-			menu.getStyleClass().removeAll(
-				"add-media-status-menu-songs",
-				"add-media-status-menu-games",
-				"add-media-status-menu-shows"
-			);
-
+		if(menu != null)
+		{
+			menu.getStyleClass().removeAll("add-media-status-menu-songs", "add-media-status-menu-games", "add-media-status-menu-shows");
 			menu.getStyleClass().add(statusMenuTheme);
 		}
 
@@ -881,20 +1067,38 @@ public class AddMediaController {
 		addControlTheme(seasonsField, controlTheme);
 	}
 	
+	/**
+	 * Removes media themes from a control.
+	 *
+	 * @param control target control
+	 */
 	private void removeControlThemes(Control control) {
 		if(control != null)
 			control.getStyleClass().removeAll("add-media-control-songs", "add-media-control-games", "add-media-control-shows");
 	}
-
+	
+	/**
+	 * Applies a media theme to a control.
+	 *
+	 * @param control target control
+	 * @param theme theme class to apply
+	 */
 	private void addControlTheme(Control control, String theme) {
 		if(control != null)
 			control.getStyleClass().add(theme);
 	}
 	
+	/**
+	 * Configures the background dot grid for the selected media type.
+	 */
 	private void setupDotGrid() {
 		Color dotColor = Color.TRANSPARENT;
-
-		switch(mediaType) {
+		
+		
+		/* Each color was specifically and intentionally chosen. Designed in Canva! */
+		// Selects dot color
+		switch(mediaType)
+		{
 			case SONG:
 				dotColor = Color.web("#2e5068", 0.15);
 				break;
@@ -910,7 +1114,8 @@ public class AddMediaController {
 
 		if(dots.isEmpty())
 			createDotGrid(dotGridPane, dots, dotColor);
-		else {
+		else
+		{
 			for(Circle dot : dots)
 				dot.setFill(dotColor);
 
@@ -918,24 +1123,41 @@ public class AddMediaController {
 		}
 	}
 	
+	/* Methods used by the buttons */
+	
+	/**
+	 * Sets media status to Planned.
+	 */
 	@FXML
 	private void handlePlannedStatus() {
 		setSelectedStatus(Status.PLANNED);
 	}
-
+	
+	/**
+	 * Sets media status to In Progress.
+	 */
 	@FXML
 	private void handleInProgressStatus() {
 		setSelectedStatus(Status.IN_PROGRESS);
 	}
-
+	
+	/**
+	 * Sets media status to Completed.
+	 */
 	@FXML
 	private void handleCompletedStatus() {
 		setSelectedStatus(Status.COMPLETED);
 	}
-
+	
+	/**
+	 * Updates the selected status and button label.
+	 *
+	 * @param status selected media status
+	 */
 	private void setSelectedStatus(Status status) {
 		selectedStatus = status;
-
+		
+		// Updates button text
 		if(status == null)
 			statusMenuButton.setText("STATUS");
 		else if(status == Status.PLANNED)

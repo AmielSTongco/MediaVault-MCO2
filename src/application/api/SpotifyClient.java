@@ -25,7 +25,13 @@ import java.nio.charset.StandardCharsets;
  * into Song objects.</p>
  */
 public class SpotifyClient {
-
+	
+	/*
+	 * The creation of this API Client was guided by the official documentation
+	 * of the Spotify API (Source: https://developer.spotify.com/documentation/web-api)
+	 */
+	
+	// Required attributes for Spotify API
     private final String clientId;
     private final String clientSecret;
     private final HttpClient client;

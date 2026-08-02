@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import application.dao.UserDAO;
-import application.dao.impl.MediaPlaylistDAOImpl;
+import application.dao.MediaPlaylistDAO;
 import application.model.Type;
 import application.model.UserSession;
 import javafx.fxml.FXML;
@@ -23,7 +23,12 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 public class AddPlaylistController {
-
+	
+	/*
+	 * Controls the pop-up that shows when
+	 * you try to add a playlist of a media
+	 */
+	
 	@FXML
     private TextField playlistNameField;
 
@@ -33,50 +38,77 @@ public class AddPlaylistController {
     @FXML
     private Label statusLabel;
 	
-	private MediaPlaylistDAOImpl mediaPlaylistDAO;
+	private MediaPlaylistDAO mediaPlaylistDAO;
 	private Runnable closeAction;
-	//private Runnable deleteSuccessAction;
 	private String playlistPicturePath;
-	
 	private Type mediaType;
-
+	
+	/**
+	 * Initializes status message visibility.
+	 */
 	@FXML
 	public void initialize() {
+		// Hides status message
 		statusLabel.setVisible(false);
 		statusLabel.setManaged(false);
 	}
-
+	
+	/**
+	 * Sets database connection and initializes playlist data access.
+	 *
+	 * @param conn active database connection
+	 */
 	public void setConnection(Connection conn) {
-		mediaPlaylistDAO = new MediaPlaylistDAOImpl(conn, UserSession.getCurrentUserId());
+		mediaPlaylistDAO = new MediaPlaylistDAO(conn, UserSession.getCurrentUserId());
 	}
-
+	
+	/**
+	 * Sets action executed when the popup closes.
+	 *
+	 * @param closeAction callback to execute
+	 */
 	public void setCloseAction(Runnable closeAction) {
 		this.closeAction = closeAction;
 	}
 	
+	/**
+	 * Sets media type of the playlist being created.
+	 *
+	 * @param mediaType selected media type
+	 */
 	public void setMediaType(Type mediaType) {
 		this.mediaType = mediaType;
 	}
-
+	
+	/**
+	 * Validates playlist information and creates a new playlist.
+	 */
 	@FXML
 	private void handleCreate() {
-		if(mediaPlaylistDAO == null) {
+		if(mediaPlaylistDAO == null)
+		{
 			showStatus("Database connection is unavailable.", true);
 		}
-		else {
+		else
+		{
 			String playlistName = playlistNameField.getText().trim();
 			boolean valid = true;
-
-			if(playlistName.isEmpty()) {
+			
+			// Validates playlist name
+			if(playlistName.isEmpty())
+			{
 				showStatus("Playlist name cannot be empty.", true);
 				valid = false;
 			}
 
 			try {
-				if(valid) {
-					
-					if(playlistPicturePath == null || playlistPicturePath.isBlank()) {
-						switch(mediaType) {
+				if(valid)
+				{
+					// Assigns default playlist picture
+					if(playlistPicturePath == null || playlistPicturePath.isBlank())
+					{
+						switch(mediaType)
+						{
 							case Type.SONG:
 								playlistPicturePath = "/resources/application/images/icons/default-song-playlist-icon.png";
 								break;
@@ -91,10 +123,14 @@ public class AddPlaylistController {
 
 					boolean created = mediaPlaylistDAO.createPlaylist(playlistName, playlistPicturePath, mediaType);
 					
-					if (created) {
+					// Displays creation result
+					if(created)
+					{
 			            showStatus("Playlist created successfully.", false);
 			            playlistNameField.clear();
-			        } else {
+			        }
+					else
+			        {
 			            showStatus("Failed to create playlist. The name may already exist or be reserved.", true);
 			        }
 				}
@@ -106,6 +142,9 @@ public class AddPlaylistController {
 		}
 	}
 	
+	/**
+	 * Opens a file chooser and loads the selected playlist picture.
+	 */
 	@FXML
 	private void handlePlaylistPicture() {
 		FileChooser chooser = new FileChooser();
@@ -114,12 +153,15 @@ public class AddPlaylistController {
 
 		File selectedFile = chooser.showOpenDialog(playlistPicture.getScene().getWindow());
 
-		if(selectedFile != null) {
+		if(selectedFile != null)
+		{
 			 playlistPicturePath = selectedFile.getAbsolutePath();
 			
+			// Loads selected picture
 			Image image = new Image(selectedFile.toURI().toString());
 			playlistPicture.setImage(image);
 			
+			// Clips picture corners
 			Rectangle rect = new Rectangle(220, 220);
 			rect.setArcHeight(90);
 	        rect.setArcWidth(90);
@@ -129,13 +171,22 @@ public class AddPlaylistController {
 			showStatus("Playlist picture selected.", false);
 		}
 	}
-
+	
+	/**
+	 * Closes the add playlist popup.
+	 */
 	@FXML
 	private void handleClose() {
 		if(closeAction != null)
 			closeAction.run();
 	}
-
+	
+	/**
+	 * Displays a success or error message.
+	 *
+	 * @param message message to display
+	 * @param error true for error styling, otherwise false
+	 */
 	private void showStatus(String message, boolean error) {
 		statusLabel.setText(message);
 		statusLabel.setTextFill(error ? javafx.scene.paint.Color.web("#FF8F9B") : javafx.scene.paint.Color.web("#9BE7B0"));

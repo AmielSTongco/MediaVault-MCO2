@@ -10,215 +10,263 @@ import application.db.DatabaseInitializer;
 
 public class UserDAO {
 	
+	/*
+	 * Handles database operations involving user accounts,
+	 * credentials, profile pictures, and account deletion
+	 */
+	
 	private Connection conn;
 
-    public UserDAO(Connection conn) {
-        this.conn = conn;
-    }
+	/**
+	 * Creates a UserDAO using the given database connection.
+	 *
+	 * @param conn active database connection
+	 */
+	public UserDAO(Connection conn) {
+		this.conn = conn;
+	}
 
 	/**
-	 * Verifies a user's login credentials.
+	 * Verifies entered login credentials.
 	 *
-	 * @param username the username to check
-	 * @param password the password to check
-	 * @return {@code true} if a user with the given username and password exists;
-	 *         {@code false} otherwise
-	 * @throws SQLException if a database access error occurs
-	 * @pre  {@code username} and {@code password} are non-null
-	 * @post no data is modified
+	 * @param username username to verify
+	 * @param password password to verify
+	 * @return true if matching account exists, otherwise false
+	 * @throws SQLException if a database error occurs
 	 */
-    public boolean login(String username, String password) throws SQLException {
+	public boolean login(String username, String password) throws SQLException {
+		String sql = "SELECT 1 FROM users WHERE username = ? AND password = ?";
 
-        String sql = """
-            SELECT 1
-            FROM users
-            WHERE username = ? AND password = ?
-        """;
+		try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, username);
+			stmt.setString(2, password);
 
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, username);
-            ps.setString(2, password);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        }
-    }
-    
-	/**
-	 * Retrieves the ID of the user with the given username.
-	 *
-	 * @param username the username to look up
-	 * @return the user's ID if found; {@code -1} if no such user exists
-	 * @throws SQLException if a database access error occurs
-	 * @pre  {@code username} is non-null
-	 * @post no data is modified
-	 */
-    public int getUserID(String username) throws SQLException {
-        String sql = "SELECT id FROM users WHERE username = ?";
-
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, username);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("id");
-                }
-            }
-        }
-
-        return -1;
-    }
-    
-	/**
-	 * Checks whether a user with the given username exists.
-	 *
-	 * @param username the username to check
-	 * @return {@code true} if the username exists; {@code false} otherwise
-	 * @throws SQLException if a database access error occurs
-	 * @pre  {@code username} is non-null
-	 * @post no data is modified
-	 */
-    public boolean usernameExists(String username) throws SQLException {
-        String sql = "SELECT 1 FROM users WHERE username = ?";
-
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, username);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        }
-    }
-
-	/**
-	 * Creates a new user with the given username and password, then registers
-	 * default entries for the new user.
-	 *
-	 * @param username the username for the new user
-	 * @param password the password for the new user
-	 * @throws SQLException if a database access error occurs
-	 * @pre  {@code username} and {@code password} are non-null
-	 * @post if {@code username} is not already taken, a new row is inserted into
-	 *       the users table and {@link DatabaseInitializer#registerUser} is
-	 *       called with the new user's ID; if {@code username} is already taken,
-	 *       no user is created and no registration occurs
-	 */
-    public void addUser(String username, String password) throws SQLException {
-        int userId = -1;
-    	String sql = "INSERT INTO users(username, password) VALUES(?, ?)";
-
-        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, username);
-            ps.setString(2, password);
-
-            ps.executeUpdate();
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-		        if (keys.next()) {
-		        	userId = keys.getInt(1);
-		        }
-		    }
-            
-        } catch (SQLException e) {
-			if (e.getMessage().contains("UNIQUE constraint failed")) {
-		        System.out.println("Username '" + username + "' is already taken.");
-		    } else {
-		        System.out.println(e.getMessage());
-		    }
+			try(ResultSet rs = stmt.executeQuery()) {
+				return rs.next();
+			}
 		}
-        
-        // add "all" entries category if user is added
-     	if (userId != -1) {
-     		DatabaseInitializer.registerUser(conn, userId);
-     	}
-    }
-    
-    public boolean verifyPassword(int userId, String password) throws SQLException {
-    	String sql = "SELECT 1 FROM users WHERE id = ? AND password = ?";
+	}
 
-    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
-    		ps.setInt(1, userId);
-    		ps.setString(2, password);
+	/**
+	 * Retrieves user ID using a username.
+	 *
+	 * @param username username to search for
+	 * @return matching user ID, or -1 if none exists
+	 * @throws SQLException if a database error occurs
+	 */
+	public int getUserID(String username) throws SQLException {
+		String sql = "SELECT id FROM users WHERE username = ?";
 
-    		try(ResultSet rs = ps.executeQuery()) {
-    			return rs.next();
-    		}
-    	}
-    }
+		try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, username);
 
-    public void updateUsername(int userId, String username) throws SQLException {
-    	String sql = "UPDATE users SET username = ? WHERE id = ?";
+			try(ResultSet rs = stmt.executeQuery()) {
+				if(rs.next())
+					return rs.getInt("id");
+			}
+		}
 
-    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
-    		ps.setString(1, username);
-    		ps.setInt(2, userId);
-    		ps.executeUpdate();
-    	}
-    }
+		return -1;
+	}
 
-    public void updatePassword(int userId, String password) throws SQLException {
-    	String sql = "UPDATE users SET password = ? WHERE id = ?";
+	/**
+	 * Checks whether a username is already registered.
+	 *
+	 * @param username username to check
+	 * @return true if username exists, otherwise false
+	 * @throws SQLException if a database error occurs
+	 */
+	public boolean usernameExists(String username) throws SQLException {
+		String sql = "SELECT 1 FROM users WHERE username = ?";
 
-    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
-    		ps.setString(1, password);
-    		ps.setInt(2, userId);
-    		ps.executeUpdate();
-    	}
-    }
+		try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, username);
 
-    public void updateProfilePicture(int userId, String path) throws SQLException {
-    	String sql = "UPDATE users SET profile_picture = ? WHERE id = ?";
+			try(ResultSet rs = stmt.executeQuery()) {
+				return rs.next();
+			}
+		}
+	}
 
-    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
-    		ps.setString(1, path);
-    		ps.setInt(2, userId);
-    		ps.executeUpdate();
-    	}
-    }
+	/**
+	 * Creates a new user and registers default playlists.
+	 *
+	 * @param username new username
+	 * @param password new password
+	 * @throws SQLException if a database error occurs
+	 */
+	public void addUser(String username, String password) throws SQLException {
+		int userId = -1;
+		String sql = "INSERT INTO users(username, password) VALUES(?, ?)";
 
-    public String getProfilePicture(int userId) throws SQLException {
-    	String sql = "SELECT profile_picture FROM users WHERE id = ?";
+		try(PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+			stmt.setString(1, username);
+			stmt.setString(2, password);
+			stmt.executeUpdate();
 
-    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
-    		ps.setInt(1, userId);
+			// Retrieves generated user ID
+			try(ResultSet keys = stmt.getGeneratedKeys()) {
+				if(keys.next())
+					userId = keys.getInt(1);
+			}
+		}
+		catch(SQLException e) {
+			if(e.getMessage() != null && e.getMessage().contains("UNIQUE constraint failed"))
+				System.out.println("Username '" + username + "' is already taken.");
+			else
+				throw e;
+		}
 
-    		try(ResultSet rs = ps.executeQuery()) {
-    			if(rs.next())
-    				return rs.getString("profile_picture");
-    		}
-    	}
+		// Creates default playlists for new user
+		if(userId != -1)
+			DatabaseInitializer.registerUser(conn, userId);
+	}
 
-    	return null;
-    }
+	/**
+	 * Verifies current password of a user.
+	 *
+	 * @param userId user ID
+	 * @param password password to verify
+	 * @return true if password matches, otherwise false
+	 * @throws SQLException if a database error occurs
+	 */
+	public boolean verifyPassword(int userId, String password) throws SQLException {
+		String sql = "SELECT 1 FROM users WHERE id = ? AND password = ?";
 
-    public void deleteUser(int userId) throws SQLException {
-	    	String sql = "DELETE FROM songs_playlists WHERE user_id = ?";
-	    	
-	    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
-	    		ps.setInt(1, userId);
-	    		ps.executeUpdate();
-	    	}
-	    	
-	    	sql = "DELETE FROM games_playlists WHERE user_id = ?";
-	    	
-	    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
-	    		ps.setInt(1, userId);
-	    		ps.executeUpdate();
-	    	}
-	    	
-	    	sql = "DELETE FROM shows_playlists WHERE id = ?";
-	    	
-	    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
-	    		ps.setInt(1, userId);
-	    		ps.executeUpdate();
-	    	}
-	    	
-	    	sql = "DELETE FROM users WHERE id = ?";
-	
-	    	try(PreparedStatement ps = conn.prepareStatement(sql)) {
-	    		ps.setInt(1, userId);
-	    		ps.executeUpdate();
-	    	}
-    }
+		try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, userId);
+			stmt.setString(2, password);
+
+			try(ResultSet rs = stmt.executeQuery()) {
+				return rs.next();
+			}
+		}
+	}
+
+	/**
+	 * Updates username of a user.
+	 *
+	 * @param userId user ID
+	 * @param username new username
+	 * @throws SQLException if a database error occurs
+	 */
+	public void updateUsername(int userId, String username) throws SQLException {
+		String sql = "UPDATE users SET username = ? WHERE id = ?";
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, username);
+			stmt.setInt(2, userId);
+			stmt.executeUpdate();
+		}
+	}
+
+	/**
+	 * Updates password of a user.
+	 *
+	 * @param userId user ID
+	 * @param password new password
+	 * @throws SQLException if a database error occurs
+	 */
+	public void updatePassword(int userId, String password) throws SQLException {
+		String sql = "UPDATE users SET password = ? WHERE id = ?";
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, password);
+			stmt.setInt(2, userId);
+			stmt.executeUpdate();
+		}
+	}
+
+	/**
+	 * Updates profile picture path of a user.
+	 *
+	 * @param userId user ID
+	 * @param path new profile picture path
+	 * @throws SQLException if a database error occurs
+	 */
+	public void updateProfilePicture(int userId, String path) throws SQLException {
+		String sql = "UPDATE users SET profile_picture = ? WHERE id = ?";
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, path);
+			stmt.setInt(2, userId);
+			stmt.executeUpdate();
+		}
+	}
+
+	/**
+	 * Retrieves saved profile picture path of a user.
+	 *
+	 * @param userId user ID
+	 * @return saved profile picture path, or null if none exists
+	 * @throws SQLException if a database error occurs
+	 */
+	public String getProfilePicture(int userId) throws SQLException {
+		String sql = "SELECT profile_picture FROM users WHERE id = ?";
+
+		try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, userId);
+
+			try(ResultSet rs = stmt.executeQuery()) {
+				if(rs.next())
+					return rs.getString("profile_picture");
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Deletes a user and all user-owned playlists.
+	 *
+	 * @param userId user ID
+	 * @throws SQLException if a database error occurs
+	 */
+	public void deleteUser(int userId) throws SQLException {
+		boolean previousAutoCommit = conn.getAutoCommit();
+		conn.setAutoCommit(false);
+
+		try {
+			// Deletes song playlists
+			String sql = "DELETE FROM songs_playlists WHERE user_id = ?";
+
+			try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+				stmt.setInt(1, userId);
+				stmt.executeUpdate();
+			}
+
+			// Deletes game playlists
+			sql = "DELETE FROM games_playlists WHERE user_id = ?";
+
+			try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+				stmt.setInt(1, userId);
+				stmt.executeUpdate();
+			}
+
+			// Deletes show playlists
+			sql = "DELETE FROM shows_playlists WHERE user_id = ?";
+
+			try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+				stmt.setInt(1, userId);
+				stmt.executeUpdate();
+			}
+
+			// Deletes user account
+			sql = "DELETE FROM users WHERE id = ?";
+
+			try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+				stmt.setInt(1, userId);
+				stmt.executeUpdate();
+			}
+
+			conn.commit();
+		}
+		catch(SQLException e) {
+			conn.rollback();
+			throw e;
+		}
+		finally {
+			conn.setAutoCommit(previousAutoCommit);
+		}
+	}
 }

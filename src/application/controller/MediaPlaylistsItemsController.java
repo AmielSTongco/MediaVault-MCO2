@@ -1,31 +1,33 @@
 package application.controller;
 
+import java.io.IOException;
+import java.sql.Connection;
 import java.util.List;
 
+import application.dao.MediaPlaylistDAO;
 import application.model.Media;
-import application.model.Show;
 import application.model.MediaPlaylist;
-import application.dao.impl.MediaPlaylistDAOImpl;
+import application.model.Show;
 import application.model.Type;
+import application.model.UserSession;
 import application.view.MediaTableOwner;
-import application.controller.MediaPlaylistsController;
 import application.view.TableBuilder;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.sql.Connection;
-import application.model.UserSession;
-
-import java.io.IOException;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.layout.StackPane;
-
 public class MediaPlaylistsItemsController extends BaseMediaPageController implements MediaTableOwner {
+	
+	/*
+	 * Controls the scene which displays and manages
+	 * media entries inside a selected playlist
+	 */
 
 	@FXML
 	private Button backButton;
@@ -73,53 +75,31 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 	private TableColumn<Media, String> infoColumn;
 
 	private MediaPlaylist playlist;
-	private MediaPlaylistDAOImpl mediaPlaylistDAO;
+	private MediaPlaylistDAO mediaPlaylistDAO;
 	private boolean reorderingEnabled;
-
+	
+	/**
+	 * Initializes shared page elements, navigation buttons, media table, and listeners.
+	 */
 	@FXML
 	public void initialize() {
 		initializeBase();
-
-		makeNavigationButton(
-			backButton,
-			"/resources/application/images/icons/back-reply-svgrepo-com.png",
-			"Back",
-			() -> goBack()
-		);
 		
-		makeNavigationButton(
-			addButton,
-			"/resources/application/images/icons/plus-svgrepo-com.png",
-			"Manually Add Media",
-			this::manuallyAddMedia
-		);
-		
-		makeNavigationButton(
-			searchButton,
-			"/resources/application/images/icons/nav-search-icon.png",
-			"Search Media",
-			this::openSearch
-		);
-
-		makeNavigationButton(
-			homeButton,
-			"/resources/application/images/icons/home-icon-svgrepo-com.png",
-			"Home",
-			() -> switchScene("/resources/application/fxml/Menu.fxml")
-		);
+		// Creates navigation buttons
+		makeNavigationButton(backButton, "/resources/application/images/icons/back-reply-svgrepo-com.png", "Back", this::goBack);
+		makeNavigationButton(addButton, "/resources/application/images/icons/plus-svgrepo-com.png", "Manually Add Media", this::manuallyAddMedia);
+		makeNavigationButton(searchButton, "/resources/application/images/icons/nav-search-icon.png", "Search Media", this::openSearch);
+		makeNavigationButton(homeButton, "/resources/application/images/icons/home-icon-svgrepo-com.png", "Home", () -> switchScene("/resources/application/fxml/Menu.fxml"));
 
 		initializeNavigationBar();
 
 		TableBuilder.createMediaTable(this);
-		TableBuilder.enableRowReordering(
-				mediaTable,
-				media -> true,
-				this::saveMediaOrder
-			);
-
 		handleDoubleClick(mediaTable, this::openMedia);
 	}
 	
+	/**
+	 * Opens popup for manually adding media.
+	 */
 	private void manuallyAddMedia() {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/AddMedia.fxml"));
@@ -140,14 +120,19 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 		}
 	}
 	
+	/**
+	 * Permanently deletes current custom playlist.
+	 */
 	public void deletePlaylist() {
-		if(playlist != null && mediaType != null) {
-			boolean defaultPlaylist =
-				playlist.getTitle().equals("all_songs") && mediaType == Type.SONG ||
-				playlist.getTitle().equals("all_games") && mediaType == Type.GAME ||
-				playlist.getTitle().equals("all_shows") && mediaType == Type.SHOW;
+		if(playlist != null && mediaType != null)
+		{
+			boolean defaultPlaylist = playlist.getTitle().equals("all_songs") && mediaType == Type.SONG ||
+					playlist.getTitle().equals("all_games") && mediaType == Type.GAME ||
+					playlist.getTitle().equals("all_shows") && mediaType == Type.SHOW;
 
-			if(!defaultPlaylist) {
+			// Prevents deletion of default playlists
+			if(!defaultPlaylist)
+			{
 				try {
 					mediaPlaylistDAO.deletePlaylist(playlist.getPlaylistId(), mediaType.getTitle());
 					goBack();
@@ -159,6 +144,9 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 		}
 	}
 	
+	/**
+	 * Returns to media playlist table.
+	 */
 	private void goBack() {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/MediaPlaylistsScene.fxml"));
@@ -175,15 +163,23 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Applies media-specific theme, playlist image, and controls.
+	 *
+	 * @param mediaType selected media type
+	 */
 	@Override
 	public void setupView(Type mediaType) {
 		super.setupView(mediaType);
 
-		if(playlist != null) {
+		if(playlist != null)
+		{
 			String imagePath = playlist.getImagePath();
 
-			if(imagePath == null || imagePath.isBlank()) {
+			// Uses default playlist image when needed
+			if(imagePath == null || imagePath.isBlank())
+			{
 				if(mediaType == Type.SONG)
 					imagePath = "/resources/application/images/icons/default-song-playlist-icon.png";
 				else if(mediaType == Type.GAME)
@@ -201,16 +197,28 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 		setupMediaReordering();
 	}
 	
+	/**
+	 * Sets database connection and initializes playlist data access.
+	 *
+	 * @param conn active database connection
+	 */
 	@Override
 	public void setConnection(Connection conn) {
-		mediaPlaylistDAO = new MediaPlaylistDAOImpl(conn, UserSession.getCurrentUserId());
+		mediaPlaylistDAO = new MediaPlaylistDAO(conn, UserSession.getCurrentUserId());
 		super.setConnection(conn);
 	}
-
+	
+	/**
+	 * Sets current playlist and updates page details.
+	 *
+	 * @param playlist selected media playlist
+	 */
 	public void setPlaylist(MediaPlaylist playlist) {
 		this.playlist = playlist;
 
-		if(pageLabel != null && playlist != null) {
+		// Formats default playlist title
+		if(pageLabel != null && playlist != null)
+		{
 			String title = playlist.getTitle();
 
 			if(title.equals("all_songs"))
@@ -228,38 +236,43 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 		setupMediaReordering();
 	}
 	
+	/**
+	 * Configures playlist delete button visibility and behavior.
+	 */
 	private void setupDeleteButton() {
-		if(playlist != null && mediaType != null && deletePlaylistButton != null) {
-			boolean defaultPlaylist =
-				playlist.getTitle().equals("all_songs") && mediaType == Type.SONG ||
-				playlist.getTitle().equals("all_games") && mediaType == Type.GAME ||
-				playlist.getTitle().equals("all_shows") && mediaType == Type.SHOW;
+		if(playlist != null && mediaType != null && deletePlaylistButton != null)
+		{
+			boolean defaultPlaylist = playlist.getTitle().equals("all_songs") && mediaType == Type.SONG ||
+					playlist.getTitle().equals("all_games") && mediaType == Type.GAME ||
+					playlist.getTitle().equals("all_shows") && mediaType == Type.SHOW;
 
-			if(defaultPlaylist) {
+			// Hides delete button for default playlists
+			if(defaultPlaylist)
+			{
 				deletePlaylistButton.setVisible(false);
 				deletePlaylistButton.setManaged(false);
 				deletePlaylistButton.setDisable(true);
 			}
-			else {
+			else
+			{
 				deletePlaylistButton.setVisible(true);
 				deletePlaylistButton.setManaged(true);
 				deletePlaylistButton.setDisable(false);
 
-				makeNavigationButton(
-					deletePlaylistButton,
-					"/resources/application/images/icons/delete-icon.png",
-					"Delete Playlist",
-					this::deletePlaylist
-				);
+				makeNavigationButton(deletePlaylistButton, "/resources/application/images/icons/delete-icon.png", "Delete Playlist", this::deletePlaylist);
 			}
 
 			initializeNavigationBar();
 		}
 	}
 	
+	/**
+	 * Loads media entries from current playlist.
+	 */
 	@Override
 	protected void loadTableData() {
-		if(mediaPlaylistDAO != null && mediaType != null && playlist != null) {
+		if(mediaPlaylistDAO != null && mediaType != null && playlist != null)
+		{
 			try {
 				List<Media> media = mediaPlaylistDAO.getMediasInPlaylist(playlist.getPlaylistId(), mediaType);
 				mediaTable.getItems().setAll(media);
@@ -269,9 +282,15 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 			}
 		}
 	}
-
+	
+	/**
+	 * Opens selected media based on its media type.
+	 *
+	 * @param media selected media
+	 */
 	private void openMedia(Media media) {
-		if(media != null) {
+		if(media != null)
+		{
 			if(media instanceof Show)
 				openSeasons((Show)media);
 			else if(mediaType == Type.SONG)
@@ -281,6 +300,12 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 		}
 	}
 	
+	/**
+	 * Opens detail scene for selected song or game.
+	 *
+	 * @param media selected media
+	 * @param fxmlPath target details scene
+	 */
 	private void openMediaDetails(Media media, String fxmlPath) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
@@ -300,6 +325,11 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 		}
 	}
 	
+	/**
+	 * Opens season table for selected show.
+	 *
+	 * @param show selected show
+	 */
 	private void openSeasons(Show show) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/SeasonsTableScene.fxml"));
@@ -318,7 +348,10 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Opens media search scene.
+	 */
 	private void openSearch() {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/SearchScene.fxml"));
@@ -336,26 +369,25 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 		}
 	}
 	
+	/**
+	 * Enables show reordering inside show playlists.
+	 */
 	private void setupMediaReordering() {
-		if(!reorderingEnabled && mediaTable != null && playlist != null && mediaType == Type.SHOW) {
-			TableBuilder.enableRowReordering(
-				mediaTable,
-				media -> media instanceof Show,
-				this::saveMediaOrder
-			);
-
+		if(!reorderingEnabled && mediaTable != null && playlist != null && mediaType == Type.SHOW)
+		{
+			TableBuilder.enableRowReordering(mediaTable, media -> media instanceof Show, this::saveMediaOrder);
 			reorderingEnabled = true;
 		}
 	}
-
+	
+	/**
+	 * Saves current show order inside selected playlist.
+	 */
 	private void saveMediaOrder() {
-		if(mediaPlaylistDAO != null && playlist != null && mediaType == Type.SHOW) {
+		if(mediaPlaylistDAO != null && playlist != null && mediaType == Type.SHOW)
+		{
 			try {
-				mediaPlaylistDAO.updateMediaOrder(
-					playlist.getPlaylistId(),
-					mediaTable.getItems(),
-					mediaType
-				);
+				mediaPlaylistDAO.updateMediaOrder(playlist.getPlaylistId(), mediaTable.getItems(), mediaType);
 			}
 			catch(Exception e) {
 				e.printStackTrace();
@@ -363,47 +395,92 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 			}
 		}
 	}
-
+	
+	/**
+	 * Returns media table.
+	 *
+	 * @return media table
+	 */
 	@Override
 	public TableView<Media> getMediaTable() {
 		return mediaTable;
 	}
-
+	
+	/**
+	 * Returns media number column.
+	 *
+	 * @return media number column
+	 */
 	@Override
 	public TableColumn<Media, Number> getNumberColumn() {
 		return numberColumn;
 	}
-
+	
+	/**
+	 * Returns media title column.
+	 *
+	 * @return media title column
+	 */
 	@Override
 	public TableColumn<Media, Media> getTitleColumn() {
 		return titleColumn;
 	}
-
+	
+	/**
+	 * Returns media creator column.
+	 *
+	 * @return media creator column
+	 */
 	@Override
 	public TableColumn<Media, String> getCreatorColumn() {
 		return creatorColumn;
 	}
-
+	
+	/**
+	 * Returns media year column.
+	 *
+	 * @return media year column
+	 */
 	@Override
 	public TableColumn<Media, String> getYearColumn() {
 		return yearColumn;
 	}
-
+	
+	/**
+	 * Returns media status column.
+	 *
+	 * @return media status column
+	 */
 	@Override
 	public TableColumn<Media, String> getStatusColumn() {
 		return statusColumn;
 	}
-
+	
+	/**
+	 * Returns media rating column.
+	 *
+	 * @return media rating column
+	 */
 	@Override
 	public TableColumn<Media, String> getRatingColumn() {
 		return ratingColumn;
 	}
-
+	
+	/**
+	 * Returns media review column.
+	 *
+	 * @return media review column
+	 */
 	@Override
 	public TableColumn<Media, String> getReviewColumn() {
 		return reviewColumn;
 	}
-
+	
+	/**
+	 * Returns media information column.
+	 *
+	 * @return media information column
+	 */
 	@Override
 	public TableColumn<Media, String> getInfoColumn() {
 		return infoColumn;
