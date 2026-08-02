@@ -4,8 +4,6 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -14,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<StackPane fx:id="rootStackPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.SeasonsController">
+<StackPane fx:id="rootStackPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.SeasonDetailsController">
 	<children>
 		<Canvas fx:id="backgroundCanvas" mouseTransparent="true" />
 
@@ -47,40 +45,32 @@
 			</top>
 
 			<center>
-				<VBox spacing="10.0" styleClass="content-card" BorderPane.alignment="CENTER">
+				<VBox alignment="CENTER" spacing="25.0" styleClass="content-card" BorderPane.alignment="CENTER">
 					<children>
-						<HBox alignment="CENTER_LEFT" maxHeight="120.0" minHeight="120.0" prefHeight="120.0" VBox.vgrow="NEVER">
+						<Text fx:id="pageLabel" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-header-title" text="Season Details" />
+
+						<StackPane fx:id="imagePane" maxHeight="420.0" maxWidth="420.0" minHeight="420.0" minWidth="420.0" prefHeight="420.0" prefWidth="420.0" styleClass="media-art-border">
 							<children>
-								<ImageView fx:id="mediaLogo" fitHeight="108.0" fitWidth="108.0" pickOnBounds="true" preserveRatio="false" />
-
-								<Region prefWidth="20.0" />
-
-								<Text fx:id="pageLabel" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-header-title" text="Seasons" />
+								<ImageView fx:id="mediaLogo" fitHeight="410.0" fitWidth="410.0" pickOnBounds="true" preserveRatio="false" smooth="true" />
 							</children>
-						</HBox>
+						</StackPane>
 
-						<TableView fx:id="mediaPlaylistTable" maxHeight="660.0" minHeight="660.0" prefHeight="660.0" prefWidth="1360.0" VBox.vgrow="NEVER">
-							<columns>
-								<TableColumn fx:id="numberColumn" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="#" />
-								<TableColumn fx:id="titleColumn" prefWidth="180.0" resizable="false" sortable="false" text="Season" />
-								<TableColumn fx:id="totalColumn" prefWidth="150.0" resizable="false" sortable="false" text="Total Episodes" />
-								<TableColumn fx:id="completedColumn" prefWidth="120.0" resizable="false" sortable="false" text="Completed" />
-								<TableColumn fx:id="inProgressColumn" prefWidth="140.0" resizable="false" sortable="false" text="In Progress" />
-								<TableColumn fx:id="plannedColumn" prefWidth="100.0" resizable="false" sortable="false" text="Planned" />
-								<TableColumn fx:id="avgRatingColumn" prefWidth="140.0" resizable="false" sortable="false" text="Average Rating" />
-							</columns>
-						</TableView>
+						<Label fx:id="showTitleLabel" alignment="CENTER" maxWidth="700.0" styleClass="info-pill" text="Show:" />
 
-						<HBox fx:id="extendableNavigationPane" alignment="CENTER" maxHeight="120.0" minHeight="120.0" prefHeight="120.0" prefWidth="371.0" spacing="25.0" VBox.vgrow="NEVER">
+						<Label fx:id="seasonNumberLabel" alignment="CENTER" maxWidth="700.0" styleClass="info-pill" text="Season Number:" />
+
+						<HBox fx:id="extendableNavigationPane" alignment="CENTER" maxHeight="140.0" minHeight="140.0" prefHeight="140.0" spacing="25.0">
 							<children>
 								<Button fx:id="backButton" mnemonicParsing="false" styleClass="navigation-button" />
+								<Button fx:id="viewEpisodesButton" mnemonicParsing="false" styleClass="navigation-button" />
+								<Button fx:id="deleteSeasonButton" mnemonicParsing="false" styleClass="navigation-button" />
 								<Button fx:id="homeButton" mnemonicParsing="false" styleClass="navigation-button" />
 							</children>
 						</HBox>
 					</children>
 
 					<BorderPane.margin>
-						<Insets bottom="5.0" left="20.0" right="20.0" top="5.0" />
+						<Insets bottom="15.0" left="30.0" right="30.0" top="10.0" />
 					</BorderPane.margin>
 				</VBox>
 			</center>

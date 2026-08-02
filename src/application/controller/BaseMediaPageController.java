@@ -304,7 +304,7 @@ public abstract class BaseMediaPageController {
 		return event -> timelineBounce.play();
 	}
 
-	private void setButtonIcon(Button button, String path) {
+	protected void setButtonIcon(Button button, String path) {
 		ImageView imageView = new ImageView(loadImage(path));
 
 		imageView.setFitWidth(72);

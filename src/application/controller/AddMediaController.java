@@ -382,17 +382,21 @@ public class AddMediaController {
 					media = createMediaFromFields();
 
 				if(media != null) {
-					media.setStatus(status);
-					media.setUserRating(rating);
-					media.setReview(review);
+					if(media instanceof Show && status == Status.COMPLETED)
+						showStatus("A show cannot be completed until all of its episodes are completed.", true);
+					else {
+						media.setStatus(status);
+						media.setUserRating(rating);
+						media.setReview(review);
 
-					saveMediaToPlaylist(media);
+						saveMediaToPlaylist(media);
 
-					if(saveAction != null)
-						saveAction.accept(media);
+						if(saveAction != null)
+							saveAction.accept(media);
 
-					if(closeAction != null)
-						closeAction.run();
+						if(closeAction != null)
+							closeAction.run();
+					}
 				}
 				else
 					showStatus("Media information is unavailable.", true);
@@ -423,15 +427,23 @@ public class AddMediaController {
 			else if(newMedia instanceof Show)
 				oldMedia = mediaDAO.getShowOfUserById(mediaId);
 		}
-		else
+		else {
 			mediaId = mediaDAO.addMedia(newMedia);
+		}
 
 		newMedia.setMediaId(mediaId);
-		
+
+		if(oldMedia == null)
+			mediaDAO.addMediaReview(newMedia);
+
 		if(newMedia instanceof Show) {
 			Show show = (Show)newMedia;
-			System.out.println("Saving TMDB API ID: " + show.getApiId());
-			seasonDAO.generateSeasons(mediaId, show.getNumOfSeasons(), show.getSeasonImagePaths());
+
+			seasonDAO.generateSeasons(
+				mediaId,
+				show.getNumOfSeasons(),
+				show.getSeasonImagePaths()
+			);
 		}
 
 		if(oldMedia != null) {
@@ -491,8 +503,16 @@ public class AddMediaController {
 			String genre = showGenreField.getText().trim();
 			int seasons = Integer.parseInt(seasonsField.getText().trim());
 			boolean airing = airingCheckBox.isSelected();
+			
+			String finalImagePath = imagePath;
 
-			return new Show(title, creator, yearStart, yearEnd, status, rating, review, genre, seasons, airing, imagePath);
+			if(finalImagePath == null || finalImagePath.isBlank())
+				finalImagePath = "/resources/application/images/icons/default-show-playlist-icon.png";
+			
+			Show show = new Show(title, creator, yearStart, yearEnd, status, rating, review, genre, seasons, airing, finalImagePath);
+			show.setApiId(0);
+
+			return show;
 		}
 
 		return null;

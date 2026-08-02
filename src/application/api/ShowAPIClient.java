@@ -124,9 +124,11 @@ public class ShowAPIClient {
 				int episodeNumber = getIntValue(item, "episode_number");
 				String title = getTextValue(item, "name");
 				String writer = getEpisodeWriters(item);
+				int yearReleased = getReleaseYear(item, "air_date");
 				String imagePath = buildImagePath(getTextValue(item, "still_path"));
 
-				episodes.add(new Episode(episodeNumber, title, writer, imagePath));
+				Episode episode = new Episode(0, 0, episodeNumber, title, writer, yearReleased, Status.PLANNED, 0.0, "", imagePath);
+				episodes.add(episode);
 			}
 		}
 

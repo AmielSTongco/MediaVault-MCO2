@@ -83,7 +83,9 @@ public class DatabaseInitializer {
 				display_order INTEGER NOT NULL DEFAULT 0,
 				image_path TEXT,
 				season_number INTEGER DEFAULT 0,
-				FOREIGN KEY (show_id) REFERENCES shows(id)
+				episode_count INTEGER,
+				FOREIGN KEY (show_id) REFERENCES shows(id) ON DELETE CASCADE,
+				UNIQUE(show_id, season_number)
 			)""");
 			
 			// create episodes table
@@ -95,8 +97,10 @@ public class DatabaseInitializer {
 				title TEXT,
 				image_path TEXT,
 				writer TEXT,
+				year_released INTEGER DEFAULT 0,
 				display_order INTEGER NOT NULL DEFAULT 0,
-				FOREIGN KEY (season_id) REFERENCES seasons(id)
+				FOREIGN KEY (season_id) REFERENCES seasons(id) ON DELETE CASCADE,
+				UNIQUE(season_id, episode_number)
 			)""");
 			
 			// create games_playlists table
@@ -123,8 +127,6 @@ public class DatabaseInitializer {
 				image_path TEXT,
 				display_order INTEGER NOT NULL DEFAULT 0,
 				UNIQUE (user_id, title),
-				
-				UNIQUE(user_id, title),
 				FOREIGN KEY (user_id) REFERENCES users(id)
 			)""");
 			
@@ -314,7 +316,7 @@ public class DatabaseInitializer {
 
 				UNIQUE (user_id, episode_id),
 				FOREIGN KEY (user_id) REFERENCES users(id),
-				FOREIGN KEY (episode_id) REFERENCES episode(id)
+				FOREIGN KEY (episode_id) REFERENCES episodes(id)
 			)""");
 			
 			System.out.println("Tables initialized.");

@@ -114,15 +114,38 @@ public class MediaPlaylistDAOImpl {
 	 *                       executing the statement
 	 */
 	public void addMediaToPlaylist(int playlistId, int mediaId, Status status, double rating, String review, String mediaType) throws SQLException {
-		
 		String media = mediaType.toLowerCase();
 
 		if(media.endsWith("s"))
 			media = media.substring(0, media.length() - 1);
 
 		String tableName = media + "s_playlist_items";
+		String playlistTable = media + "s_playlists";
 		String idColumn = media + "_id";
+		String defaultPlaylistTitle = "all_" + media + "s";
 
+		addMediaToSpecificPlaylist(playlistId, mediaId, tableName, idColumn);
+
+		String defaultPlaylistSql = "SELECT id FROM " + playlistTable
+				+ " WHERE user_id = ? AND title = ?";
+
+		int defaultPlaylistId = -1;
+
+		try(PreparedStatement stmt = conn.prepareStatement(defaultPlaylistSql)) {
+			stmt.setInt(1, userId);
+			stmt.setString(2, defaultPlaylistTitle);
+
+			try(ResultSet rs = stmt.executeQuery()) {
+				if(rs.next())
+					defaultPlaylistId = rs.getInt("id");
+			}
+		}
+
+		if(defaultPlaylistId > 0 && defaultPlaylistId != playlistId)
+			addMediaToSpecificPlaylist(defaultPlaylistId, mediaId, tableName, idColumn);
+	}
+	
+	private void addMediaToSpecificPlaylist(int playlistId, int mediaId, String tableName, String idColumn) throws SQLException {
 		String orderSql = "SELECT COALESCE(MAX(display_order), 0) + 1 "
 				+ "FROM " + tableName + " WHERE playlist_id = ?";
 
@@ -131,14 +154,14 @@ public class MediaPlaylistDAOImpl {
 		try(PreparedStatement stmt = conn.prepareStatement(orderSql)) {
 			stmt.setInt(1, playlistId);
 
-			ResultSet rs = stmt.executeQuery();
-
-			if(rs.next())
-				displayOrder = rs.getInt(1);
+			try(ResultSet rs = stmt.executeQuery()) {
+				if(rs.next())
+					displayOrder = rs.getInt(1);
+			}
 		}
 
 		String sql = "INSERT OR IGNORE INTO " + tableName
-			+ " (playlist_id, " + idColumn + ", display_order) VALUES (?, ?, ?)";
+				+ " (playlist_id, " + idColumn + ", display_order) VALUES (?, ?, ?)";
 
 		try(PreparedStatement stmt = conn.prepareStatement(sql)) {
 			stmt.setInt(1, playlistId);
@@ -146,7 +169,7 @@ public class MediaPlaylistDAOImpl {
 			stmt.setInt(3, displayOrder);
 			stmt.executeUpdate();
 		}
-    }
+	}
 	
 	/**
 	 * Removes a media item from the specified playlist.

@@ -7,6 +7,7 @@ import java.util.List;
 
 import application.model.Media;
 //import application.model.Song;
+import application.model.Season;
 import application.model.Game;
 import application.model.Show;
 import application.model.MediaPlaylist;
@@ -216,7 +217,9 @@ public abstract class TableBuilder {
 
 		statusColumn.setCellValueFactory(cell ->
 			new ReadOnlyStringWrapper(
-				cell.getValue().getStatus() == null ? "" : cell.getValue().getStatus().toString()
+				cell.getValue().getStatus() == null
+					? ""
+					: cell.getValue().getStatus().toString().replace('_', ' ')
 			)
 		);
 		statusColumn.setCellFactory(column -> createTextCell(30));
@@ -227,7 +230,7 @@ public abstract class TableBuilder {
 			if(rating <= 0)
 				return new ReadOnlyStringWrapper("/--/");
 
-			return new ReadOnlyStringWrapper(String.format("%.2f", rating));
+			return new ReadOnlyStringWrapper(String.format("%.1f", rating));
 		});
 		ratingColumn.setCellFactory(column -> createTextCell(6));
 
@@ -366,23 +369,25 @@ public abstract class TableBuilder {
 					if(playlist.getTitle().equals("all_shows"))
 						title.setText("All Shows");
 
-					String path = playlist.getImagePath();
+					String defaultPath = null;
 
-					if(path == null || path.isBlank()) {
+					if(playlist instanceof Season)
+						defaultPath = "/resources/application/images/icons/default-show-icon.png";
+					else {
 						switch(playlist.getTitle()) {
 							case "all_songs":
-								path = "/resources/application/images/icons/default-song-playlist-icon.png";
+								defaultPath = "/resources/application/images/icons/default-song-playlist-icon.png";
 								break;
 							case "all_games":
-								path = "/resources/application/images/icons/default-game-playlist-icon.png";
+								defaultPath = "/resources/application/images/icons/default-game-playlist-icon.png";
 								break;
 							case "all_shows":
-								path = "/resources/application/images/icons/default-show-playlist-icon.png";
+								defaultPath = "/resources/application/images/icons/default-show-playlist-icon.png";
 								break;
 						}
 					}
 
-					Image image = loadMediaImage(playlist.getImagePath(), path);
+					Image image = loadMediaImage(playlist.getImagePath(), defaultPath);
 
 					if(image != null && image.isBackgroundLoading()) {
 						cover.setImage(image);
@@ -427,7 +432,7 @@ public abstract class TableBuilder {
 			if(rating <= 0)
 				return new ReadOnlyStringWrapper("/--/");
 
-			return new ReadOnlyStringWrapper(String.format("%.2f", rating));
+			return new ReadOnlyStringWrapper(String.format("%.1f", rating));
 		});
 		avgRatingColumn.setCellFactory(column -> createTextCell(8));
 	}
@@ -544,6 +549,9 @@ public abstract class TableBuilder {
 		if(finalPath == null || finalPath.isBlank())
 			finalPath = defaultPath;
 
+		if(finalPath == null || finalPath.isBlank())
+			return null;
+
 		if(finalPath.startsWith("http://") || finalPath.startsWith("https://"))
 			return new Image(finalPath, true);
 
@@ -557,10 +565,12 @@ public abstract class TableBuilder {
 		if(file.exists())
 			return new Image(file.toURI().toString());
 
-		URL defaultResource = TableBuilder.class.getResource(defaultPath);
+		if(defaultPath != null && !defaultPath.isBlank()) {
+			URL defaultResource = TableBuilder.class.getResource(defaultPath);
 
-		if(defaultResource != null)
-			return new Image(defaultResource.toExternalForm());
+			if(defaultResource != null)
+				return new Image(defaultResource.toExternalForm());
+		}
 
 		return null;
 	}
@@ -640,22 +650,38 @@ public abstract class TableBuilder {
 	}
 	
 	private static void setCenterCroppedImage(ImageView imageView, Image image, double size) {
-		imageView.setImage(image);
 		imageView.setFitWidth(size);
 		imageView.setFitHeight(size);
-		imageView.setPreserveRatio(true);
+		imageView.setPreserveRatio(false);
+		imageView.setViewport(null);
+		imageView.setImage(image);
 
 		if(image != null && image.getWidth() > 0 && image.getHeight() > 0) {
 			double imageWidth = image.getWidth();
 			double imageHeight = image.getHeight();
-			double cropSize = Math.min(imageWidth, imageHeight);
-			double cropX = (imageWidth - cropSize) / 2;
-			double cropY = (imageHeight - cropSize) / 2;
+			double targetRatio = size/size;
+			double imageRatio = imageWidth/imageHeight;
+			double cropWidth = imageWidth;
+			double cropHeight = imageHeight;
+			double cropX = 0;
+			double cropY = 0;
 
-			imageView.setViewport(new Rectangle2D(cropX, cropY, cropSize, cropSize));
+			if(imageRatio > targetRatio) {
+				cropWidth = imageHeight*targetRatio;
+				cropX = (imageWidth - cropWidth)/2;
+			}
+			else {
+				cropHeight = imageWidth/targetRatio;
+				cropY = (imageHeight - cropHeight)/2;
+			}
+
+			imageView.setViewport(new Rectangle2D(cropX, cropY, cropWidth, cropHeight));
 		}
-		else
-			imageView.setViewport(null);
+
+		Rectangle clip = new Rectangle(size, size);
+		clip.setArcWidth(8);
+		clip.setArcHeight(8);
+		imageView.setClip(clip);
 	}
 	
 	protected abstract void loadTableData();

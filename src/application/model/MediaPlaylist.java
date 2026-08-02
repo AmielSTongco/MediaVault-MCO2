@@ -50,4 +50,5 @@ public class MediaPlaylist {
 	public void setTitle(String title) {this.title = title;}
 	public void setMedias(List<Media> medias) {this.medias = medias;}
 	public void setPlaylistId(int playlistId) {this.playlistId = playlistId;}
+	public void setImagePath(String imagePath) {this.imagePath = imagePath;}
 }

@@ -448,6 +448,15 @@
 	-fx-font-size: 15px;
 }
 
+.media-art-border {
+	-fx-background-color: transparent;
+	-fx-border-color: rgba(0, 0, 0, 1);
+	-fx-border-width: 3;
+	-fx-border-radius: 34;
+	-fx-padding: 1;
+}
+
+
 /* ----- MEDIA SCENE ----- */
 /* Container Box */
 .details-card {
@@ -844,4 +853,256 @@
 
 .navigation-button:hover{
 	-fx-text-fill: white;
+}
+
+/* =========================================================
+   MEDIA DETAILS THEMES
+   ========================================================= */
+
+.media-details-root {
+	-fx-background-color: -media-border;
+}
+
+.media-details-card {
+	-fx-background-color: -media-background;
+	-fx-background-radius: 24;
+}
+
+.songs-details-theme {
+	-media-border: #0e1e29;
+	-media-background: #1a3345;
+	-media-control: #162e3f;
+}
+
+.games-details-theme {
+	-media-border: #0b112c;
+	-media-background: #1a255e;
+	-media-control: #162051;
+}
+
+.shows-details-theme,
+.seasons-details-theme,
+.episodes-details-theme {
+	-media-border: #1b152c;
+	-media-background: #362b57;
+	-media-control: #31274f;
+}
+
+.media-details-title {
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 72px;
+	-fx-font-weight: 800;
+	-fx-text-fill: white;
+}
+
+.media-details-card .info-pill,
+.media-details-card .media-edit-field {
+	-fx-background-color: rgba(22, 46, 63, 0.88);
+	-fx-background-radius: 14;
+	-fx-border-color: rgba(0, 0, 0, 0.65);
+	-fx-border-radius: 14;
+	-fx-border-width: 1.5;
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 8, 0.15, 0, 3);
+	-fx-text-fill: white;
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 22px;
+	-fx-font-weight: normal;
+	-fx-padding: 10 14 10 14;
+}
+
+.media-details-card .info-pill {
+	-fx-font-weight: bold;
+}
+
+.media-details-card .media-edit-field {
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 22px;
+	-fx-font-weight: normal;
+	-fx-font-style: normal;
+	-fx-text-fill: #B2B2B2;
+}
+
+.media-details-card .media-edit-field .text {
+	-fx-fill: #B2B2B2;
+}
+
+.media-details-card .text-field.media-edit-field,
+.media-details-card .text-area.media-edit-field {
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 22px;
+	-fx-font-weight: normal;
+	-fx-highlight-fill: rgba(255,255,255,0.15);
+	-fx-highlight-text-fill: white;
+}
+
+.media-details-card .media-edit-field {
+	-fx-prompt-text-fill: rgba(255, 255, 255, 0.55);
+}
+
+.media-details-card .review-pill {
+	-fx-alignment: TOP_LEFT;
+	-fx-font-size: 22px;
+	-fx-padding: 12 14 12 14;
+}
+
+.media-details-card .combo-box.media-edit-field {
+	-fx-background-color: -media-control;
+	-fx-background-radius: 14;
+	-fx-border-color: rgba(0,0,0,0.65);
+	-fx-border-radius: 14;
+	-fx-border-width: 1.5;
+
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 22px;
+	-fx-font-weight: normal;
+
+	-fx-padding: 0;
+	-fx-pref-height: 52;
+	-fx-min-height: 52;
+	-fx-max-height: 52;
+}
+
+.media-details-card .combo-box.media-edit-field .list-cell {
+	-fx-background-color: transparent;
+	-fx-text-fill: #B2B2B2;
+
+	-fx-padding: 0 16 0 16;
+	-fx-alignment: CENTER_LEFT;
+
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 22px;
+	-fx-font-weight: normal;
+}
+
+.media-details-card .combo-box.media-edit-field .arrow-button {
+	-fx-background-color: transparent;
+	-fx-padding: 0 12 0 12;
+}
+
+.media-details-card .combo-box-popup .list-view {
+	-fx-background-color: -media-control;
+	-fx-border-color: rgba(0, 0, 0, 0.65);
+}
+
+.media-details-card .combo-box.media-edit-field .arrow {
+	-fx-background-color: white;
+}
+
+.media-details-card .combo-box-popup .list-cell {
+	-fx-background-color: -media-control;
+	-fx-text-fill: #B2B2B2;
+
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 20px;
+	-fx-font-weight: normal;
+}
+
+.media-details-card .combo-box-popup .list-cell:hover {
+	-fx-background-color: derive(-media-control, 15%);
+}
+
+.media-edit-prefix {
+	-fx-text-fill: white;
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 22px;
+	-fx-font-weight: bold;
+}
+
+.media-edit-value-field,
+.media-edit-value-field:focused {
+	-fx-background-color: transparent;
+	-fx-background-insets: 0;
+	-fx-border-color: transparent;
+	-fx-padding: 0;
+	-fx-text-fill: #B2B2B2;
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 22px;
+}
+
+#reviewEditBox .text-area,
+#reviewEditBox .text-area .scroll-pane,
+#reviewEditBox .text-area .viewport,
+#reviewEditBox .text-area .content {
+	-fx-background-color: transparent;
+	-fx-background-insets: 0;
+}
+
+.edit-picture-button:disabled {
+	-fx-opacity: 1;
+}
+
+.review-text-area {
+	-fx-background-color: rgba(22,46,63,0.88);
+	-fx-background-radius: 14;
+	-fx-border-color: rgba(0,0,0,0.65);
+	-fx-border-radius: 14;
+	-fx-border-width: 1.5;
+
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 22px;
+	-fx-text-fill: white;
+
+	-fx-padding: 10 14 10 14;
+}
+
+.review-text-area .content {
+	-fx-background-color: transparent;
+	-fx-background-insets: 0;
+}
+
+.review-text-area .viewport {
+	-fx-background-color: transparent;
+}
+
+.games-details-theme .info-pill,
+.games-details-theme .media-edit-field {
+	-fx-background-color: rgba(22, 32, 81, 0.88);
+}
+
+.shows-details-theme .info-pill,
+.shows-details-theme .media-edit-field,
+.seasons-details-theme .info-pill,
+.seasons-details-theme .media-edit-field,
+.episodes-details-theme .info-pill,
+.episodes-details-theme .media-edit-field {
+	-fx-background-color: rgba(49, 39, 79, 0.88);
+}
+
+.media-details-card .edit-picture-button {
+	-fx-background-color: -media-control;
+	-fx-text-fill: white;
+	-fx-background-radius: 30;
+}
+
+.media-details-card .navigation-button {
+	-fx-background-color: transparent;
+}
+
+.edit-picture-button {
+	-fx-background-color: -media-control;
+	-fx-background-radius: 30;
+	-fx-border-color: rgba(0, 0, 0, 0.65);
+	-fx-border-radius: 30;
+	-fx-border-width: 1.5;
+	-fx-text-fill: white;
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 16px;
+	-fx-font-weight: 700;
+	-fx-padding: 8 18 8 14;
+	-fx-graphic-text-gap: 8;
+	-fx-cursor: hand;
+}
+
+.edit-picture-button:hover {
+	-fx-opacity: 0.88;
+}
+
+.error-label {
+	-fx-text-fill: #ff6b6b;
+	-fx-font-family: "Public Sans";
+	-fx-font-size: 16px;
+	-fx-font-weight: normal;
+	-fx-alignment: center;
+	-fx-text-alignment: center;
+	-fx-max-width: Infinity;
 }

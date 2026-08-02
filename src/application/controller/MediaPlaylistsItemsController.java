@@ -74,6 +74,7 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 
 	private MediaPlaylist playlist;
 	private MediaPlaylistDAOImpl mediaPlaylistDAO;
+	private boolean reorderingEnabled;
 
 	@FXML
 	public void initialize() {
@@ -140,12 +141,21 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 	}
 	
 	public void deletePlaylist() {
-		try {
-			mediaPlaylistDAO.deletePlaylist(playlist.getPlaylistId(), mediaType.getTitle());
-			goBack();
-		}
-		catch(Exception e) {
-			e.printStackTrace();
+		if(playlist != null && mediaType != null) {
+			boolean defaultPlaylist =
+				playlist.getTitle().equals("all_songs") && mediaType == Type.SONG ||
+				playlist.getTitle().equals("all_games") && mediaType == Type.GAME ||
+				playlist.getTitle().equals("all_shows") && mediaType == Type.SHOW;
+
+			if(!defaultPlaylist) {
+				try {
+					mediaPlaylistDAO.deletePlaylist(playlist.getPlaylistId(), mediaType.getTitle());
+					goBack();
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
@@ -169,22 +179,26 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 	@Override
 	public void setupView(Type mediaType) {
 		super.setupView(mediaType);
-		
-		String imagePath = playlist.getImagePath();
 
-		if(imagePath == null || imagePath.isBlank()) {
-			if(mediaType == Type.SONG)
-				imagePath = "/resources/application/images/icons/default-song-playlist-icon.png";
-			else if(mediaType == Type.GAME)
-				imagePath = "/resources/application/images/icons/default-game-playlist-icon.png";
-			else if(mediaType == Type.SHOW)
-				imagePath = "/resources/application/images/icons/default-show-playlist-icon.png";
+		if(playlist != null) {
+			String imagePath = playlist.getImagePath();
+
+			if(imagePath == null || imagePath.isBlank()) {
+				if(mediaType == Type.SONG)
+					imagePath = "/resources/application/images/icons/default-song-playlist-icon.png";
+				else if(mediaType == Type.GAME)
+					imagePath = "/resources/application/images/icons/default-game-playlist-icon.png";
+				else if(mediaType == Type.SHOW)
+					imagePath = "/resources/application/images/icons/default-show-playlist-icon.png";
+			}
+
+			mediaLogo.setImage(loadImage(imagePath));
+			cropImage(mediaLogo);
 		}
-		
-		mediaLogo.setImage(loadImage(imagePath));
-		cropImage(mediaLogo);
-		
+
+		setupDeleteButton();
 		loadTableData();
+		setupMediaReordering();
 	}
 	
 	@Override
@@ -198,44 +212,49 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 
 		if(pageLabel != null && playlist != null) {
 			String title = playlist.getTitle();
-			if (title.equals("all_songs")) {
+
+			if(title.equals("all_songs"))
 				pageLabel.setText("All Songs");
-			}
-			else if (title.equals("all_games")) {
+			else if(title.equals("all_games"))
 				pageLabel.setText("All Games");
-			}
-			else if (title.equals("all_shows")) {
+			else if(title.equals("all_shows"))
 				pageLabel.setText("All Shows");
-			}
-			else {
+			else
 				pageLabel.setText(playlist.getTitle());
-			}
 		}
-			
+
 		setupDeleteButton();
 		loadTableData();
+		setupMediaReordering();
 	}
 	
 	private void setupDeleteButton() {
-		boolean defaultPlaylist =
-			playlist.getTitle().equals("all_songs") && mediaType == Type.SONG ||
-			playlist.getTitle().equals("all_games") && mediaType == Type.GAME ||
-			playlist.getTitle().equals("all_shows") && mediaType == Type.SHOW;
+		if(playlist != null && mediaType != null && deletePlaylistButton != null) {
+			boolean defaultPlaylist =
+				playlist.getTitle().equals("all_songs") && mediaType == Type.SONG ||
+				playlist.getTitle().equals("all_games") && mediaType == Type.GAME ||
+				playlist.getTitle().equals("all_shows") && mediaType == Type.SHOW;
 
-		if(!defaultPlaylist) {
-			makeNavigationButton(
-				deletePlaylistButton,
-				"/resources/application/images/icons/delete-icon.png",
-				"Delete Playlist",
-				this::deletePlaylist
-			);
-		}
-		else {
-			deletePlaylistButton.setVisible(false);
-			deletePlaylistButton.setManaged(false);
-		}
+			if(defaultPlaylist) {
+				deletePlaylistButton.setVisible(false);
+				deletePlaylistButton.setManaged(false);
+				deletePlaylistButton.setDisable(true);
+			}
+			else {
+				deletePlaylistButton.setVisible(true);
+				deletePlaylistButton.setManaged(true);
+				deletePlaylistButton.setDisable(false);
 
-		initializeNavigationBar();
+				makeNavigationButton(
+					deletePlaylistButton,
+					"/resources/application/images/icons/delete-icon.png",
+					"Delete Playlist",
+					this::deletePlaylist
+				);
+			}
+
+			initializeNavigationBar();
+		}
 	}
 	
 	@Override
@@ -255,18 +274,40 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 		if(media != null) {
 			if(media instanceof Show)
 				openSeasons((Show)media);
-			else
-				switchScene("/resources/application/fxml/MediaScene.fxml");
+			else if(mediaType == Type.SONG)
+				openMediaDetails(media, "/resources/application/fxml/SongsScene.fxml");
+			else if(mediaType == Type.GAME)
+				openMediaDetails(media, "/resources/application/fxml/GamesScene.fxml");
+		}
+	}
+	
+	private void openMediaDetails(Media media, String fxmlPath) {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+			Parent root = loader.load();
+
+			MediaController controller = loader.getController();
+			controller.setConnection(conn);
+			controller.setPlaylist(playlist);
+			controller.setMedia(media);
+			controller.setupView(mediaType);
+
+			Stage stage = (Stage)rootPane.getScene().getWindow();
+			stage.getScene().setRoot(root);
+		}
+		catch(IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
 	private void openSeasons(Show show) {
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/SeasonsScene.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/SeasonsTableScene.fxml"));
 			Parent root = loader.load();
 
-			SeasonsController controller = loader.getController();
+			SeasonsTableController controller = loader.getController();
 			controller.setConnection(conn);
+			controller.setPlaylist(playlist);
 			controller.setShow(show);
 			controller.setupView(Type.SHOW);
 
@@ -295,16 +336,31 @@ public class MediaPlaylistsItemsController extends BaseMediaPageController imple
 		}
 	}
 	
-	private void saveMediaOrder() {
-		try {
-			mediaPlaylistDAO.updateMediaOrder(
-				playlist.getPlaylistId(),
-				mediaTable.getItems(),
-				mediaType
+	private void setupMediaReordering() {
+		if(!reorderingEnabled && mediaTable != null && playlist != null && mediaType == Type.SHOW) {
+			TableBuilder.enableRowReordering(
+				mediaTable,
+				media -> media instanceof Show,
+				this::saveMediaOrder
 			);
+
+			reorderingEnabled = true;
 		}
-		catch(Exception e) {
-			e.printStackTrace();
+	}
+
+	private void saveMediaOrder() {
+		if(mediaPlaylistDAO != null && playlist != null && mediaType == Type.SHOW) {
+			try {
+				mediaPlaylistDAO.updateMediaOrder(
+					playlist.getPlaylistId(),
+					mediaTable.getItems(),
+					mediaType
+				);
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				loadTableData();
+			}
 		}
 	}
 

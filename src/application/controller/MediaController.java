@@ -1,636 +1,1175 @@
 package application.controller;
 
+import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import application.dao.impl.MediaDAOImpl;
+import application.model.Game;
+import application.model.Media;
+import application.model.Show;
+import application.model.Song;
+import application.model.Season;
+import application.model.Episode;
+import application.model.Status;
+import application.model.Type;
+import application.model.UserSession;
+
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Light;
-import javafx.scene.effect.Lighting;
-import javafx.scene.effect.Reflection;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
+
+import javafx.util.StringConverter;
+import javafx.collections.FXCollections;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextInputControl;
+import application.dao.impl.MediaPlaylistDAOImpl;
+import application.model.MediaPlaylist;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.stage.Stage;
-import javafx.util.Duration;
+import application.dao.impl.EpisodeDAOImpl;
 
-public class MediaController {
+import java.util.ArrayList;
 
-	// For Expandable Navigation Bar
-	private static final int deltaXEditButton   = 40;
-	private static final int deltaXRemoveButton = 20;
-	private static final int deltaXDeleteButton = 0;
-	private static final int deltaXBackButton   = -20;
-	private static final int deltaXHomeButton   = -40;
-	
-	private Rectangle clipRect;
-	 
-	private DropShadow dropShadowForSelectedPane;
-	
-	// For editing details
-	private boolean isEditing = false;
-	
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+
+
+public class MediaController extends BaseMediaPageController {
+
 	@FXML
-	private Button editPictureButton;
-	
-    @FXML
-    private ImageView mediaArt;
+	private StackPane contentCard;
 
-    @FXML
-    private Label creatorLabel;
-    
-    @FXML
-    private TextField creatorField;
-
-    @FXML
-    private HBox extendableNavigationPane;
-
-    @FXML
-    private Label genreLabel;
-    
-    @FXML
-    private TextField genreField;
-    
-    @FXML
-    private Label mediaLabel;
-
-    @FXML
-    private ImageView mediaVaultLogo;
-
-    @FXML
-    private ImageView mediaVaultTitle;
-    
-    @FXML
-    private ImageView profileAvatar;
-
-    @FXML
-    private Button editButton;
-
-    @FXML
-    private Button removeButton;
-    
-    @FXML
-    private Button deleteButton;
-    
-    @FXML
-    private Button backButton;
-
-    @FXML
-    private Button homeButton;
-
-	@FXML 
-	private Label avgPlaytimeLabel;
-	
 	@FXML
-	private TextField avgPlaytimeField;
-    
-    @FXML
-    private Label playtimeLabel;
-    
+	private ImageView mediaArt;
+
+	@FXML
+	private Label titleLabel;
+
+	@FXML
+	private TextField titleField;
+
+	@FXML
+	private Label creatorLabel;
+
+	@FXML
+	private TextField creatorField;
+
+	@FXML
+	private Label yearLabel;
+
+	@FXML
+	private TextField yearField;
+
+	@FXML
+	private Label genreLabel;
+
+	@FXML
+	private TextField genreField;
+
+	@FXML
+	private Label playtimeLabel;
+
 	@FXML
 	private TextField playtimeField;
 
-    @FXML
-    private Label ratingLabel;
-    
+	@FXML
+	private Label avgPlaytimeLabel;
+
+	@FXML
+	private TextField avgPlaytimeField;
+
+	@FXML
+	private Label statusLabel;
+
+	@FXML
+	private ComboBox<Status> statusField;
+
+	@FXML
+	private Label ratingLabel;
+
 	@FXML
 	private TextField ratingField;
 
-    @FXML
-    private Label reviewLabel;
-    
 	@FXML
-	private TextField reviewField;
-    
-    @FXML
-    private Label yearFirstAiredLabel;
-    
+	private Label reviewLabel;
+
+	@FXML
+	private TextArea reviewField;
+
+	@FXML
+	private Label yearFirstAiredLabel;
+
 	@FXML
 	private TextField yearFirstAiredField;
-    
-    @FXML
-    private Label yearLastAiredLabel;
-    
+
+	@FXML
+	private Label yearLastAiredLabel;
+
 	@FXML
 	private TextField yearLastAiredField;
-    
-    @FXML
-    private Label numOfEpisodesLabel;
-    
+
 	@FXML
-	private TextField numOfEpisodesField;
-    
-    @FXML
-    private Label numOfSeasonsLabel;
-    
+	private Label numOfSeasonsLabel;
+
 	@FXML
 	private TextField numOfSeasonsField;
-    
-    @FXML
-    private Label airingLabel;
-    
+
+	@FXML
+	private Label numOfEpisodesLabel;
+
+	@FXML
+	private TextField numOfEpisodesField;
+
+	@FXML
+	private Label airingLabel;
+
 	@FXML
 	private TextField airingField;
 
-    @FXML
-    private ImageView settingsIcon;
-
-    @FXML
-    private Label statusLabel;
-    
 	@FXML
-	private TextField statusField;
+	private Label seasonNumberLabel;
 
-    @FXML
-    private Label titleLabel;
-    
-    @FXML
-    private TextField titleField;
-
-    @FXML
-    private Label yearLabel;
-    
 	@FXML
-	private TextField yearField;
-    
-	private String mediaType;
+	private TextField seasonNumberField;
 
-    @FXML
-    public void initialize() {
-		mediaType = mediaLabel.getText();		
-		
-		Image logoImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/logo.png"));
-        Image titleImg = new Image(getClass().getResourceAsStream("/resources/application/images/logos/title.png"));
-        Image settingsImg = new Image(getClass().getResourceAsStream("/resources/application/images/icons/settings-gear-svgrepo-com.png"));
-        Image profileImg = new Image(getClass().getResourceAsStream("/resources/application/images/default/default-profile.png"));
+	@FXML
+	private Label episodeNumberLabel;
 
-        // Assign images to ImageView nodes
-        mediaVaultLogo.setImage(logoImg);
-        mediaVaultTitle.setImage(titleImg);
-        settingsIcon.setImage(settingsImg);
-        profileAvatar.setImage(profileImg);
-		
-        // Create a rounded rectangle for media image
-        // code adapted from: https://stackoverflow.com/q/39650031
-        Rectangle rect; 
-        if (mediaType.equalsIgnoreCase("shows")) {
-        		rect = new Rectangle(500, 500);
-        }
-        else {
-        		rect = new Rectangle(560, 560);
-        }
-        
-        rect.setArcHeight(90);
-        rect.setArcWidth(90);
-        rect.setEffect(new Reflection());
-        mediaArt.setClip(rect);
-        
-        clipRect = new Rectangle();
-		clipRect.setWidth(extendableNavigationPane.getPrefWidth());
+	@FXML
+	private TextField episodeNumberField;
 
-		setIcon(editButton, "/resources/application/images/icons/pencil-svgrepo-com.png");
-		setIcon(removeButton, "/resources/application/images/icons/minus-svgrepo-com.png");
-		setIcon(deleteButton, "/resources/application/images/icons/trash-can-svgrepo-com.png");
-		setIcon(backButton, "/resources/application/images/icons/back-reply-svgrepo-com.png");
-		setIcon(homeButton, "/resources/application/images/icons/home-icon-svgrepo-com.png");
-		hidePane();
-        
-        DropShadow shadow = new DropShadow();
-        shadow.setRadius(10);
-        shadow.setOffsetY(5);
-        shadow.setColor(Color.color(0, 0, 0, 0.4));
-        
-        Light.Distant light = new Light.Distant();
-        light.setAzimuth(-135);
-        
-        Lighting lighting = new Lighting();
-        lighting.setLight(light);
-        lighting.setDiffuseConstant(1.45);
-        lighting.setSurfaceScale(1);
-        
-        shadow.setInput(lighting);
-        
-        // Add shadows for aesthetics
-        mediaLabel.setEffect(shadow);
-        creatorLabel.setEffect(shadow);
-        genreLabel.setEffect(shadow);
-        statusLabel.setEffect(shadow);
-        ratingLabel.setEffect(shadow);
-        reviewLabel.setEffect(shadow);
-        editPictureButton.setEffect(shadow);
-        
-        
-        // Declare listeners
-        titleField.textProperty().addListener((observable, oldText, newText) ->
-	    	titleLabel.setText(newText)
-	    );
-	
-	    genreField.textProperty().addListener((observable, oldText, newText) ->
-	    	genreLabel.setText("Genre: " + newText)
-	    );
-	
-	    statusField.textProperty().addListener((observable, oldText, newText) ->
-	    	statusLabel.setText("Status: " + newText)
-	    );
-	
-	    ratingField.textProperty().addListener((observable, oldText, newText) ->
-	    	ratingLabel.setText("Rating: " + newText)
-	    );
-	
-	    reviewField.textProperty().addListener((observable, oldText, newText) ->
-	    	reviewLabel.setText("Review: " + newText)
-	    );
-	
-	    switch(mediaType) {
-	    	case "SONGS":
-	    		playtimeLabel.setEffect(shadow);
-	    		yearLabel.setEffect(shadow);
-	
-	    		creatorField.textProperty().addListener((observable, oldText, newText) ->
-	    			creatorLabel.setText("Artist: " + newText)
-	    		);
-	
-	    		playtimeField.textProperty().addListener((observable, oldText, newText) ->
-	    			playtimeLabel.setText("Playtime: " + newText)
-	    		);
-	
-	    		yearField.textProperty().addListener((observable, oldText, newText) ->
-	    			yearLabel.setText("Year: " + newText)
-	    		);
-	    		break;
-	
-	    	case "GAMES":
-	    		avgPlaytimeLabel.setEffect(shadow);
-	    		yearLabel.setEffect(shadow);
-	
-	    		creatorField.textProperty().addListener((observable, oldText, newText) ->
-	    			creatorLabel.setText("Developer: " + newText)
-	    		);
-	
-	    		avgPlaytimeField.textProperty().addListener((observable, oldText, newText) ->
-	    			avgPlaytimeLabel.setText("Average Playtime: " + newText)
-	    		);
-	
-	    		yearField.textProperty().addListener((observable, oldText, newText) ->
-	    			yearLabel.setText("Year: " + newText)
-	    		);
-	    		break;
-	
-	    	case "SHOWS":
-	    		airingLabel.setEffect(shadow);
-	    		yearFirstAiredLabel.setEffect(shadow);
-	    		yearLastAiredLabel.setEffect(shadow);
-	    		numOfEpisodesLabel.setEffect(shadow);
-	    		numOfSeasonsLabel.setEffect(shadow);
-	
-	    		creatorField.textProperty().addListener((observable, oldText, newText) ->
-	    			creatorLabel.setText("Director/s: " + newText)
-	    		);
-	
-	    		airingField.textProperty().addListener((observable, oldText, newText) ->
-	    			airingLabel.setText("Airing: " + newText)
-	    		);
-	
-	    		yearFirstAiredField.textProperty().addListener((observable, oldText, newText) ->
-	    			yearFirstAiredLabel.setText("Year First Aired: " + newText)
-	    		);
-	
-	    		yearLastAiredField.textProperty().addListener((observable, oldText, newText) ->
-	    			yearLastAiredLabel.setText("Year Last Aired: " + newText)
-	    		);
-	
-	    		numOfEpisodesField.textProperty().addListener((observable, oldText, newText) ->
-	    			numOfEpisodesLabel.setText("Episodes: " + newText)
-	    		);
-	
-	    		numOfSeasonsField.textProperty().addListener((observable, oldText, newText) ->
-	    			numOfSeasonsLabel.setText("Seasons: " + newText)
-	    		);
-	    		break;
-	    }
-    }
-    
-    @FXML
-	private void showPane() { 
-	    	editButton.setText("Update Details");
-	    	removeButton.setText("Remove From Playlist");
-	    	deleteButton.setText("Delete Media");
-	    	backButton.setText("Back");
-	    	homeButton.setText("Home");
-    	
-		// Animation for showing the pane completely
-		Timeline timelineDown = new Timeline();
- 
-		final KeyValue kvDwn1 = new KeyValue(clipRect.heightProperty(), extendableNavigationPane.getHeight());
-		final KeyValue kvDwn2 = new KeyValue(clipRect.translateYProperty(), 0);
-		final KeyValue kvDwn3 = new KeyValue(extendableNavigationPane.translateYProperty(), 0);
-		final KeyFrame kfDwn = new KeyFrame(Duration.millis(100), createBouncingEffect(extendableNavigationPane.getHeight()), kvDwn1, kvDwn2, kvDwn3);
- 
-		// Animation for moving Edit button
-		final KeyValue kvEdit = new KeyValue(editButton.translateXProperty(), -deltaXEditButton);
-		final KeyFrame kfEdit = new KeyFrame(Duration.millis(200), kvEdit);
+	@FXML
+	private Button editPictureButton;
 
-		// Animation for moving Remove button
-		final KeyValue kvRemove = new KeyValue(removeButton.translateXProperty(), -deltaXRemoveButton);
-		final KeyFrame kfRemove = new KeyFrame(Duration.millis(200), kvRemove);
+	@FXML
+	private Button editButton;
 
-		// Animation for moving Delete button
-		final KeyValue kvDelete = new KeyValue(deleteButton.translateXProperty(), -deltaXDeleteButton);
-		final KeyFrame kfDelete = new KeyFrame(Duration.millis(200), kvDelete);
+	@FXML
+	private Button removeButton;
 
-		// Animation for moving Back button
-		final KeyValue kvBack = new KeyValue(backButton.translateXProperty(), -deltaXBackButton);
-		final KeyFrame kfBack = new KeyFrame(Duration.millis(200), kvBack);
+	@FXML
+	private Button deleteButton;
 
-		// Animation for moving Home button
-		final KeyValue kvHome = new KeyValue(homeButton.translateXProperty(), -deltaXHomeButton);
-		final KeyFrame kfHome = new KeyFrame(Duration.millis(200), kvHome);
+	@FXML
+	private Button backButton;
 
-		timelineDown.getKeyFrames().addAll(kfDwn, kfEdit, kfRemove, kfDelete, kfBack, kfHome);
-		timelineDown.play();
+	@FXML
+	private Button homeButton;
+	
+	@FXML
+	private Label errorLabel;
+	
+	@FXML
+	private Pane dotGridPane;
+
+	private String detailType;
+	private boolean editing;
+	private String selectedPicturePath;
+	private Media media;
+	private MediaDAOImpl mediaDAO;
+	private MediaPlaylist playlist;
+	private MediaPlaylistDAOImpl mediaPlaylistDAO;
+	private boolean changesSaved;
+	private final Rectangle dotGridClip = new Rectangle();
+	private EpisodeDAOImpl episodeDAO;
+	
+	private final ArrayList<Circle> dots = new ArrayList<>();
+	private static final double DOT_SPACING = 65.0;	
+	
+	private boolean returnToSeasons;
+	private Show returnShow;
+	private boolean openedFromSeasons;
+	
+	private Show parentShow;
+	private Season parentSeason;
+	private boolean openedFromEpisodes;
+
+	@FXML
+	public void initialize() {
+		initializeBase();
+
+		detailType = mediaLabel == null || mediaLabel.getText() == null
+			? "SONGS"
+			: mediaLabel.getText().toUpperCase();
+
+		applyDetailTheme();
+		initializeDotGrid();
+		initializeFields();
+		initializeListeners();
+		initializeButtons();
+		initializeNavigationBar();
 	}
- 
-	@FXML
-	private void hidePane() {
-		editButton.setText(null);
-		removeButton.setText(null);
-		deleteButton.setText(null);
-		backButton.setText(null);
-		homeButton.setText(null);
-		
-		// Animation for hiding the pane..
-		Timeline timelineUp = new Timeline();
- 
-		final KeyValue kvUp1 = new KeyValue(clipRect.heightProperty(), 55);
-		final KeyValue kvUp2 = new KeyValue(extendableNavigationPane.translateYProperty(), 10);
-		final KeyFrame kfUp = new KeyFrame(Duration.millis(200), kvUp1, kvUp2);
- 
-		// Animation for moving Edit button
-		final KeyValue kvEdit = new KeyValue(editButton.translateXProperty(), deltaXEditButton);
-		final KeyFrame kfEdit = new KeyFrame(Duration.millis(200), kvEdit);
-
-		// Animation for moving Remove button
-		final KeyValue kvRemove = new KeyValue(removeButton.translateXProperty(), deltaXRemoveButton);
-		final KeyFrame kfRemove = new KeyFrame(Duration.millis(200), kvRemove);
-
-		// Animation for moving Delete button
-		final KeyValue kvDelete = new KeyValue(deleteButton.translateXProperty(), deltaXDeleteButton);
-		final KeyFrame kfDelete = new KeyFrame(Duration.millis(200), kvDelete);
-		
-		// Animation for moving Back button
-		final KeyValue kvBack = new KeyValue(backButton.translateXProperty(), deltaXBackButton);
-		final KeyFrame kfBack = new KeyFrame(Duration.millis(200), kvBack);
-
-		// Animation for moving Home button
-		final KeyValue kvHome = new KeyValue(homeButton.translateXProperty(), deltaXHomeButton);
-		final KeyFrame kfHome = new KeyFrame(Duration.millis(200), kvHome);
-
-		timelineUp.getKeyFrames().addAll(kfUp, kfEdit, kfRemove, kfDelete, kfBack, kfHome);
-		timelineUp.play();
+	
+	public void setMedia(Media media) {
+		this.media = media;
+		loadMediaData();
 	}
- 
-	@FXML
-	private void toggleEdit() {
-		deselectAllPanes();
-		isEditing = !isEditing;
-		
-		if (!isEditing) {
-			setIcon(editButton, "/resources/application/images/icons/pencil-svgrepo-com.png");
-			
-			showLabelHideField(titleLabel, titleField);
-			showLabelHideField(creatorLabel, creatorField);
-			showLabelHideField(genreLabel, genreField);
-			showLabelHideField(statusLabel, statusField);
-			showLabelHideField(ratingLabel, ratingField);
-			showLabelHideField(reviewLabel, reviewField);
-		    
-			switch (mediaType) {
-			    case "SONGS":
-			        showLabelHideField(playtimeLabel, playtimeField);
-			        showLabelHideField(yearLabel, yearField);
-			        break;
 	
-			    case "GAMES":
-			        showLabelHideField(avgPlaytimeLabel, avgPlaytimeField);
-			        showLabelHideField(yearLabel, yearField);
-			        break;
+	@Override
+	public void setConnection(Connection conn) {
+		super.setConnection(conn);
+		mediaDAO = new MediaDAOImpl(conn, UserSession.getCurrentUserId());
+		mediaPlaylistDAO = new MediaPlaylistDAOImpl(conn, UserSession.getCurrentUserId());
+		episodeDAO = new EpisodeDAOImpl(conn, UserSession.getCurrentUserId());
+	}
 	
-			    case "SHOWS":
-			        showLabelHideField(airingLabel, airingField);
-			        showLabelHideField(yearFirstAiredLabel, yearFirstAiredField);
-			        showLabelHideField(yearLastAiredLabel, yearLastAiredField);
-			        showLabelHideField(numOfEpisodesLabel, numOfEpisodesField);
-			        showLabelHideField(numOfSeasonsLabel, numOfSeasonsField);
-			        break;
+	public void setPlaylist(MediaPlaylist playlist) {
+		this.playlist = playlist;
+		updateRemoveButtonVisibility();
+	}
+	
+	public void setReturnToSeasons(Show show) {
+		returnToSeasons = true;
+		returnShow = show;
+	}
+	
+	public void setOpenedFromSeasons(boolean openedFromSeasons) {
+		this.openedFromSeasons = openedFromSeasons;
+		updateButtonVisibility();
+	}
+	
+	private void updateButtonVisibility() {
+		if(deleteButton != null) {
+			deleteButton.setVisible(!openedFromSeasons);
+			deleteButton.setManaged(!openedFromSeasons);
+		}
+
+		if(removeButton != null) {
+			removeButton.setVisible(!openedFromSeasons);
+			removeButton.setManaged(!openedFromSeasons);
+		}
+
+		initializeNavigationBar();
+	}
+	
+	private void loadMediaData() {
+		if(media != null) {
+			loadMediaPicture();
+
+			if(media instanceof Song)
+				loadSongData((Song)media);
+			else if(media instanceof Game)
+				loadGameData((Game)media);
+			else if(media instanceof Show)
+				loadShowData((Show)media);
+			else if(media instanceof Episode)
+				loadEpisodeData((Episode)media);
+
+			revertChanges();
+		}
+	}
+	
+	private void loadSongData(Song song) {
+		setText(titleLabel, titleField, song.getTitle());
+		setTextWithPrefix(creatorLabel, creatorField, "Artist: ", song.getCreator());
+		setTextWithPrefix(yearLabel, yearField, "Year Released: ", song.getYearString());
+		setTextWithPrefix(genreLabel, genreField, "Album: ", song.getAlbum());
+		setTextWithPrefix(playtimeLabel, playtimeField, "Runtime in Seconds: ", String.valueOf(song.getRuntimeSeconds()));
+		setStatus(media.getStatus());
+		setTextWithPrefix(ratingLabel, ratingField, "Rating: ", getRatingText());
+		setTextWithPrefix(reviewLabel, reviewField, "Review: ", getReviewText());
+	}
+
+	private void loadGameData(Game game) {
+		setText(titleLabel, titleField, game.getTitle());
+		setTextWithPrefix(creatorLabel, creatorField, "Developer: ", game.getCreator());
+		setTextWithPrefix(yearLabel, yearField, "Year Released: ", game.getYearString());
+		setTextWithPrefix(genreLabel, genreField, "Genre: ", game.getGenre());
+		setTextWithPrefix(avgPlaytimeLabel, avgPlaytimeField, "Average Playtime in Minutes: ", String.valueOf(game.getAvgPlaytimeMins()));
+		setStatus(media.getStatus());
+		setTextWithPrefix(ratingLabel, ratingField, "Rating: ", getRatingText());
+		setTextWithPrefix(reviewLabel, reviewField, "Review: ", getReviewText());
+	}
+
+	private void loadShowData(Show show) {
+		setText(titleLabel, titleField, show.getTitle());
+		setTextWithPrefix(creatorLabel, creatorField, "Director: ", show.getCreator());
+		setTextWithPrefix(yearFirstAiredLabel, yearFirstAiredField, "Year Started: ", formatNumber(show.getYearStart()));
+		setTextWithPrefix(yearLastAiredLabel, yearLastAiredField, "Year Ended: ", formatNumber(show.getYearEnd()));
+		setTextWithPrefix(genreLabel, genreField, "Genre: ", show.getGenre());
+		setTextWithPrefix(numOfSeasonsLabel, numOfSeasonsField, "Number of Seasons: ", String.valueOf(show.getNumOfSeasons()));
+		setTextWithPrefix(airingLabel, airingField, "Is Airing: ", show.isAiring() ? "Yes" : "No");
+		setStatus(media.getStatus());
+		setTextWithPrefix(ratingLabel, ratingField, "Rating: ", getRatingText());
+		setTextWithPrefix(reviewLabel, reviewField, "Review: ", getReviewText());
+	}
+	
+	private void setStatus(Status status) {
+		if(statusLabel != null && statusField != null) {
+			statusField.setValue(status);
+
+			if(status != null)
+				statusLabel.setText("Status: " + statusField.getConverter().toString(status));
+			else
+				statusLabel.setText("Status: ");
+		}
+	}
+
+	private void loadMediaPicture() {
+		if(mediaArt != null && media != null) {
+			Image image = null;
+			boolean defaultImage = false;
+			String imagePath = media.getImagePath();
+
+			if(imagePath != null && !imagePath.isBlank())
+				image = loadImage(imagePath);
+
+			if(image == null) {
+				defaultImage = true;
+
+				if(media instanceof Song)
+					image = loadImage("/resources/application/images/icons/default-song-icon.png");
+				else if(media instanceof Game)
+					image = loadImage("/resources/application/images/icons/default-game-icon.png");
+				else if(media instanceof Show || media instanceof Episode)
+					image = loadImage("/resources/application/images/icons/default-show-icon.png");
 			}
 
+			if(image != null) {
+				StackPane container = (StackPane)mediaArt.getParent();
+
+				if(defaultImage)
+					container.getStyleClass().remove("media-art-border");
+				else if(!container.getStyleClass().contains("media-art-border"))
+					container.getStyleClass().add("media-art-border");
+
+				mediaArt.setViewport(null);
+				mediaArt.setImage(image);
+				fillImage(mediaArt);
+			}
+		}
+	}
+	
+	private void updateRemoveButtonVisibility() {
+		if(removeButton != null && playlist != null && mediaType != null) {
+			boolean defaultPlaylist =
+				playlist.getTitle().equals("all_songs") && mediaType == Type.SONG ||
+				playlist.getTitle().equals("all_games") && mediaType == Type.GAME ||
+				playlist.getTitle().equals("all_shows") && mediaType == Type.SHOW;
+
+			removeButton.setVisible(!defaultPlaylist);
+			removeButton.setManaged(!defaultPlaylist);
+
+			initializeNavigationBar();
+		}
+	}
+
+	private void setTextWithPrefix(Label label, TextInputControl field, String prefix, String value) {
+		String text = value;
+
+		if(text == null)
+			text = "";
+
+		if(label != null)
+			label.setText(prefix + text);
+
+		if(field != null)
+			field.setText(text);
+	}
+
+	private String formatNumber(int value) {
+		String text = "";
+
+		if(value > 0)
+			text = String.valueOf(value);
+
+		return text;
+	}
+
+	private String getRatingText() {
+		String rating = "";
+
+		if(media.getUserRating() > 0)
+			rating = String.format("%.2f", media.getUserRating());
+
+		return rating;
+	}
+
+	private String getReviewText() {
+		String review = media.getReview();
+
+		if(review == null)
+			review = "";
+
+		return review;
+	}
+	
+	private void setText(Label label, TextField field, String value) {
+		String text = value;
+
+		if(text == null)
+			text = "";
+
+		if(label != null)
+			label.setText(text);
+
+		if(field != null)
+			field.setText(text);
+	}
+
+	private void applyDetailTheme() {
+		rootStackPane.getStyleClass().removeAll(
+			"songs-details-theme",
+			"games-details-theme",
+			"shows-details-theme",
+			"seasons-details-theme",
+			"episodes-details-theme"
+		);
+
+		switch(detailType) {
+			case "GAMES":
+				rootStackPane.getStyleClass().add("games-details-theme");
+				setupView(Type.GAME);
+				break;
+
+			case "SHOWS":
+				rootStackPane.getStyleClass().add("shows-details-theme");
+				setupView(Type.SHOW);
+				break;
+
+			case "SEASONS":
+				rootStackPane.getStyleClass().add("seasons-details-theme");
+				setupView(Type.SHOW);
+				break;
+
+			case "EPISODES":
+				rootStackPane.getStyleClass().add("episodes-details-theme");
+				setupView(Type.SHOW);
+				break;
+
+			default:
+				rootStackPane.getStyleClass().add("songs-details-theme");
+				setupView(Type.SONG);
+				break;
+		}
+	}
+
+	private void initializeFields() {
+		hideStatusField();
+		hideField(ratingLabel, ratingField);
+		hideField(reviewLabel, reviewField);
+
+		if(mediaArt != null) {
+			Rectangle clip = new Rectangle();
+			clip.setWidth(390);
+			clip.setHeight(390);
+			clip.setArcWidth(60);
+			clip.setArcHeight(60);
+
+			mediaArt.setClip(clip);
+			mediaArt.setFitWidth(390);
+			mediaArt.setFitHeight(390);
+			mediaArt.setPreserveRatio(false);
+			mediaArt.setSmooth(true);
+		}
+	}
+	
+	private void fillImage(ImageView imageView) {
+		Image image = imageView.getImage();
+
+		if(image != null) {
+			double imgRatio = image.getWidth() / image.getHeight();
+			double viewRatio = imageView.getFitWidth() / imageView.getFitHeight();
+
+			if(imgRatio > viewRatio) {
+				double width = viewRatio / imgRatio;
+
+				imageView.setViewport(new Rectangle2D(
+					(image.getWidth() - image.getWidth() * width) / 2,
+					0,
+					image.getWidth() * width,
+					image.getHeight()
+				));
+			}
+			else {
+				double height = imgRatio / viewRatio;
+
+				imageView.setViewport(new Rectangle2D(
+					0,
+					(image.getHeight() - image.getHeight() * height) / 2,
+					image.getWidth(),
+					image.getHeight() * height
+				));
+			}
+		}
+	}
+
+	private void initializeListeners() {
+		bindField(ratingField, ratingLabel, "Rating: ");
+		bindField(reviewField, reviewLabel, "Review: ");
+
+		if(statusField != null) {
+			statusField.setConverter(new StringConverter<Status>() {
+				@Override
+				public String toString(Status status) {
+					if(status == null)
+						return "STATUS";
+
+					return status.toDbString().replace('_', ' ').toUpperCase();
+				}
+
+				@Override
+				public Status fromString(String string) {
+					if(string == null || string.equals("STATUS"))
+						return null;
+
+					return Status.fromDbString(string.replace(' ', '_').toLowerCase());
+				}
+			});
+
+			statusField.setItems(FXCollections.observableArrayList(
+				Status.PLANNED,
+				Status.IN_PROGRESS,
+				Status.COMPLETED
+			));
+
+			statusField.setPromptText("STATUS");
+
+			statusField.valueProperty().addListener((observable, oldStatus, newStatus) -> {
+				if(newStatus != null)
+					statusLabel.setText("Status: " + statusField.getConverter().toString(newStatus));
+				else
+					statusLabel.setText("Status: ");
+			});
+		}
+	}
+
+	private void bindField(TextInputControl field, Label label, String prefix) {
+		if(field != null && label != null) {
+			field.textProperty().addListener((observable, oldText, newText) ->
+				label.setText(prefix + newText)
+			);
+		}
+	}
+
+	private void initializeButtons() {
+		makeNavigationButton(
+			editButton,
+			"/resources/application/images/icons/pencil-svgrepo-com.png",
+			"Update Details",
+			this::toggleEdit
+		);
+
+		makeNavigationButton(
+			backButton,
+			"/resources/application/images/icons/back-reply-svgrepo-com.png",
+			"Back",
+			this::goBack
+		);
+
+		makeNavigationButton(
+			homeButton,
+			"/resources/application/images/icons/home-icon-svgrepo-com.png",
+			"Home",
+			() -> switchScene("/resources/application/fxml/Menu.fxml")
+		);
+		
+		makeNavigationButton(
+			removeButton,
+			"/resources/application/images/icons/remove-icon.png",
+			"Remove From Playlist",
+			this::removeMedia
+		);
+
+		makeNavigationButton(
+			deleteButton,
+			"/resources/application/images/icons/trash-can-svgrepo-com.png",
+			"Delete Media",
+			this::deleteMedia
+		);
+		
+		editButton.setTranslateY(-15);
+		removeButton.setTranslateY(-15);
+		deleteButton.setTranslateY(-15);
+		backButton.setTranslateY(-15);
+		homeButton.setTranslateY(-15);
+		
+		updateRemoveButtonVisibility();
+	}
+
+	@FXML
+	private void toggleEdit() {
+		editing = !editing;
+
+		if(editing) {
+			hideError();
+
+			setButtonIcon(
+				editButton,
+				"/resources/application/images/icons/check-svgrepo-com.png"
+			);
 		}
 		else {
-			setIcon(editButton, "/resources/application/images/icons/check-svgrepo-com.png");
+			saveChanges();
+			showAllLabels();
+
+			setButtonIcon(
+				editButton,
+				"/resources/application/images/icons/pencil-svgrepo-com.png"
+			);
 		}
 	}
- 
-	@FXML
-	private void removeMedia() {
-		System.out.println("Selecting pane 2");
-		deselectAllPanes();
-		removeButton.setEffect(dropShadowForSelectedPane);
+
+	private void saveChanges() {
+		changesSaved = false;
+		hideError();
+
+		if(media != null && mediaDAO != null) {
+			try {
+				Status status = statusField.getValue();
+				String ratingText = ratingField.getText().trim();
+				String review = reviewField.getText().trim();
+				double rating = 0.0;
+				boolean validRating = true;
+				boolean validCompletion = true;
+
+				if(!ratingText.isBlank()) {
+					try {
+						rating = Double.parseDouble(ratingText);
+					}
+					catch(NumberFormatException e) {
+						validRating = false;
+					}
+				}
+
+				if(status == null) {
+					revertChanges();
+					showError("Please select a status.");
+				}
+				else if(!validRating) {
+					revertChanges();
+					showError("Rating must be a valid number.");
+				}
+				else if(status == Status.COMPLETED && ratingText.isBlank()) {
+					revertChanges();
+					showError("A rating is required when media is marked as COMPLETED.");
+				}
+				else if(status == Status.COMPLETED && (rating <= 0 || rating > 10)) {
+					revertChanges();
+					showError("Rating must be between 0.01 and 10.00.");
+				}
+				else if(status != Status.COMPLETED && !ratingText.isBlank()) {
+					revertChanges();
+					showError("You can only rate media that is marked as COMPLETED.");
+				}
+				else if(status != Status.COMPLETED && !review.isBlank()) {
+					revertChanges();
+					showError("You can only review media that is marked as COMPLETED.");
+				}
+				else {
+					if(media instanceof Show && status == Status.COMPLETED) {
+						Show show = (Show)media;
+
+						if(episodeDAO == null || !episodeDAO.canCompleteShow(show.getMediaId())) {
+							showError("You must complete every episode before completing the show.");
+							validCompletion = false;
+						}
+					}
+
+					if(validCompletion) {
+						mediaDAO.updateMediaStatus(media, status);
+						mediaDAO.updateMediaRating(media, rating);
+						mediaDAO.updateMediaReview(media, review);
+
+						media.setStatus(status);
+						media.setUserRating(rating);
+						media.setReview(review);
+
+						updateEditableDisplay();
+						changesSaved = true;
+					}
+				}
+			}
+			catch(SQLException e) {
+				revertChanges();
+				showError("Failed to save changes.");
+				e.printStackTrace();
+			}
+		}
 	}
 	
-	@FXML
-	private void deleteMedia() {
-		System.out.println("Selecting pane 3");
-		deselectAllPanes();
-		deleteButton.setEffect(dropShadowForSelectedPane);
+	private void revertChanges() {
+		if(media != null) {
+			Status previousStatus = media.getStatus();
+			double previousRating = media.getUserRating();
+			String previousReview = media.getReview();
+
+			if(previousReview == null || previousReview.equals("/--/"))
+				previousReview = "";
+
+			statusField.setValue(previousStatus);
+
+			if(previousRating > 0)
+				ratingField.setText(String.format("%.2f", previousRating));
+			else
+				ratingField.setText("");
+
+			reviewField.setText(previousReview);
+			updateEditableDisplay();
+		}
 	}
 	
-	@FXML
-	private void goToBack() {
-		System.out.println("Selecting pane 4");
-		deselectAllPanes();
-		backButton.setEffect(dropShadowForSelectedPane);
+	private void updateEditableDisplay() {
+		if(media != null) {
+			Status status = media.getStatus();
+			double rating = media.getUserRating();
+			String review = media.getReview();
+
+			if(status != null)
+				statusLabel.setText("Status: " + statusField.getConverter().toString(status));
+			else
+				statusLabel.setText("Status: ");
+
+			if(rating > 0)
+				ratingLabel.setText("Rating: " + String.format("%.2f", rating));
+			else
+				ratingLabel.setText("Rating: ");
+
+			if(review == null || review.isBlank() || review.equals("/--/"))
+				reviewLabel.setText("Review: ");
+			else
+				reviewLabel.setText("Review: " + review);
+		}
 	}
 	
-	@FXML
-	private void goToHome(ActionEvent event) {
-		deselectAllPanes();
-		
-		try {
-	    		FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/Menu.fxml"));
-	    		Parent root = loader.load();
-	        
-	        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-	        stage.getScene().setRoot(root);
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
+	public void setEpisodeContext(Show show, Season season) {
+		this.parentShow = show;
+		this.parentSeason = season;
+		openedFromEpisodes = true;
+		updateButtonVisibility();
 	}
 	
+	private void loadEpisodeData(Episode episode) {
+		setText(titleLabel, titleField, episode.getTitle());
+		setTextWithPrefix(creatorLabel, creatorField, "Writer: ", episode.getCreator());
+		setTextWithPrefix(yearLabel, yearField, "Year Released: ", episode.getYearString());
+		setTextWithPrefix(seasonNumberLabel, seasonNumberField, "Season Number: ", String.valueOf(episode.getSeasonNumber()));
+		setTextWithPrefix(episodeNumberLabel, episodeNumberField, "Episode Number: ", String.valueOf(episode.getEpisodeNumber()));
+		setStatus(episode.getStatus());
+		setTextWithPrefix(ratingLabel, ratingField, "Rating: ", getRatingText());
+		setTextWithPrefix(reviewLabel, reviewField, "Review: ", getReviewText());
+	}
+
+	private void showAllLabels() {
+		showStatusLabel();
+		showLabel(ratingLabel, ratingField);
+		showLabel(reviewLabel, reviewField);
+	}
+	
+	private void showStatusLabel() {
+		if(statusLabel != null && statusField != null) {
+			statusLabel.setVisible(true);
+			statusLabel.setManaged(true);
+			statusField.setVisible(false);
+			statusField.setManaged(false);
+		}
+	}
+	
+	private void hideStatusField() {
+		if(statusLabel != null && statusField != null) {
+			statusLabel.setVisible(true);
+			statusLabel.setManaged(true);
+			statusField.setVisible(false);
+			statusField.setManaged(false);
+		}
+	}
+
 	@FXML
 	private void editTitle() {
-	    if (isEditing) {
-	    		hideLabelShowField(titleLabel, titleField);
-	    }
+		editField(titleLabel, titleField);
 	}
 
 	@FXML
 	private void editCreator() {
-	    if (isEditing) {
-	    		hideLabelShowField(creatorLabel, creatorField);
-	    }
+		editField(creatorLabel, creatorField);
 	}
 
 	@FXML
 	private void editYear() {
-	    if (isEditing) {
-	    		hideLabelShowField(yearLabel, yearField);
-	    }
+		editField(yearLabel, yearField);
 	}
 
 	@FXML
 	private void editGenre() {
-	    if (isEditing) {
-	    		hideLabelShowField(genreLabel, genreField);
-	    }
+		editField(genreLabel, genreField);
 	}
 
 	@FXML
 	private void editPlaytime() {
-	    if (isEditing) {
-	    		hideLabelShowField(playtimeLabel, playtimeField);
-	    }
-	}
-
-	@FXML
-	private void editStatus() {
-	    if (isEditing) {
-	    		hideLabelShowField(statusLabel, statusField);
-	    }
-	}
-
-	@FXML
-	private void editRating() {
-	    if (isEditing) {
-	    		hideLabelShowField(ratingLabel, ratingField);
-	    }
-	}
-
-	@FXML
-	private void editReview() {
-	    if (isEditing) {
-	    		hideLabelShowField(reviewLabel, reviewField);
-	    }
+		editField(playtimeLabel, playtimeField);
 	}
 
 	@FXML
 	private void editAvgPlaytime() {
-	    if (isEditing) {
-	    		hideLabelShowField(avgPlaytimeLabel, avgPlaytimeField);
-	    }
+		editField(avgPlaytimeLabel, avgPlaytimeField);
 	}
-	
+
 	@FXML
-	private void editAiring() {
-	    if (isEditing) {
-	    		hideLabelShowField(airingLabel, airingField);
-	    }
+	private void editStatus() {
+		if(editing && statusLabel != null && statusField != null) {
+			statusLabel.setVisible(false);
+			statusLabel.setManaged(false);
+			statusField.setVisible(true);
+			statusField.setManaged(true);
+			statusField.requestFocus();
+		}
+	}
+
+	@FXML
+	private void editRating() {
+		editField(ratingLabel, ratingField);
+	}
+
+	@FXML
+	private void editReview() {
+		editField(reviewLabel, reviewField);
 	}
 
 	@FXML
 	private void editYearFirstAired() {
-	    if (isEditing) {
-	    		hideLabelShowField(yearFirstAiredLabel, yearFirstAiredField);
-	    }
+		editField(yearFirstAiredLabel, yearFirstAiredField);
 	}
 
 	@FXML
 	private void editYearLastAired() {
-	    if (isEditing) {
-	    		hideLabelShowField(yearLastAiredLabel, yearLastAiredField);
-	    }
-	}
-
-	@FXML
-	private void editNumOfEpisodes() {
-	    if (isEditing) {
-	    		hideLabelShowField(numOfEpisodesLabel, numOfEpisodesField);
-	    }
+		editField(yearLastAiredLabel, yearLastAiredField);
 	}
 
 	@FXML
 	private void editNumOfSeasons() {
-	    if (isEditing) {
-	    		hideLabelShowField(numOfSeasonsLabel, numOfSeasonsField);
-	    }
-	}
-	
-	private void showLabelHideField(Label label, TextField field) {
-	    label.setVisible(true);
-	    label.setManaged(true);
-	    field.setVisible(false);
-	    field.setManaged(false);
+		editField(numOfSeasonsLabel, numOfSeasonsField);
 	}
 
-	private void hideLabelShowField(Label label, TextField field) {
-	    label.setVisible(false);
-	    label.setManaged(false);
-	    field.setVisible(true);
-	    field.setManaged(true);
+	@FXML
+	private void editNumOfEpisodes() {
+		editField(numOfEpisodesLabel, numOfEpisodesField);
 	}
-	
+
+	@FXML
+	private void editAiring() {
+		editField(airingLabel, airingField);
+	}
+
+	@FXML
+	private void editSeasonNumber() {
+		editField(seasonNumberLabel, seasonNumberField);
+	}
+
+	@FXML
+	private void editEpisodeNumber() {
+		editField(episodeNumberLabel, episodeNumberField);
+	}
+
+	private void editField(Label label, TextInputControl field) {
+		if(editing && label != null && field != null) {
+			label.setVisible(false);
+			label.setManaged(false);
+
+			field.setVisible(true);
+			field.setManaged(true);
+			field.requestFocus();
+			field.selectAll();
+		}
+	}
+
+	private void showLabel(Label label, TextInputControl field) {
+		if(label != null && field != null) {
+			label.setVisible(true);
+			label.setManaged(true);
+
+			field.setVisible(false);
+			field.setManaged(false);
+		}
+	}
+
+	private void hideField(Label label, TextInputControl field) {
+		if(label != null && field != null) {
+			field.setVisible(false);
+			field.setManaged(false);
+
+			label.setVisible(true);
+			label.setManaged(true);
+		}
+	}
+
 	@FXML
 	private void choosePicture() {
-	}
- 
-	private void deselectAllPanes() {
-		editButton.setEffect(null);
-		removeButton.setEffect(null);
-		deleteButton.setEffect(null);
-		backButton.setEffect(null);
-		homeButton.setEffect(null);
-	}
- 
-	private EventHandler<ActionEvent> createBouncingEffect(double height) {
-		final Timeline timelineBounce = new Timeline();
-		timelineBounce.setCycleCount(2);
-		timelineBounce.setAutoReverse(true);
-		final KeyValue kv1 = new KeyValue(clipRect.heightProperty(), (height - 15));
-		final KeyValue kv2 = new KeyValue(clipRect.translateYProperty(), 15);
-		final KeyValue kv3 = new KeyValue(extendableNavigationPane.translateYProperty(), -15);
-		final KeyFrame kf1 = new KeyFrame(Duration.millis(100), kv1, kv2, kv3);
-		timelineBounce.getKeyFrames().add(kf1);
- 
-		EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				timelineBounce.play();
-			}
-		};
-		return handler;
+		FileChooser chooser = new FileChooser();
+		chooser.setTitle("Select Media Picture");
+		chooser.getExtensionFilters().add(
+			new FileChooser.ExtensionFilter(
+				"Image Files",
+				"*.png",
+				"*.jpg",
+				"*.jpeg",
+				"*.gif",
+				"*.webp"
+			)
+		);
+
+		File selectedFile = chooser.showOpenDialog(
+			mediaArt.getScene().getWindow()
+		);
+
+		if(selectedFile != null) {
+			selectedPicturePath = selectedFile.getAbsolutePath();
+
+			Image image = new Image(selectedFile.toURI().toString());
+			mediaArt.setImage(image);
+			fillImage(mediaArt);
+		}
 	}
 	
-	private void setIcon(Button button, String name) {
-		Image image = new Image(getClass().getResourceAsStream(name));
-		ImageView imageView = new ImageView(image);
-        
-        imageView.setFitWidth(72);
-        imageView.setFitHeight(72); 
-        imageView.setPreserveRatio(true);
-		
-		button.setGraphic(imageView);
-		button.setContentDisplay(ContentDisplay.TOP);
+	private void showError(String message) {
+		errorLabel.setText(message);
+		errorLabel.setVisible(true);
+	}
+
+	private void hideError() {
+		errorLabel.setText("");
+		errorLabel.setVisible(false);
+	}
+
+	private void removeMedia() {
+		hideError();
+
+		if(media != null && playlist != null && mediaPlaylistDAO != null) {
+			try {
+				mediaPlaylistDAO.removeMediaFromPlaylist(
+					playlist.getPlaylistId(),
+					media.getMediaId(),
+					mediaType
+				);
+
+				goBack();
+			}
+			catch(SQLException e) {
+				showError("Failed to remove this media from the playlist.");
+				e.printStackTrace();
+			}
+		}
+		else
+			showError("This media or playlist could not be found.");
+	}
+
+	private void deleteMedia() {
+		hideError();
+
+		if(media != null && mediaDAO != null) {
+			try {
+				mediaDAO.deleteMedia(media);
+				goBack();
+			}
+			catch(SQLException e) {
+				showError("Failed to permanently delete this media.");
+				e.printStackTrace();
+			}
+		}
+		else
+			showError("The media could not be found.");
+	}
+	
+	private void goBack() {
+		if(openedFromEpisodes)
+			goBackToEpisodes();
+		else if(returnToSeasons)
+			goBackToSeasons();
+		else
+			goBackToPlaylist();
+	}
+
+	private void goBackToEpisodes() {
+		if(parentShow != null && parentSeason != null) {
+			try {
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/EpisodesTableScene.fxml"));
+				Parent root = loader.load();
+
+				EpisodesTableController controller = loader.getController();
+				controller.setConnection(conn);
+				controller.setShow(parentShow);
+				controller.setSeason(parentSeason);
+
+				Stage stage = (Stage)rootPane.getScene().getWindow();
+				stage.getScene().setRoot(root);
+			}
+			catch(IOException e) {
+				showError("Failed to return to the episodes.");
+				e.printStackTrace();
+			}
+		}
+		else
+			showError("The original episode list could not be found.");
+	}
+
+	private void goBackToSeasons() {
+		if(returnShow != null) {
+			try {
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/SeasonsTableScene.fxml"));
+				Parent root = loader.load();
+
+				SeasonsTableController controller = loader.getController();
+				controller.setConnection(conn);
+				controller.setPlaylist(playlist);
+				controller.setShow(returnShow);
+				controller.setupView(Type.SHOW);
+
+				Stage stage = (Stage)rootPane.getScene().getWindow();
+				stage.getScene().setRoot(root);
+			}
+			catch(IOException e) {
+				showError("Failed to return to the seasons.");
+				e.printStackTrace();
+			}
+		}
+		else
+			showError("The original seasons page could not be found.");
+	}
+
+	private void goBackToPlaylist() {
+		if(playlist != null && mediaType != null) {
+			try {
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/MediaPlaylistsItemsScene.fxml"));
+				Parent root = loader.load();
+
+				MediaPlaylistsItemsController controller = loader.getController();
+				controller.setConnection(conn);
+				controller.setupView(mediaType);
+				controller.setPlaylist(playlist);
+
+				Stage stage = (Stage)rootPane.getScene().getWindow();
+				stage.getScene().setRoot(root);
+			}
+			catch(IOException e) {
+				showError("Failed to return to the playlist.");
+				e.printStackTrace();
+			}
+		}
+		else
+			showError("The original playlist could not be found.");
+	}
+	
+	private void initializeDotGrid() {
+		if(dotGridPane != null && contentCard != null) {
+			dotGridPane.prefWidthProperty().bind(contentCard.widthProperty());
+			dotGridPane.prefHeightProperty().bind(contentCard.heightProperty());
+
+			dotGridClip.widthProperty().bind(dotGridPane.widthProperty());
+			dotGridClip.heightProperty().bind(dotGridPane.heightProperty());
+			dotGridClip.setArcWidth(48.0);
+			dotGridClip.setArcHeight(48.0);
+			dotGridPane.setClip(dotGridClip);
+
+			dotGridPane.widthProperty().addListener((observable, oldValue, newValue) ->
+				updateDotGrid()
+			);
+
+			dotGridPane.heightProperty().addListener((observable, oldValue, newValue) ->
+				updateDotGrid()
+			);
+
+			setupDotGrid();
+		}
+	}
+
+	private void setupDotGrid() {
+		if(dotGridPane != null && mediaType != null) {
+			Color dotColor = getDotColor();
+
+			for(Circle dot : dots)
+				dot.setFill(dotColor);
+
+			updateDotGrid();
+		}
+	}
+
+	private void createDots(int requiredDots, Color color) {
+		while(dots.size() < requiredDots) {
+			Circle dot = new Circle();
+			dot.setFill(color);
+			dot.setMouseTransparent(true);
+
+			dots.add(dot);
+			dotGridPane.getChildren().add(dot);
+		}
+	}
+
+	private void updateDotGrid() {
+		if(dotGridPane != null && mediaType != null) {
+			double width = dotGridPane.getWidth();
+			double height = dotGridPane.getHeight();
+
+			if(width > 0 && height > 0) {
+				int visibleColumns = (int)Math.ceil(width / DOT_SPACING) + 4;
+				int visibleRows = (int)Math.ceil(height / DOT_SPACING) + 4;
+				int requiredDots = visibleColumns * visibleRows;
+				Color dotColor = getDotColor();
+
+				createDots(requiredDots, dotColor);
+
+				double centerX = width / 2.0;
+				double centerY = height / 2.0;
+				double startX = centerX - ((visibleColumns - 1) * DOT_SPACING) / 2.0;
+				double startY = centerY - ((visibleRows - 1) * DOT_SPACING) / 2.0;
+				int dotIndex = 0;
+
+				for(int row = 0; row < visibleRows; row++) {
+					for(int column = 0; column < visibleColumns; column++) {
+						Circle dot = dots.get(dotIndex);
+						double x = startX + column * DOT_SPACING;
+						double y = startY + row * DOT_SPACING;
+						double distance = Math.hypot(x - centerX, y - centerY);
+						double radius = Math.max(3.5, 13.0 - distance / 90.0);
+
+						dot.setCenterX(x);
+						dot.setCenterY(y);
+						dot.setRadius(radius);
+						dot.setFill(dotColor);
+						dot.setVisible(true);
+						dotIndex++;
+					}
+				}
+
+				for(int i = dotIndex; i < dots.size(); i++)
+					dots.get(i).setVisible(false);
+			}
+		}
+	}
+
+	private Color getDotColor() {
+		Color dotColor = Color.TRANSPARENT;
+
+		if(mediaType != null) {
+			switch(mediaType) {
+				case SONG:
+					dotColor = Color.web("#2e5068", 0.15);
+					break;
+
+				case GAME:
+					dotColor = Color.web("#212d5f", 0.43);
+					break;
+
+				case SHOW:
+					dotColor = Color.web("#413466", 0.33);
+					break;
+			}
+		}
+
+		return dotColor;
+	}
+
+	@Override
+	protected void loadTableData() {
 	}
 }

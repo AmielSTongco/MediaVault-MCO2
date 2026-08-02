@@ -100,4 +100,8 @@ public class Media {
     	else
     		this.yearString = yearString;
     }
+    
+	public void setImagePath(String imagePath) {
+		this.imagePath = imagePath;
+	}
 }

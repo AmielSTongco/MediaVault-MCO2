@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<StackPane fx:id="rootStackPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.SeasonsTableController">
+	<children>
+		<Canvas fx:id="backgroundCanvas" mouseTransparent="true" />
+
+		<BorderPane fx:id="rootPane">
+			<top>
+				<HBox maxHeight="130.0" minHeight="130.0" prefHeight="130.0" styleClass="nav-bar" BorderPane.alignment="CENTER">
+					<children>
+						<HBox alignment="CENTER_LEFT" spacing="10.0">
+							<children>
+								<ImageView fx:id="mediaVaultLogo" fitHeight="105.0" pickOnBounds="true" preserveRatio="true" />
+								<ImageView fx:id="mediaVaultTitle" fitHeight="65.0" pickOnBounds="true" preserveRatio="true" />
+							</children>
+						</HBox>
+
+						<Region HBox.hgrow="ALWAYS" />
+
+						<Label fx:id="mediaLabel" alignment="CENTER" styleClass="font-open-sauce, active-pill" text="SHOWS" textFill="WHITE" />
+
+						<Region HBox.hgrow="ALWAYS" />
+
+						<HBox alignment="CENTER_RIGHT" spacing="25.0">
+							<children>
+								<ImageView fx:id="profileAvatar" fitHeight="65.0" pickOnBounds="true" preserveRatio="true" />
+								<Label fx:id="userName" maxWidth="220.0" styleClass="font-public-sans, profile-text" text="chisaepicmoment" />
+								<ImageView fx:id="settingsIcon" fitHeight="55.0" pickOnBounds="true" preserveRatio="true" />
+							</children>
+						</HBox>
+					</children>
+				</HBox>
+			</top>
+
+			<center>
+				<VBox spacing="10.0" styleClass="content-card" BorderPane.alignment="CENTER">
+					<children>
+						<HBox alignment="CENTER_LEFT" maxHeight="120.0" minHeight="120.0" prefHeight="120.0" VBox.vgrow="NEVER">
+							<children>
+								<ImageView fx:id="mediaLogo" fitHeight="120.0" fitWidth="160.0" pickOnBounds="true" preserveRatio="true" />
+
+								<Region prefWidth="20.0" />
+
+								<Text fx:id="pageLabel" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-header-title" text="Seasons" />
+							</children>
+						</HBox>
+
+						<TableView fx:id="mediaPlaylistTable" maxHeight="660.0" minHeight="660.0" prefHeight="660.0" prefWidth="1360.0" VBox.vgrow="NEVER">
+							<columns>
+								<TableColumn fx:id="numberColumn" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="#" />
+								<TableColumn fx:id="titleColumn" prefWidth="300.0" resizable="false" sortable="false" text="Season" />
+								<TableColumn fx:id="totalColumn" prefWidth="170.0" resizable="false" sortable="false" text="Total Episodes" />
+								<TableColumn fx:id="completedColumn" prefWidth="180.0" resizable="false" sortable="false" text="Completed" />
+								<TableColumn fx:id="inProgressColumn" prefWidth="180.0" resizable="false" sortable="false" text="In Progress" />
+								<TableColumn fx:id="plannedColumn" prefWidth="180.0" resizable="false" sortable="false" text="Planned" />
+								<TableColumn fx:id="avgRatingColumn" prefWidth="300.0" resizable="false" sortable="false" text="Average Rating" />
+							</columns>
+						</TableView>
+
+						<HBox fx:id="extendableNavigationPane" alignment="CENTER" maxHeight="120.0" minHeight="120.0" prefHeight="120.0" prefWidth="1360.0" spacing="25.0" VBox.vgrow="NEVER">
+							<children>
+								<Button fx:id="backButton" mnemonicParsing="false" styleClass="navigation-button" />
+								<Button fx:id="viewShowButton" mnemonicParsing="false" styleClass="navigation-button" />
+								<Button fx:id="deleteShowButton" mnemonicParsing="false" styleClass="navigation-button" />
+								<Button fx:id="homeButton" mnemonicParsing="false" styleClass="navigation-button" />
+								<Button fx:id="addButton" mnemonicParsing="false" styleClass="navigation-button" />
+							</children>
+						</HBox>
+					</children>
+
+					<BorderPane.margin>
+						<Insets bottom="5.0" left="20.0" right="20.0" top="5.0" />
+					</BorderPane.margin>
+				</VBox>
+			</center>
+		</BorderPane>
+	</children>
+</StackPane>

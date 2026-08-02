@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<StackPane fx:id="rootStackPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.EpisodesController">
+<StackPane fx:id="rootStackPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.EpisodesTableController">
 	<children>
 		<Canvas fx:id="backgroundCanvas" mouseTransparent="true" />
 
@@ -63,28 +63,28 @@
 							<children>
 								<TableView fx:id="mediaTable" maxHeight="660.0" minHeight="660.0" prefHeight="660.0" prefWidth="1360.0">
 									<columns>
-										<TableColumn fx:id="numberColumn" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="#" />
-										<TableColumn fx:id="titleColumn" prefWidth="310.0" resizable="false" sortable="false" text="Title" />
-										<TableColumn fx:id="creatorColumn" prefWidth="230.0" resizable="false" sortable="false" text="Creator" />
-										<TableColumn fx:id="yearColumn" prefWidth="130.0" resizable="false" sortable="false" text="Year" />
-										<TableColumn fx:id="statusColumn" prefWidth="220.0" resizable="false" sortable="false" text="Status" />
-										<TableColumn fx:id="ratingColumn" prefWidth="90.0" resizable="false" sortable="false" text="Rating" />
-										<TableColumn fx:id="reviewColumn" prefWidth="220.0" resizable="false" sortable="false" text="Reviewed" />
-										<TableColumn fx:id="infoColumn" prefWidth="300.0" resizable="false" sortable="false" text="Details" />
+										<TableColumn fx:id="numberColumn" maxWidth="55.0" minWidth="55.0" prefWidth="55.0" resizable="false" sortable="false" text="#" />
+										<TableColumn fx:id="titleColumn" prefWidth="220.0" resizable="false" sortable="false" text="Title" />
+										<TableColumn fx:id="creatorColumn" prefWidth="180.0" resizable="false" sortable="false" text="Creator" />
+										<TableColumn fx:id="yearColumn" prefWidth="90.0" resizable="false" sortable="false" text="Year" />
+										<TableColumn fx:id="statusColumn" prefWidth="145.0" resizable="false" sortable="false" text="Status" />
+										<TableColumn fx:id="ratingColumn" prefWidth="100.0" resizable="false" sortable="false" text="Rating" />
+										<TableColumn fx:id="reviewColumn" prefWidth="145.0" resizable="false" sortable="false" text="Reviewed" />
+										<TableColumn fx:id="infoColumn" prefWidth="425.0" resizable="false" sortable="false" text="Info" />
 									</columns>
 								</TableView>
 
-								<Label fx:id="loadingLabel" alignment="CENTER" managed="false" styleClass="add-media-detail-label" text="Loading episodes..." visible="false" />
+								<Label fx:id="loadingLabel" alignment="CENTER" managed="false" styleClass="font-public-sans, loading-label" text="Loading episodes..." visible="false" StackPane.alignment="CENTER" />
 							</children>
 						</StackPane>
 
-						<HBox fx:id="extendableNavigationPane" alignment="CENTER" maxHeight="120.0" minHeight="120.0" prefHeight="120.0" prefWidth="371.0" spacing="25.0" VBox.vgrow="NEVER">
+						<HBox fx:id="extendableNavigationPane" alignment="CENTER" maxHeight="120.0" minHeight="120.0" prefHeight="120.0" spacing="25.0" VBox.vgrow="NEVER">
 							<children>
 								<Button fx:id="backButton" mnemonicParsing="false" styleClass="navigation-button" />
-								<Button fx:id="addButton" mnemonicParsing="false" styleClass="navigation-button" />
-								<Button fx:id="searchButton" mnemonicParsing="false" styleClass="navigation-button" />
-								<Button fx:id="deletePlaylistButton" mnemonicParsing="false" styleClass="navigation-button" />
 								<Button fx:id="homeButton" mnemonicParsing="false" styleClass="navigation-button" />
+								<Button fx:id="addEpisodeButton" mnemonicParsing="false" styleClass="navigation-button" />
+								<Button fx:id="deleteLastEpisodeButton" mnemonicParsing="false" styleClass="navigation-button" />
+								<Button fx:id="changeSeasonPictureButton" mnemonicParsing="false" styleClass="navigation-button" />
 							</children>
 						</HBox>
 					</children>

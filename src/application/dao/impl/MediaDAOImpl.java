@@ -278,6 +278,42 @@ public class MediaDAOImpl{
 		return mediaId;
 	}
 	
+	public void addMediaReview(Media media) throws SQLException {
+		String mediaName = "";
+		String reviewTable = "";
+		String idColumn = "";
+
+		if(media instanceof Song) {
+			mediaName = "song";
+			reviewTable = "songs_reviews";
+			idColumn = "song_id";
+		}
+		else if(media instanceof Game) {
+			mediaName = "game";
+			reviewTable = "games_reviews";
+			idColumn = "game_id";
+		}
+		else if(media instanceof Show) {
+			mediaName = "show";
+			reviewTable = "shows_reviews";
+			idColumn = "show_id";
+		}
+
+		if(!mediaName.isBlank()) {
+			String sql = "INSERT OR IGNORE INTO " + reviewTable
+					   + " (user_id, " + idColumn + ", status, user_rating, review) "
+					   + "VALUES (?, ?, ?, ?, ?)";
+
+			try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+				stmt.setInt(1, userId);
+				stmt.setInt(2, media.getMediaId());
+				stmt.setString(3, media.getStatus().toDbString());
+				stmt.setDouble(4, media.getUserRating());
+				stmt.setString(5, media.getReview());
+				stmt.executeUpdate();
+			}
+		}
+	}
 	
 	/**
 	 * Retrieves all songs belonging to the current user's default
@@ -676,27 +712,28 @@ public class MediaDAOImpl{
 	 * @throws SQLException if a database error occurs
 	 */
 	public void updateMediaStatus(Media media, Status newStatus) throws SQLException {
-		
 		String table = null;
-		
-		if (media instanceof Song)
-			table = "song";
-		else if (media instanceof Game)
-			table = "game";
-		else if (media instanceof Show)
-			table = "show";
-		
-		// Update the media's status in the corresponding review table.
-		String sql = "UPDATE " + table + "s_reviews "
-				   + "SET status = ? "
-				   + "WHERE user_id = ? AND " + table + "_id = ?";
 
-	    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-	        stmt.setString(1, newStatus.toDbString());
-	        stmt.setInt(2, userId);
-	        stmt.setInt(3, findMediaId(media));
-	        stmt.executeUpdate();
-	    }
+		if(media instanceof Song)
+			table = "song";
+		else if(media instanceof Game)
+			table = "game";
+		else if(media instanceof Show)
+			table = "show";
+
+		if(table != null) {
+			String sql = "INSERT INTO " + table + "s_reviews(user_id, " + table + "_id, status) "
+					   + "VALUES(?, ?, ?) "
+					   + "ON CONFLICT(user_id, " + table + "_id) DO UPDATE SET "
+					   + "status = excluded.status";
+
+			try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+				stmt.setInt(1, userId);
+				stmt.setInt(2, findMediaId(media));
+				stmt.setString(3, newStatus.toDbString());
+				stmt.executeUpdate();
+			}
+		}
 	}
 	
 	/**
@@ -759,6 +796,17 @@ public class MediaDAOImpl{
 	        stmt.setInt(3, findMediaId(media));
 	        stmt.executeUpdate();
 	    }
+	}
+	
+	public int deleteMedia(Media media) throws SQLException {
+		if(media instanceof Song)
+			return deleteSong(media.getTitle(), media.getCreator());
+		else if(media instanceof Game)
+			return deleteGame(media.getTitle(), media.getCreator());
+		else if(media instanceof Show)
+			return deleteShow(media.getTitle(), media.getCreator());
+
+		return 0;
 	}
 	
 	/**
