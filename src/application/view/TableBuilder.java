@@ -221,9 +221,14 @@ public abstract class TableBuilder {
 		);
 		statusColumn.setCellFactory(column -> createTextCell(30));
 
-		ratingColumn.setCellValueFactory(cell ->
-			new ReadOnlyStringWrapper(cell.getValue().getUserRatingString())
-		);
+		ratingColumn.setCellValueFactory(cell -> {
+			double rating = cell.getValue().getUserRating();
+
+			if(rating <= 0)
+				return new ReadOnlyStringWrapper("/--/");
+
+			return new ReadOnlyStringWrapper(String.format("%.2f", rating));
+		});
 		ratingColumn.setCellFactory(column -> createTextCell(6));
 
 		reviewColumn.setCellValueFactory(cell ->
@@ -237,15 +242,15 @@ public abstract class TableBuilder {
 		infoColumn.setCellFactory(column -> createTextCell(4));
 	}
 
-	public static void createPlaylistTable(PlaylistTableOwner owner) {
-		TableView<MediaPlaylist> mediaPlaylistTable = owner.getMediaPlaylistTable();
-		TableColumn<MediaPlaylist, Number> numberColumn = owner.getNumberColumn();
-		TableColumn<MediaPlaylist, MediaPlaylist> titleColumn = owner.getTitleColumn();
-		TableColumn<MediaPlaylist, String> totalColumn = owner.getTotalColumn();
-		TableColumn<MediaPlaylist, String> completedColumn = owner.getCompletedColumn();
-		TableColumn<MediaPlaylist, String> inProgressColumn = owner.getInProgressColumn();
-		TableColumn<MediaPlaylist, String> plannedColumn = owner.getPlannedColumn();
-		TableColumn<MediaPlaylist, String> avgRatingColumn = owner.getAvgRatingColumn();
+	public static <T extends MediaPlaylist> void createPlaylistTable(PlaylistTableOwner<T> owner) {
+		TableView<T> mediaPlaylistTable = owner.getMediaPlaylistTable();
+		TableColumn<T, Number> numberColumn = owner.getNumberColumn();
+		TableColumn<T, T> titleColumn = owner.getTitleColumn();
+		TableColumn<T, String> totalColumn = owner.getTotalColumn();
+		TableColumn<T, String> completedColumn = owner.getCompletedColumn();
+		TableColumn<T, String> inProgressColumn = owner.getInProgressColumn();
+		TableColumn<T, String> plannedColumn = owner.getPlannedColumn();
+		TableColumn<T, String> avgRatingColumn = owner.getAvgRatingColumn();
 
 		mediaPlaylistTable.setPrefWidth(1360);
 		mediaPlaylistTable.setMinHeight(616);
@@ -280,7 +285,7 @@ public abstract class TableBuilder {
 			new ReadOnlyIntegerWrapper(mediaPlaylistTable.getItems().indexOf(cell.getValue()) + 1)
 		);
 
-		numberColumn.setCellFactory(column -> new TableCell<MediaPlaylist, Number>() {
+		numberColumn.setCellFactory(column -> new TableCell<T, Number>() {
 			private final Label label = new Label();
 			private final StackPane wrapper = new StackPane(label);
 
@@ -309,7 +314,7 @@ public abstract class TableBuilder {
 
 		titleColumn.setCellValueFactory(cell -> new ReadOnlyObjectWrapper<>(cell.getValue()));
 
-		titleColumn.setCellFactory(column -> new TableCell<MediaPlaylist, MediaPlaylist>() {
+		titleColumn.setCellFactory(column -> new TableCell<T, T>() {
 			private final ImageView cover = new ImageView();
 			private final Label title = new Label();
 			private final StackPane imagePane = new StackPane(cover);
@@ -339,7 +344,7 @@ public abstract class TableBuilder {
 			}
 
 			@Override
-			protected void updateItem(MediaPlaylist playlist, boolean empty) {
+			protected void updateItem(T playlist, boolean empty) {
 				super.updateItem(playlist, empty);
 
 				
@@ -416,9 +421,14 @@ public abstract class TableBuilder {
 		);
 		plannedColumn.setCellFactory(column -> createTextCell(8));
 
-		avgRatingColumn.setCellValueFactory(cell ->
-			new ReadOnlyStringWrapper(String.valueOf(cell.getValue().getAvgRatingCount()))
-		);
+		avgRatingColumn.setCellValueFactory(cell -> {
+			double rating = cell.getValue().getAvgRatingCount();
+
+			if(rating <= 0)
+				return new ReadOnlyStringWrapper("/--/");
+
+			return new ReadOnlyStringWrapper(String.format("%.2f", rating));
+		});
 		avgRatingColumn.setCellFactory(column -> createTextCell(8));
 	}
 

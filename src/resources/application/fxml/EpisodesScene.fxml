@@ -51,7 +51,7 @@
 					<children>
 						<HBox alignment="CENTER_LEFT" maxHeight="120.0" minHeight="120.0" prefHeight="120.0" VBox.vgrow="NEVER">
 							<children>
-								<ImageView fx:id="mediaLogo" fitHeight="120.0" fitWidth="160.0" pickOnBounds="true" preserveRatio="true" />
+								<ImageView fx:id="mediaLogo" fitHeight="108.0" fitWidth="108.0" pickOnBounds="true" preserveRatio="false" />
 
 								<Region prefWidth="20.0" />
 

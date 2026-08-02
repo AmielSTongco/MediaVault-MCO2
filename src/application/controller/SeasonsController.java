@@ -27,6 +27,15 @@ public class SeasonsController extends BaseMediaPageController implements Playli
 	private Button backButton;
 
 	@FXML
+	private Button addButton;
+
+	@FXML
+	private Button viewShowButton;
+
+	@FXML
+	private Button deleteShowButton;
+
+	@FXML
 	private Button homeButton;
 	
 	@FXML
@@ -64,9 +73,63 @@ public class SeasonsController extends BaseMediaPageController implements Playli
 	@FXML
 	public void initialize() {
 		initializeBase();
+		
+		makeNavigationButton(
+				backButton,
+				"/resources/application/images/icons/back-reply-svgrepo-com.png",
+				"Back",
+				this::goBack
+			);
+
+			makeNavigationButton(
+				addButton,
+				"/resources/application/images/icons/plus-svgrepo-com.png",
+				"Add Season Manually",
+				this::addSeasonManually
+			);
+
+			makeNavigationButton(
+				viewShowButton,
+				"/resources/application/images/icons/view-details-icon.png",
+				"View Show Details",
+				this::viewShowDetails
+			);
+
+			makeNavigationButton(
+				deleteShowButton,
+				"/resources/application/images/icons/delete-icon.png",
+				"Delete Show",
+				this::deleteShow
+			);
+
+			makeNavigationButton(
+				homeButton,
+				"/resources/application/images/icons/home-icon-svgrepo-com.png",
+				"Home",
+				() -> switchScene("/resources/application/fxml/Menu.fxml")
+			);
+			
+			initializeNavigationBar();
+		
 		TableBuilder.createPlaylistTable(this);
 		mediaPlaylistTable.setItems(seasons);
 		handleDoubleClick(mediaPlaylistTable, this::openSeason);
+	}
+	
+	private void addSeasonManually() {
+		// Open the manual season form.
+	}
+
+	private void viewShowDetails() {
+		// Open the selected show's details.
+	}
+
+	private void deleteShow() {
+		// Confirm and delete the current show.
+	}
+
+	private void goBack() {
+		// Return to the show's playlist.
 	}
 
 	@Override

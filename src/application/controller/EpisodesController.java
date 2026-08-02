@@ -156,8 +156,7 @@ public class EpisodesController extends BaseMediaPageController implements Media
 				image = loadImage(show.getImagePath());
 
 			if(image != null) {
-				mediaLogo.setImage(image);
-				cropImage(mediaLogo);
+				setCenterCroppedImage(mediaLogo, image, 108);
 			}
 		}
 	}
@@ -235,6 +234,28 @@ public class EpisodesController extends BaseMediaPageController implements Media
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private void setCenterCroppedImage(ImageView imageView, Image image, double size) {
+		imageView.setImage(image);
+		imageView.setFitWidth(size);
+		imageView.setFitHeight(size);
+		imageView.setPreserveRatio(false);
+
+		if(image.getWidth() > 0 && image.getHeight() > 0) {
+			double imageWidth = image.getWidth();
+			double imageHeight = image.getHeight();
+			double cropSize = Math.min(imageWidth, imageHeight);
+			double cropX = (imageWidth - cropSize)/2;
+			double cropY = (imageHeight - cropSize)/2;
+
+			imageView.setViewport(new javafx.geometry.Rectangle2D(cropX, cropY, cropSize, cropSize));
+		}
+
+		javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(size, size);
+		clip.setArcWidth(20);
+		clip.setArcHeight(20);
+		imageView.setClip(clip);
 	}
 
 	@Override
