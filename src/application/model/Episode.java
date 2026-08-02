@@ -1,29 +1,31 @@
 package application.model;
 
-public class Episode {
+public class Episode extends Media {
 
 	private int episodeId;
 	private int seasonId;
 	private int episodeNumber;
-	private String title;
-	private String imagePath;
-	private Status status;
-	private double userRating;
-	private String review;
+	private String writer;
 
-	public Episode(int episodeId, int seasonId, int episodeNumber, String title, String imagePath, Status status, double userRating, String review) {
+	public Episode(int episodeId, int seasonId, int episodeNumber, String title, String writer, Status status, double userRating, String review, String imagePath) {
+		super(title, writer, 0, status == null ? Status.PLANNED : status, userRating, review == null ? "" : review, imagePath);
+
 		this.episodeId = episodeId;
 		this.seasonId = seasonId;
 		this.episodeNumber = episodeNumber;
-		this.title = title;
-		this.imagePath = imagePath;
-		this.status = status;
-		this.userRating = userRating;
-		this.review = review;
+		this.writer = writer == null || writer.isBlank() ? "/--/" : writer;
+
+		setCreator(this.writer);
+		setYearString("/--/");
+		setMediaInfo("Episode " + episodeNumber);
+	}
+
+	public Episode(int episodeNumber, String title, String writer, String imagePath) {
+		this(0, 0, episodeNumber, title, writer, Status.PLANNED, 0.0, "", imagePath);
 	}
 
 	public Episode(int episodeNumber, String title, String imagePath) {
-		this(0, 0, episodeNumber, title, imagePath, null, 0.0, "");
+		this(0, 0, episodeNumber, title, "/--/", Status.PLANNED, 0.0, "", imagePath);
 	}
 
 	public int getEpisodeId() {
@@ -32,6 +34,7 @@ public class Episode {
 
 	public void setEpisodeId(int episodeId) {
 		this.episodeId = episodeId;
+		setMediaId(episodeId);
 	}
 
 	public int getSeasonId() {
@@ -46,40 +49,21 @@ public class Episode {
 		return episodeNumber;
 	}
 
-	public String getTitle() {
-		return title;
+	public void setEpisodeNumber(int episodeNumber) {
+		this.episodeNumber = episodeNumber;
+		setMediaInfo("Episode " + episodeNumber);
 	}
 
-	public String getImagePath() {
-		return imagePath;
+	public String getWriter() {
+		return writer;
 	}
 
-	public Status getStatus() {
-		return status;
-	}
+	public void setWriter(String writer) {
+		if(writer == null || writer.isBlank())
+			this.writer = "/--/";
+		else
+			this.writer = writer;
 
-	public double getUserRating() {
-		return userRating;
-	}
-
-	public String getReview() {
-		if(review == null || review.isBlank())
-			return "/--/";
-
-		return review;
-	}
-
-	public String getStatusString() {
-		if(status == null)
-			return "/--/";
-
-		return status.toDbString();
-	}
-
-	public String getRatingString() {
-		if(userRating <= 0)
-			return "/--/";
-
-		return String.format("%.1f", userRating);
+		setCreator(this.writer);
 	}
 }

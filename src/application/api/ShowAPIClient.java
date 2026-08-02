@@ -123,13 +123,43 @@ public class ShowAPIClient {
 			for(JsonNode item : results) {
 				int episodeNumber = getIntValue(item, "episode_number");
 				String title = getTextValue(item, "name");
+				String writer = getEpisodeWriters(item);
 				String imagePath = buildImagePath(getTextValue(item, "still_path"));
 
-				episodes.add(new Episode(episodeNumber, title, imagePath));
+				episodes.add(new Episode(episodeNumber, title, writer, imagePath));
 			}
 		}
 
 		return episodes;
+	}
+	
+	private String getEpisodeWriters(JsonNode episode) {
+		JsonNode crew = episode.get("crew");
+
+		if(crew == null || !crew.isArray())
+			return "/--/";
+
+		String writers = "";
+
+		for(JsonNode crewMember : crew) {
+			String job = getTextValue(crewMember, "job");
+
+			if(job.equalsIgnoreCase("Writer") || job.equalsIgnoreCase("Screenplay") || job.equalsIgnoreCase("Teleplay") || job.equalsIgnoreCase("Story")) {
+				String name = getTextValue(crewMember, "name");
+
+				if(!name.isBlank() && !writers.contains(name)) {
+					if(!writers.isBlank())
+						writers += ", ";
+
+					writers += name;
+				}
+			}
+		}
+
+		if(writers.isBlank())
+			return "/--/";
+
+		return writers;
 	}
 	
 	private List<String> getSeasonImagePaths(JsonNode showDetails) {

@@ -5,9 +5,10 @@ public class Season extends MediaPlaylist {
 	private int showId;
 	private int seasonNumber;
 
-	public Season(int seasonId, int showId, String title, String imagePath, int totalCount, int completedCount, int inProgressCount, int plannedCount, double avgRating) {
+	public Season(int seasonId, int showId, int seasonNumber, String title, String imagePath, int totalCount, int completedCount, int inProgressCount, int plannedCount, double avgRating) {
 		super(seasonId, title, imagePath, totalCount, completedCount, inProgressCount, plannedCount, avgRating);
 		this.showId = showId;
+		this.seasonNumber = seasonNumber;
 	}
 
 	public int getShowId() {

@@ -82,6 +82,7 @@ public class DatabaseInitializer {
 				title TEXT,
 				display_order INTEGER NOT NULL DEFAULT 0,
 				image_path TEXT,
+				season_number INTEGER DEFAULT 0,
 				FOREIGN KEY (show_id) REFERENCES shows(id)
 			)""");
 			
@@ -93,6 +94,7 @@ public class DatabaseInitializer {
 				episode_number INTEGER NOT NULL,
 				title TEXT,
 				image_path TEXT,
+				writer TEXT,
 				display_order INTEGER NOT NULL DEFAULT 0,
 				FOREIGN KEY (season_id) REFERENCES seasons(id)
 			)""");

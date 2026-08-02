@@ -439,6 +439,7 @@ public class MediaDAOImpl{
 	                        rs.getString("image_path"));
 
 	                show.setMediaId(rs.getInt("id"));
+	                show.setApiId(rs.getInt("api_id"));
 	                shows.add(show);
 	            }
 	        }
@@ -569,8 +570,9 @@ public class MediaDAOImpl{
 	        // Retrieve the requested show together with its review information.
 	        String sql = """
 	            SELECT s.id, s.title, s.creator, s.year_start, s.year_end,
-	                   s.genre, s.num_of_seasons, s.airing,
-	                   sr.status, sr.user_rating, sr.review
+			       s.genre, s.num_of_seasons, s.airing,
+			       s.image_path, s.api_id,
+			       sr.status, sr.user_rating, sr.review
 	            FROM shows_playlists sp
 	            INNER JOIN shows_playlist_items spi ON sp.id = spi.playlist_id
 	            INNER JOIN shows s ON spi.show_id = s.id
@@ -613,6 +615,7 @@ public class MediaDAOImpl{
 	                    );
 
 	                    show.setMediaId(rs.getInt("id"));
+	                    show.setApiId(rs.getInt("api_id"));
 	                    return show;
 	                }
 	            }

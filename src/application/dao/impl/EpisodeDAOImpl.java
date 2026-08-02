@@ -21,8 +21,8 @@ public class EpisodeDAOImpl {
 	}
 
 	public void addEpisodes(int seasonId, List<Episode> episodes) throws SQLException {
-		String insertEpisodeSql = "INSERT OR IGNORE INTO episodes(season_id, episode_number, title, image_path) VALUES(?, ?, ?, ?)";
-		String updateEpisodeSql = "UPDATE episodes SET title = ?, image_path = ? WHERE season_id = ? AND episode_number = ?";
+		String insertEpisodeSql = "INSERT OR IGNORE INTO episodes(season_id, episode_number, title, writer, image_path) VALUES(?, ?, ?, ?, ?)";
+		String updateEpisodeSql = "UPDATE episodes SET title = ?, writer = ?, image_path = ? WHERE season_id = ? AND episode_number = ?";
 
 		try(PreparedStatement insertStmt = conn.prepareStatement(insertEpisodeSql);
 			PreparedStatement updateStmt = conn.prepareStatement(updateEpisodeSql)) {
@@ -31,13 +31,15 @@ public class EpisodeDAOImpl {
 				insertStmt.setInt(1, seasonId);
 				insertStmt.setInt(2, episode.getEpisodeNumber());
 				insertStmt.setString(3, episode.getTitle());
-				insertStmt.setString(4, episode.getImagePath());
+				insertStmt.setString(4, episode.getWriter());
+				insertStmt.setString(5, episode.getImagePath());
 				insertStmt.addBatch();
 
 				updateStmt.setString(1, episode.getTitle());
-				updateStmt.setString(2, episode.getImagePath());
-				updateStmt.setInt(3, seasonId);
-				updateStmt.setInt(4, episode.getEpisodeNumber());
+				updateStmt.setString(2, episode.getWriter());
+				updateStmt.setString(3, episode.getImagePath());
+				updateStmt.setInt(4, seasonId);
+				updateStmt.setInt(5, episode.getEpisodeNumber());
 				updateStmt.addBatch();
 			}
 
@@ -49,7 +51,7 @@ public class EpisodeDAOImpl {
 	public List<Episode> getEpisodesBySeasonId(int seasonId) throws SQLException {
 		List<Episode> episodes = new ArrayList<>();
 
-		String sql = "SELECT e.id, e.season_id, e.episode_number, e.title, e.image_path, "
+		String sql = "SELECT e.id, e.season_id, e.episode_number, e.title, e.writer, e.image_path, "
 				   + "er.status, er.user_rating, er.review "
 				   + "FROM episodes e "
 				   + "LEFT JOIN episodes_reviews er ON e.id = er.episode_id AND er.user_id = ? "
@@ -73,12 +75,14 @@ public class EpisodeDAOImpl {
 						rs.getInt("season_id"),
 						rs.getInt("episode_number"),
 						rs.getString("title"),
-						rs.getString("image_path"),
+						rs.getString("writer"),
 						status,
 						rs.getDouble("user_rating"),
-						rs.getString("review")
+						rs.getString("review"),
+						rs.getString("image_path")
 					);
 
+					episode.setMediaId(rs.getInt("id"));
 					episodes.add(episode);
 				}
 			}

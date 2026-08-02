@@ -44,7 +44,7 @@ public abstract class TableBuilder {
 	// ==========================
 	// PUBLIC
 	// ==========================
-
+	
 	public static void createMediaTable(MediaTableOwner owner) {
 		TableView<Media> mediaTable = owner.getMediaTable();
 		TableColumn<Media, Number> numberColumn = owner.getNumberColumn();

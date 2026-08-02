@@ -365,7 +365,7 @@ public class MediaPlaylistDAOImpl {
 		List<Show> mediaItems = new ArrayList<Show>();
 		
 		String sql = "SELECT m.id, m.title, m.creator, m.year_start, m.year_end, mr.status, mr.user_rating, mr.review, m.image_path, "
-		            + "m.genre, m.num_of_seasons, m.num_of_episodes, m.avg_mins_per_ep, m.airing "
+					+ "m.genre, m.num_of_seasons, m.num_of_episodes, m.avg_mins_per_ep, m.airing, m.api_id "
 		            + "FROM shows_playlists mp "
 		            + "JOIN shows_playlist_items mpi "
 		            + "ON mp.id = mpi.playlist_id "
@@ -408,6 +408,7 @@ public class MediaPlaylistDAOImpl {
 	                        rs.getString("image_path"));
 				    
 				    media.setMediaId(rs.getInt("id"));
+				    media.setApiId(rs.getInt("api_id"));
 					mediaItems.add(media);
 				}
 			}

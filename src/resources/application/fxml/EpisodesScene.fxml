@@ -51,7 +51,7 @@
 					<children>
 						<HBox alignment="CENTER_LEFT" maxHeight="120.0" minHeight="120.0" prefHeight="120.0" VBox.vgrow="NEVER">
 							<children>
-								<ImageView fx:id="mediaLogo" fitHeight="108.0" fitWidth="108.0" pickOnBounds="true" preserveRatio="false" />
+								<ImageView fx:id="mediaLogo" fitHeight="120.0" fitWidth="160.0" pickOnBounds="true" preserveRatio="true" />
 
 								<Region prefWidth="20.0" />
 
@@ -59,15 +59,18 @@
 							</children>
 						</HBox>
 
-						<StackPane>
+						<StackPane VBox.vgrow="NEVER">
 							<children>
-								<TableView fx:id="episodesTable" maxHeight="660.0" minHeight="660.0" prefHeight="660.0" prefWidth="1360.0" VBox.vgrow="NEVER">
+								<TableView fx:id="mediaTable" maxHeight="660.0" minHeight="660.0" prefHeight="660.0" prefWidth="1360.0">
 									<columns>
-										<TableColumn fx:id="numberColumn" maxWidth="70.0" minWidth="70.0" prefWidth="70.0" resizable="false" sortable="false" text="#" />
-										<TableColumn fx:id="titleColumn" prefWidth="460.0" resizable="false" sortable="false" text="Episode Title" />
-										<TableColumn fx:id="statusColumn" prefWidth="240.0" resizable="false" sortable="false" text="Status" />
-										<TableColumn fx:id="ratingColumn" prefWidth="160.0" resizable="false" sortable="false" text="Rating" />
-										<TableColumn fx:id="reviewColumn" prefWidth="430.0" resizable="false" sortable="false" text="Review" />
+										<TableColumn fx:id="numberColumn" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="#" />
+										<TableColumn fx:id="titleColumn" prefWidth="310.0" resizable="false" sortable="false" text="Title" />
+										<TableColumn fx:id="creatorColumn" prefWidth="230.0" resizable="false" sortable="false" text="Creator" />
+										<TableColumn fx:id="yearColumn" prefWidth="130.0" resizable="false" sortable="false" text="Year" />
+										<TableColumn fx:id="statusColumn" prefWidth="220.0" resizable="false" sortable="false" text="Status" />
+										<TableColumn fx:id="ratingColumn" prefWidth="90.0" resizable="false" sortable="false" text="Rating" />
+										<TableColumn fx:id="reviewColumn" prefWidth="220.0" resizable="false" sortable="false" text="Reviewed" />
+										<TableColumn fx:id="infoColumn" prefWidth="300.0" resizable="false" sortable="false" text="Details" />
 									</columns>
 								</TableView>
 
@@ -78,6 +81,9 @@
 						<HBox fx:id="extendableNavigationPane" alignment="CENTER" maxHeight="120.0" minHeight="120.0" prefHeight="120.0" prefWidth="371.0" spacing="25.0" VBox.vgrow="NEVER">
 							<children>
 								<Button fx:id="backButton" mnemonicParsing="false" styleClass="navigation-button" />
+								<Button fx:id="addButton" mnemonicParsing="false" styleClass="navigation-button" />
+								<Button fx:id="searchButton" mnemonicParsing="false" styleClass="navigation-button" />
+								<Button fx:id="deletePlaylistButton" mnemonicParsing="false" styleClass="navigation-button" />
 								<Button fx:id="homeButton" mnemonicParsing="false" styleClass="navigation-button" />
 							</children>
 						</HBox>
