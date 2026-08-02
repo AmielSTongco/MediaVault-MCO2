@@ -799,7 +799,7 @@ public class EpisodeDetailsController extends BaseMediaPageController {
 			}
 		}
 	}
-
+	
 	private boolean isAutomaticShow() {
 		return show != null && show.getApiId() > 0;
 	}
@@ -932,6 +932,12 @@ public class EpisodeDetailsController extends BaseMediaPageController {
 		errorLabel.setText("");
 		errorLabel.setVisible(false);
 		errorLabel.setManaged(true);
+	}
+	
+	@FXML
+	private void editGenre() {
+		if(!isAutomaticShow())
+			editField(genreLabel, genreField);
 	}
 
 	@Override
