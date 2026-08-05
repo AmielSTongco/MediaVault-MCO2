@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<StackPane fx:id="rootStackPane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.AllMediasDisplayController">
+	<children>
+		<Canvas fx:id="backgroundCanvas" mouseTransparent="true" />
+
+		<BorderPane fx:id="rootPane">
+			<top>
+				<HBox maxHeight="130.0" minHeight="130.0" prefHeight="130.0" styleClass="nav-bar">
+					<children>
+						<HBox alignment="CENTER_LEFT" spacing="10.0">
+							<children>
+								<ImageView fx:id="mediaVaultLogo" fitHeight="105.0" pickOnBounds="true" preserveRatio="true" />
+								<ImageView fx:id="mediaVaultTitle" fitHeight="65.0" pickOnBounds="true" preserveRatio="true" />
+							</children>
+						</HBox>
+
+						<Region HBox.hgrow="ALWAYS" />
+
+						<Label fx:id="mediaLabel" alignment="CENTER" styleClass="font-open-sauce, active-pill" text="MEDIA" textFill="WHITE" />
+
+						<Region HBox.hgrow="ALWAYS" />
+
+						<HBox alignment="CENTER_RIGHT" spacing="25.0">
+							<children>
+								<ImageView fx:id="profileAvatar" fitHeight="65.0" pickOnBounds="true" preserveRatio="true" />
+								<Label fx:id="userName" maxWidth="220.0" styleClass="font-public-sans, profile-text" />
+								<ImageView fx:id="settingsIcon" fitHeight="55.0" pickOnBounds="true" preserveRatio="true" />
+							</children>
+						</HBox>
+					</children>
+				</HBox>
+			</top>
+
+			<center>
+				<VBox spacing="10.0" styleClass="content-card">
+					<children>
+						<HBox alignment="CENTER_LEFT" maxHeight="120.0" minHeight="120.0" prefHeight="120.0">
+							<children>
+								<Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section-header-title" text="All Media" />
+							</children>
+						</HBox>
+
+						<TableView fx:id="mediaTable" maxHeight="660.0" minHeight="660.0" prefHeight="660.0" prefWidth="1360.0">
+							<columns>
+								<TableColumn fx:id="numberColumn" />
+								<TableColumn fx:id="titleColumn" />
+								<TableColumn fx:id="creatorColumn" />
+								<TableColumn fx:id="yearColumn" />
+								<TableColumn fx:id="statusColumn" />
+								<TableColumn fx:id="ratingColumn" />
+								<TableColumn fx:id="reviewColumn" />
+								<TableColumn fx:id="infoColumn" />
+							</columns>
+						</TableView>
+
+						<HBox fx:id="extendableNavigationPane" alignment="CENTER" maxHeight="120.0" minHeight="120.0" prefHeight="120.0" spacing="25.0">
+							<children>
+								<Button fx:id="homeButton" mnemonicParsing="false" styleClass="navigation-button" />
+							</children>
+						</HBox>
+					</children>
+
+					<BorderPane.margin>
+						<Insets top="5.0" right="20.0" bottom="5.0" left="20.0" />
+					</BorderPane.margin>
+				</VBox>
+			</center>
+		</BorderPane>
+	</children>
+</StackPane>

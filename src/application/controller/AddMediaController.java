@@ -751,6 +751,12 @@ public class AddMediaController {
 			}
 		}
 		
+		if(valid && selectedStatus == Status.COMPLETED && ratingField.getText().trim().isEmpty())
+		{
+			showStatus("Completed media must have a rating.", true);
+			valid = false;
+		}
+		
 		if(valid && selectedStatus != Status.COMPLETED)
 		{
 			if(!ratingField.getText().trim().isEmpty())

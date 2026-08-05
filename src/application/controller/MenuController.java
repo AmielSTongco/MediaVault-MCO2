@@ -3,7 +3,6 @@ package application.controller;
 import java.io.IOException;
 import java.sql.Connection;
 
-//import java.util.List;
 import javafx.animation.RotateTransition;
 import java.util.ArrayList;
 import application.model.Type;
@@ -37,12 +36,16 @@ import java.io.File;
 import java.sql.SQLException;
 import application.dao.UserDAO;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Button;
 
 
 public class MenuController {
     
 	@FXML
 	private StackPane songsContainer;
+	
+	@FXML
+	private Label mediaLabel;
 	
 	@FXML
 	private Rectangle songsBackground;
@@ -153,6 +156,8 @@ public class MenuController {
     	songsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/songs-icon.png")));
     	gamesIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/games-icon.png")));
     	showsIcon.setImage(new Image(getClass().getResourceAsStream("/resources/application/images/icons/shows-icon.png")));
+    	
+    	mediaLabel.getStyleClass().add("theme-media");
 
     	userName.setText(username);
     	menuContainer.setAlignment(Pos.CENTER);
@@ -175,6 +180,30 @@ public class MenuController {
     	clipTile(songsContainer);
     	clipTile(gamesContainer);
     	clipTile(showsContainer);
+    }
+    
+    /**
+     * Opens the page containing all user media while preserving
+     * the active database connection.
+     */
+    @FXML
+    private void openAllMedia() {
+    	try {
+    		// Loads all-media scene
+    		FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/AllMediasDisplayScene.fxml"));
+    		Parent root = loader.load();
+
+    		// Passes active connection to controller
+    		AllMediasDisplayController controller = loader.getController();
+    		controller.setConnection(conn);
+
+    		// Displays loaded scene
+    		Stage stage = (Stage)rootBorderPane.getScene().getWindow();
+    		stage.getScene().setRoot(root);
+    	}
+    	catch(IOException e) {
+    		e.printStackTrace();
+    	}
     }
 
     /**
@@ -262,7 +291,7 @@ public class MenuController {
 
     		Parent currentRoot = rootBorderPane.getScene().getRoot();
 
-    		// Adds popup to existing stack root
+    		// Adds pop-up to existing stack root
     		if(currentRoot instanceof StackPane)
     		{
     			StackPane root = (StackPane)currentRoot;

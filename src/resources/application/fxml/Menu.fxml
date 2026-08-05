@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 
 <StackPane fx:id="rootStackPane"
 		   prefHeight="864.0"
@@ -35,6 +36,10 @@
 		            </HBox>
 		            
 		            <Region HBox.hgrow="ALWAYS" />
+		            
+		            <Label fx:id="mediaLabel" alignment="CENTER" onMouseClicked="#openAllMedia" styleClass="font-open-sauce, active-pill" text="Media" textFill="WHITE" />
+
+					<Region HBox.hgrow="ALWAYS" />
 		
 		            <!-- Profile Container -->
 		            <HBox alignment="CENTER_RIGHT" spacing="25">

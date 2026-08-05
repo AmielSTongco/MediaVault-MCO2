@@ -50,6 +50,7 @@ public class SettingsController {
 	private Runnable deleteSuccessAction;
 	private Runnable profileUpdatedAction;
 	private String selectedProfilePicturePath;
+	private Connection conn;
 	
 	/**
 	 * Initializes account fields, status message, and default profile picture.
@@ -69,6 +70,7 @@ public class SettingsController {
 	 * @param conn active database connection
 	 */
 	public void setConnection(Connection conn) {
+		this.conn = conn;
 		userDAO = new UserDAO(conn);
 		loadCurrentProfilePicture();
 	}
@@ -247,12 +249,17 @@ public class SettingsController {
 	}
 	
 	/**
-	 * Switches scene back to login screen.
+	 * Switches scene back to login screen while preserving
+	 * the active database connection.
 	 */
 	private void navigateToLogin() {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/application/fxml/Login.fxml"));
 			Parent root = loader.load();
+
+			// Passes active connection to login controller
+			LoginController controller = loader.getController();
+			controller.setConnection(conn);
 
 			Stage stage = (Stage)usernameField.getScene().getWindow();
 			stage.getScene().setRoot(root);

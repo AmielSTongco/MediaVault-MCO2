@@ -159,7 +159,7 @@ public class SeasonDAO {
 		String sql = "SELECT s.id, s.show_id, s.season_number, s.title, s.image_path, "
 				   + "COUNT(e.id) AS episode_count, "
 				   + "SUM(CASE WHEN er.status = 'completed' THEN 1 ELSE 0 END) AS completed_count, "
-				   + "SUM(CASE WHEN er.status = 'in_progress' THEN 1 ELSE 0 END) AS in_progress_count, "
+				   + "SUM(CASE WHEN er.status = 'in progress' THEN 1 ELSE 0 END) AS in_progress_count, "
 				   + "SUM(CASE WHEN er.status = 'planned' OR er.status IS NULL THEN 1 ELSE 0 END) AS planned_count, "
 				   + "COALESCE(AVG(CASE WHEN er.user_rating > 0 THEN er.user_rating END), 0) AS avg_rating "
 				   + "FROM seasons s "

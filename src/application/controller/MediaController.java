@@ -490,7 +490,7 @@ public class MediaController extends BaseMediaPageController {
 		String rating = "";
 
 		if(media.getUserRating() > 0)
-			rating = String.format("%.2f", media.getUserRating());
+			rating = String.format("%.1f", media.getUserRating());
 
 		return rating;
 	}
@@ -825,7 +825,7 @@ public class MediaController extends BaseMediaPageController {
 			statusField.setValue(previousStatus);
 
 			if(previousRating > 0)
-				ratingField.setText(String.format("%.2f", previousRating));
+				ratingField.setText(String.format("%.1f", previousRating));
 			else
 				ratingField.setText("");
 
@@ -850,7 +850,7 @@ public class MediaController extends BaseMediaPageController {
 				statusLabel.setText("Status: ");
 
 			if(rating > 0)
-				ratingLabel.setText("Rating: " + String.format("%.2f", rating));
+				ratingLabel.setText("Rating: " + String.format("%.1f", rating));
 			else
 				ratingLabel.setText("Rating: ");
 
@@ -1281,8 +1281,8 @@ public class MediaController extends BaseMediaPageController {
 
 				// Restores previous playlist page
 				controller.setConnection(conn);
-				controller.setupView(mediaType);
 				controller.setPlaylist(playlist);
+				controller.setupView(mediaType);
 
 				Stage stage = (Stage)rootPane.getScene().getWindow();
 				stage.getScene().setRoot(root);

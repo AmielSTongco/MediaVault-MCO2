@@ -18,6 +18,11 @@
     -fx-bg-card: #675a8c;
 }
 
+.root.theme-media {
+	-fx-bg-main: #000000;
+	-fx-bg-card: #27282f;
+}
+
 .root {
     -fx-background-color: -fx-bg-main;
     -fx-padding: 10px;
@@ -77,6 +82,8 @@
     -fx-font-size: 46px;
     -fx-font-weight: bold;
     -fx-fill: #ffffff;
+    
+	-fx-background-color: #1a3345;
 }
 
 .theme-songs .active-pill {
@@ -89,6 +96,10 @@
 
 .theme-shows .active-pill {
 	-fx-background-color: #675a8c;
+}
+
+.theme-media .active-pill {
+	-fx-background-color: #27282f;
 }
 
 .content-card.song{
@@ -385,6 +396,15 @@
 	-fx-table-row-odd: #31274f;
 	-fx-table-row-even: #362b57;
 	-fx-table-selected: #1b152c;
+}
+
+.theme-media {
+	-fx-bg-main: #000000;
+	-fx-bg-card: #27282f;
+	-fx-theme-accent: #27282f;
+	-fx-table-row-odd: #1a1c21;
+	-fx-table-row-even: #22252b;
+	-fx-table-selected: #111214;
 }
 
 .table-row-cell {

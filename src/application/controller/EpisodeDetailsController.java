@@ -350,7 +350,7 @@ public class EpisodeDetailsController extends BaseMediaPageController {
 				statusLabel.setText("Status: ");
 
 			if(episode.getUserRating() > 0)
-				setTextWithPrefix(ratingLabel, ratingField, "Rating: ", String.format("%.2f", episode.getUserRating()));
+				setTextWithPrefix(ratingLabel, ratingField, "Rating: ", String.format("%.1f", episode.getUserRating()));
 			else
 				setTextWithPrefix(ratingLabel, ratingField, "Rating: ", "");
 
@@ -699,7 +699,7 @@ public class EpisodeDetailsController extends BaseMediaPageController {
 				statusLabel.setText("Status: ");
 
 			if(episode.getUserRating() > 0)
-				setTextWithPrefix(ratingLabel, ratingField, "Rating: ", String.format("%.2f", episode.getUserRating()));
+				setTextWithPrefix(ratingLabel, ratingField, "Rating: ", String.format("%.1f", episode.getUserRating()));
 			else
 				setTextWithPrefix(ratingLabel, ratingField, "Rating: ", "");
 
